@@ -4,6 +4,7 @@ import { getHousePrice } from './sources/housePrice'
 import { getLandUse } from './sources/landUse'
 import { getPossession } from './sources/possession'
 import { getBuilding } from './sources/building'
+import { getBuildingLedger, ledgerAvailable } from './sources/buildingLedger'
 import { checkGates, evaluate, rulesVersion, type Context } from './rules/engine'
 import { combine, type Diagnosis } from './verdict'
 import type { ResolvedAddress } from './types'
@@ -57,6 +58,12 @@ export async function diagnose(query: string): Promise<PipelineResult> {
     settle('건축물', () => getBuilding(address.pnu), errors),
   ])
 
+  // 위반건축물은 VWorld 에 없어 data.go.kr 건축물대장으로만 조달된다.
+  // 키가 없으면 조용히 건너뛰고 진단서에 '확인 안 함'으로 표시한다.
+  const ledger = ledgerAvailable()
+    ? await settle('건축물대장', () => getBuildingLedger(address), errors)
+    : null
+
   const facts: Context = {
     pnu: address.pnu,
     sigunguCd: address.sigunguCd,
@@ -75,6 +82,9 @@ export async function diagnose(query: string): Promise<PipelineResult> {
     housePriceYear: housePrice?.year ?? null,
 
     zones: landUse?.zones ?? [],
+
+    violation: ledger?.violation ?? null,
+    ledgerChecked: ledger != null,
 
     hasBuilding: building?.exists ?? null,
     mainPurpose: building?.mainPurpose ?? null,

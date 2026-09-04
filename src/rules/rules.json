@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-04b",
+  "version": "2026-09-04c",
   "note": "판정 기준. 코드를 고치지 않고 이 파일만 바꾼다. {필드} 는 실제 값으로 치환된다.",
   "gates": [
     {
@@ -237,15 +237,44 @@
       "source": "토지이용규제"
     },
     {
+      "id": "L-VIOLATION-YES",
+      "axis": "legal",
+      "when": {
+        "field": "violation",
+        "op": "eq",
+        "value": true
+      },
+      "verdict": "suspect",
+      "label": "위반건축물",
+      "reason": "건축물대장에 위반건축물로 등재되어 있습니다.",
+      "nextStep": "매매 자체는 가능하나 시정명령과 이행강제금이 매수인에게 승계되고 대출이 제한됩니다. 시정 범위와 비용을 먼저 확인하세요.",
+      "source": "건축물대장"
+    },
+    {
+      "id": "L-VIOLATION-NO",
+      "axis": "legal",
+      "when": {
+        "field": "violation",
+        "op": "eq",
+        "value": false
+      },
+      "verdict": "clear",
+      "label": "위반건축물",
+      "reason": "건축물대장에 위반건축물 등재가 없습니다.",
+      "source": "건축물대장"
+    },
+    {
       "id": "L-VIOLATION-UNKNOWN",
       "axis": "legal",
       "when": {
-        "op": "always"
+        "field": "ledgerChecked",
+        "op": "eq",
+        "value": false
       },
       "verdict": "unknown",
       "label": "위반건축물",
-      "reason": "위반건축물 등재 여부는 현재 자동으로 확인하지 않습니다.",
-      "nextStep": "건축물대장 열람으로 위반건축물 표시를 확인해야 합니다.",
+      "reason": "위반건축물 등재 여부를 확인하지 못했습니다.",
+      "nextStep": "건축물대장을 열람해 위반건축물 표시를 확인해야 합니다.",
       "source": "—"
     }
   ]
