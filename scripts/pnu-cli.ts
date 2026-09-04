@@ -6,6 +6,7 @@
  *   node scripts/pnu-cli.ts --selftest
  */
 import { composePnu, decomposePnu, parseJibun, extractJibun } from '../src/pnu'
+import { normalizeServiceKey } from '../src/sources/client'
 
 const args = process.argv.slice(2)
 
@@ -64,6 +65,11 @@ if (args[0] === '--selftest') {
   check('괄호 건물명 무시', extractJibun('경상북도 포항시 남구 오천읍 문덕리 301-1 (준양)'), { bun: 301, ji: 1, isMountain: false })
   check('도로명은 지번 아님', extractJibun('경상북도 포항시 남구 오천읍 문덕로11번길 12'), null)
   check('길 이름도 지번 아님', extractJibun('서울특별시 종로구 세종대로 175'), null)
+
+  // data.go.kr 인증키 정규화
+  check('인코딩 키를 원형으로', normalizeServiceKey('abc%2Bdef%2Fghi%3D'), 'abc+def/ghi=')
+  check('디코딩 키는 그대로', normalizeServiceKey('abc+def/ghi='), 'abc+def/ghi=')
+  check('공백 제거', normalizeServiceKey('  abc+def=  '), 'abc+def=')
 
   console.log(`\n통과 ${pass} / 실패 ${fail}`)
   process.exit(fail ? 1 : 0)

@@ -30,9 +30,28 @@ const KNOWN_CODES: Record<string, string> = {
   '12': '해당 오픈API가 없거나 폐기됨',
   '20': '서비스 접근 거부 — 활용신청 승인 여부 확인',
   '22': '일일 트래픽 초과',
-  '30': '등록되지 않은 서비스키 — .env 에 "디코딩" 키를 넣었는지 확인',
+  '30': '등록되지 않은 서비스키 — 키를 다시 복사하거나 승인 상태를 확인하세요 (인코딩/디코딩은 코드가 자동 처리합니다)',
   '31': '기한만료된 서비스키',
   '32': '등록되지 않은 도메인/IP',
+}
+
+/**
+ * 인증키를 원형(디코딩 상태)으로 되돌린다.
+ *
+ * data.go.kr 은 같은 키를 두 형태로 준다.
+ *   인코딩  abc%2Bdef%2Fghi%3D
+ *   디코딩  abc+def/ghi=
+ * UI 개편으로 한쪽만 보이는 경우가 있어, 무엇을 넣든 여기서 원형으로 맞춘다.
+ * base64 에는 '%' 가 쓰이지 않으므로 %XX 패턴이 보이면 인코딩 키로 판단해도 안전하다.
+ */
+export function normalizeServiceKey(raw: string): string {
+  const key = raw.trim()
+  if (!/%[0-9A-Fa-f]{2}/.test(key)) return key
+  try {
+    return decodeURIComponent(key)
+  } catch {
+    return key
+  }
 }
 
 export type CallOptions = {
@@ -57,8 +76,10 @@ export async function callDataGoKr<T = unknown>(
   params: Record<string, string>,
   opts: CallOptions = {},
 ): Promise<T> {
-  const key = process.env.DATA_GO_KR_KEY
-  if (!key) throw new Error('DATA_GO_KR_KEY 가 설정되지 않았습니다 (.env 확인)')
+  const raw = process.env.DATA_GO_KR_KEY
+  if (!raw) throw new Error('DATA_GO_KR_KEY 가 설정되지 않았습니다 (.env 확인)')
+  // 인코딩 키를 넣어도 되도록 원형으로 되돌린 뒤 딱 한 번만 인코딩한다
+  const key = normalizeServiceKey(raw)
 
   const { cacheSeconds = 86_400, timeoutMs = 10_000 } = opts
 
