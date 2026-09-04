@@ -2,7 +2,7 @@
  * 0단계 주소 해석 확인.
  *
  *   npm run verify:address
- *   npm run verify:address -- "경상북도 포항시 북구 구룡포읍 병포리 123-4"
+ *   npm run verify:address -- "경상북도 포항시 남구 구룡포읍 병포리 123-4"
  *
  * strict 를 끄고 돌려서 응답이 어떤 품질인지(exact/road/fuzzy) 그대로 보여준다.
  * fuzzy = 검색엔진이 다른 필지를 돌려준 것. 운영에서는 버려진다.
@@ -14,7 +14,7 @@ const SAMPLES = process.argv.slice(2)
 
 if (!SAMPLES.length) {
   console.log('실제 주소를 인자로 넣어 주세요. 예:')
-  console.log('  npm run verify:address -- "경북 포항시 북구 구룡포읍 병포리 123-4"')
+  console.log('  npm run verify:address -- "경북 포항시 남구 구룡포읍 병포리 123-4"')
   console.log('\n또는 data/g1-addresses.txt 를 채우고 npm run verify:g1 을 쓰세요.')
   process.exit(1)
 }

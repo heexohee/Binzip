@@ -58,9 +58,9 @@ if (args[0] === '--selftest') {
   check('PNU 19자리 아니면 예외', throws(() => decomposePnu('123')), true)
 
   // 전체 주소에서 지번 뽑기 — 유사검색 오판을 막는 대조용
-  check('전체주소 지번 추출', extractJibun('경상북도 포항시 북구 구룡포읍 병포리 123-4'), { bun: 123, ji: 4, isMountain: false })
-  check('부번 없는 주소', extractJibun('경상북도 포항시 북구 호미곶면 대보리 56'), { bun: 56, ji: 0, isMountain: false })
-  check('산 주소', extractJibun('경상북도 포항시 북구 구룡포읍 석병리 산 12'), { bun: 12, ji: 0, isMountain: true })
+  check('전체주소 지번 추출', extractJibun('경상북도 포항시 남구 구룡포읍 병포리 123-4'), { bun: 123, ji: 4, isMountain: false })
+  check('부번 없는 주소', extractJibun('경상북도 포항시 남구 호미곶면 대보리 56'), { bun: 56, ji: 0, isMountain: false })
+  check('산 주소', extractJibun('경상북도 포항시 남구 구룡포읍 석병리 산 12'), { bun: 12, ji: 0, isMountain: true })
   check('괄호 건물명 무시', extractJibun('경상북도 포항시 남구 오천읍 문덕리 301-1 (준양)'), { bun: 301, ji: 1, isMountain: false })
   check('도로명은 지번 아님', extractJibun('경상북도 포항시 남구 오천읍 문덕로11번길 12'), null)
   check('길 이름도 지번 아님', extractJibun('서울특별시 종로구 세종대로 175'), null)

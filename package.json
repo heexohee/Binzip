@@ -12,7 +12,8 @@
     "ledger:inspect": "tsx scripts/build-ledger.ts --inspect",
     "ledger:build": "tsx scripts/build-ledger.ts",
     "verify:g1": "tsx --env-file=.env scripts/verify-g1.ts",
-    "verify:address": "tsx --env-file=.env scripts/verify-address.ts"
+    "verify:address": "tsx --env-file=.env scripts/verify-address.ts",
+    "collect:addresses": "tsx --env-file=.env scripts/collect-addresses.ts"
   },
   "dependencies": {
     "next": "^15.1.0",

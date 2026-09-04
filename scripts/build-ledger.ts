@@ -40,7 +40,7 @@ const opt = (n: string) => {
 const INSPECT = flag('inspect')
 const IN = opt('in') ?? 'data/raw/ledger.csv'
 const OUT = opt('out') ?? 'data/ledger.json'
-/** 포항시 남구 47111 / 북구 47113 — 실제 코드는 자료로 검증할 것 */
+/** 포항시 남구 47111(구룡포읍·호미곶면) / 북구 47113(청하면) — juso admCd 로 확인함 */
 const SIGUNGU = (opt('sigungu') ?? '47111,47113').split(',').map(s => s.trim()).filter(Boolean)
 
 /* ── 인코딩 감지: 국내 공공 CSV 는 대부분 CP949 ── */
