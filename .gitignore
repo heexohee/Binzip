@@ -1,0 +1,28 @@
+# 의존성
+node_modules/
+
+# 환경변수 — 절대 커밋 금지
+.env
+.env.*
+!.env.example
+
+# Next.js
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+
+# Vercel
+.vercel
+
+# 대용량·생성물 데이터
+data/*.json
+data/cache/
+data/raw/
+!data/.gitkeep
+
+# 기타
+*.log
+npm-debug.log*
+.DS_Store
