@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-04c",
+  "version": "2026-09-04d",
   "note": "판정 기준. 코드를 고치지 않고 이 파일만 바꾼다. {필드} 는 실제 값으로 치환된다.",
   "gates": [
     {
@@ -267,14 +267,13 @@
       "id": "L-VIOLATION-UNKNOWN",
       "axis": "legal",
       "when": {
-        "field": "ledgerChecked",
-        "op": "eq",
-        "value": false
+        "field": "violation",
+        "op": "missing"
       },
       "verdict": "unknown",
       "label": "위반건축물",
-      "reason": "위반건축물 등재 여부를 확인하지 못했습니다.",
-      "nextStep": "건축물대장을 열람해 위반건축물 표시를 확인해야 합니다.",
+      "reason": "위반건축물 등재 여부는 공개 API 로 제공되지 않습니다.",
+      "nextStep": "정부24 또는 세움터에서 건축물대장을 열람해 상단의 '위반건축물' 표시를 확인해야 합니다.",
       "source": "—"
     }
   ]

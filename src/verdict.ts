@@ -40,8 +40,16 @@ export function summarize(findings: Finding[]): AxisSummary[] {
       (worst, f) => (RANK[f.verdict] > RANK[worst] ? f.verdict : worst),
       'clear',
     )
-    // clear 룰과 문제 룰이 함께 걸렸으면 clear 는 지운다 (같은 축에서 상충 표시 방지)
-    const findingsOut = verdict === 'clear' ? own : own.filter(f => f.verdict !== 'clear')
+    // 같은 항목(label)에 문제가 잡혔으면 그 항목의 clear 는 지운다 — 상충 표시 방지.
+    // 다른 항목의 clear 는 남긴다. '위반건축물 등재 없음' 같은 확인 사실은
+    // 축 전체가 unknown 이라는 이유로 사라지면 안 된다.
+    const troubled = new Set(own.filter(f => f.verdict !== 'clear').map(f => f.label))
+    const findingsOut = own.filter(f => f.verdict !== 'clear' || !troubled.has(f.label))
+
+    // 문제 → 미확인 → 확인됨 순으로 보여준다
+    const order: Record<AxisVerdict, number> = { blocked: 0, suspect: 1, unknown: 2, clear: 3 }
+    findingsOut.sort((a, b) => order[a.verdict] - order[b.verdict])
+
     return { axis, verdict, findings: findingsOut }
   })
 }

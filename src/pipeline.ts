@@ -85,6 +85,11 @@ export async function diagnose(query: string): Promise<PipelineResult> {
 
     violation: ledger?.violation ?? null,
     ledgerChecked: ledger != null,
+    platArea: ledger?.platArea ?? null,
+    buildingCoverage: ledger?.buildingCoverage ?? null,
+    floorAreaRatio: ledger?.floorAreaRatio ?? null,
+    attachedCount: ledger?.attachedCount ?? null,
+    householdCount: ledger?.householdCount ?? null,
 
     hasBuilding: building?.exists ?? null,
     mainPurpose: building?.mainPurpose ?? null,

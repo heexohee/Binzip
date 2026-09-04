@@ -80,6 +80,8 @@ const show: [string, unknown][] = [
   ['용도지역', facts.zone1],
   ['지목', facts.category],
   ['대지면적', facts.landArea ? `${facts.landArea}㎡` : null],
+  ['건폐율·용적률', facts.buildingCoverage ? `${facts.buildingCoverage}% · ${facts.floorAreaRatio}%` : null],
+  ['부속건축물', facts.attachedCount != null ? `${facts.attachedCount}동` : null],
   ['개별주택가격', facts.housePrice ? `${facts.housePriceEok}억 원 (${facts.housePriceYear})` : null],
   ['공유인 수', facts.coOwnerCount],
   ['소유자 거주지', facts.ownerResidence],
