@@ -1,3 +1,15 @@
+/**
+ * ⚠️ 현재 파이프라인에서 사용하지 않는다.
+ *
+ * 개별주택가격·토지이용규제는 VWorld NED(src/sources/ned.ts)로 옮겼다.
+ * 같은 국가공간정보 데이터를 data.go.kr 과 VWorld 가 각자 제공하는데,
+ * VWorld 키 하나로 2·3·4·5단계가 전부 해결되어 창구를 통일했다.
+ *
+ * 이 파일을 남겨두는 이유는 '단독/다가구 매매 실거래가' 때문이다.
+ * 그 API 는 data.go.kr 에만 있고 VWorld 에는 없다. 착수하면 여기를 쓴다.
+ * serviceKey 이중 인코딩·XML 오류응답·CORS 세 함정 처리가 들어 있어
+ * 지우고 다시 쓰기보다 남겨두는 편이 싸다.
+ */
 import { XMLParser } from 'fast-xml-parser'
 
 const xml = new XMLParser({ ignoreAttributes: false, parseTagValue: true })
