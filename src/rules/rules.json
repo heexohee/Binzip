@@ -1,0 +1,133 @@
+{
+  "version": "2026-09-04",
+  "note": "판정 기준. 코드를 고치지 않고 이 파일만 바꾼다. {필드} 는 실제 값으로 치환된다.",
+
+  "gates": [
+    {
+      "id": "G-REGION",
+      "when": { "field": "sigunguCd", "op": "not-in", "value": ["47111", "47113"] },
+      "reason": "포항시 남구·북구 밖의 주소입니다. 현재 이 지역만 진단합니다."
+    },
+    {
+      "id": "G-USE",
+      "when": { "field": "useSituation", "op": "not-matches", "value": "단독|주상용|주거" },
+      "reason": "토지이용상황이 '{useSituation}'입니다. 주거용 필지만 진단합니다."
+    },
+    {
+      "id": "G-PRICE",
+      "when": { "field": "housePrice", "op": "gt", "value": 100000000 },
+      "reason": "개별주택가격이 {housePriceEok}억 원으로 1억 원을 넘습니다. 이 경우 일반 중개로 거래가 됩니다."
+    }
+  ],
+
+  "rules": [
+    {
+      "id": "L-REGISTRY",
+      "axis": "legal",
+      "when": { "op": "always" },
+      "verdict": "unknown",
+      "label": "등기",
+      "reason": "등기부는 공개 API가 없어 자동으로 확인할 수 없습니다.",
+      "nextStep": "등기사항전부증명서를 열람해 상속 미등기·근저당·가압류를 확인해야 합니다.",
+      "source": "—"
+    },
+    {
+      "id": "L-COOWNER",
+      "axis": "legal",
+      "when": { "field": "coOwnerCount", "op": "gte", "value": 2 },
+      "verdict": "suspect",
+      "label": "공동소유",
+      "reason": "공유인이 {coOwnerCount}명입니다. 매각에 공유자 전원의 합의가 필요합니다.",
+      "nextStep": "공유자 명단을 확인하고 처분 동의를 먼저 받으셔야 합니다.",
+      "source": "토지소유정보"
+    },
+    {
+      "id": "L-INHERIT",
+      "axis": "legal",
+      "when": { "field": "ownershipCause", "op": "matches", "value": "상속" },
+      "verdict": "suspect",
+      "label": "상속",
+      "reason": "소유권 변동 원인이 상속({ownershipDate})입니다.",
+      "nextStep": "상속등기가 끝났는지, 공동상속인 간 합의가 됐는지 확인이 필요합니다.",
+      "source": "토지소유정보"
+    },
+
+    {
+      "id": "P-MAENGJI",
+      "axis": "physical",
+      "when": { "field": "roadSide", "op": "matches", "value": "맹지" },
+      "verdict": "blocked",
+      "label": "진입로",
+      "reason": "지적상 도로에 접하지 않는 맹지입니다.",
+      "nextStep": "인접 토지 협의나 사도 개설로 진입로를 확보해야 거래가 가능합니다.",
+      "source": "토지특성"
+    },
+    {
+      "id": "P-NARROW",
+      "axis": "physical",
+      "when": { "field": "roadSide", "op": "matches", "value": "\\(불\\)" },
+      "verdict": "suspect",
+      "label": "진입로",
+      "reason": "도로접면이 '{roadSide}'로 자동차 진입이 어려울 수 있습니다.",
+      "nextStep": "현장에서 실제 진입 가능 여부를 확인합니다.",
+      "source": "토지특성"
+    },
+    {
+      "id": "P-OK",
+      "axis": "physical",
+      "when": { "field": "roadSide", "op": "matches", "value": "광대|중로|소로|세로한면|세각한면" },
+      "verdict": "clear",
+      "label": "진입로",
+      "reason": "도로접면 '{roadSide}' — 진입로가 확보되어 있습니다.",
+      "source": "토지특성"
+    },
+    {
+      "id": "P-SLOPE",
+      "axis": "physical",
+      "when": { "field": "slope", "op": "matches", "value": "급경사|고지" },
+      "verdict": "suspect",
+      "label": "지형",
+      "reason": "지형이 '{slope}'입니다. 접근과 공사에 제약이 있을 수 있습니다.",
+      "nextStep": "현장에서 실제 경사와 접근성을 확인합니다.",
+      "source": "토지특성"
+    },
+
+    {
+      "id": "R-BLOCK",
+      "axis": "regulatory",
+      "when": {
+        "field": "zones",
+        "op": "contains-any",
+        "value": ["개발제한구역", "보전산지", "문화재보호구역", "군사기지", "군사시설", "상수원보호구역", "비오톱"]
+      },
+      "verdict": "blocked",
+      "label": "규제",
+      "reason": "{matched}에 해당해 신축·증축이 제한됩니다.",
+      "nextStep": "현 상태 그대로의 매각 또는 임대 전환을 검토합니다.",
+      "source": "토지이용규제"
+    },
+    {
+      "id": "R-COND",
+      "axis": "regulatory",
+      "when": {
+        "field": "zones",
+        "op": "contains-any",
+        "value": ["농업진흥구역", "농림지역", "보전관리지역", "자연환경보전지역", "생산관리지역", "절대보호구역", "접도구역", "도로구역"]
+      },
+      "verdict": "suspect",
+      "label": "규제",
+      "reason": "{matched} — 용도 변경과 신축에 조건이 붙습니다.",
+      "nextStep": "허용 행위 범위를 시청 건축과에서 확인합니다.",
+      "source": "토지이용규제"
+    },
+    {
+      "id": "R-CLEAR",
+      "axis": "regulatory",
+      "when": { "field": "zones", "op": "exists" },
+      "verdict": "clear",
+      "label": "규제",
+      "reason": "{zone1} — 거래를 막는 규제가 확인되지 않았습니다.",
+      "source": "토지이용규제"
+    }
+  ]
+}
