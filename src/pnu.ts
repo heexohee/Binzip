@@ -59,3 +59,29 @@ export function parseJibun(raw: string): { bun: number; ji: number; isMountain: 
     isMountain,
   }
 }
+
+/**
+ * 전체 주소 문자열 끝에 붙은 지번을 뽑아낸다.
+ *   "…구룡포읍 병포리 123-4"  → { bun: 123, ji: 4 }
+ *   "…호미곶면 대보리 산 12"  → { bun: 12, ji: 0, isMountain: true }
+ *   "…문덕로11번길 12"        → null  (도로명이라 지번이 없다)
+ *
+ * 도로명주소의 건물번호를 지번으로 오인하면 안 되므로,
+ * 앞 토큰이 '로/길'로 끝나면 지번이 아닌 것으로 본다.
+ */
+export function extractJibun(
+  fullAddress: string,
+): { bun: number; ji: number; isMountain: boolean } | null {
+  const s = fullAddress.trim().replace(/\s*\([^)]*\)\s*$/, '')
+  const m = /(?:^|\s)(산\s*)?(\d+)(?:-(\d+))?\s*$/.exec(s)
+  if (!m) return null
+
+  const before = s.slice(0, m.index).trim()
+  if (/(로|길)$/.test(before.split(/\s+/).pop() ?? '')) return null
+
+  return {
+    bun: Number(m[2]),
+    ji: Number(m[3] ?? 0),
+    isMountain: !!m[1],
+  }
+}

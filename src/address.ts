@@ -1,30 +1,55 @@
-import { composePnu, pad4 } from './pnu'
+import { composePnu, pad4, extractJibun } from './pnu'
 import type { ResolvedAddress } from './types'
 
 /**
  * 주소 문자열 → PNU 및 건축물대장 조회 키 (0단계).
  *
- * 두 창구를 지원한다. .env 의 ADDRESS_PROVIDER 로 고른다.
+ * 창구는 .env 의 ADDRESS_PROVIDER 로 고른다.
  *   juso  (기본) 행정안전부 도로명주소 API — 지번 구성요소를 명시적으로 준다
- *   kakao        카카오 로컬 — 좌표를 함께 주지만 앱에서 카카오맵 제품 활성화가 필요
+ *   kakao        카카오 로컬 — 좌표를 함께 주지만 앱에서 카카오맵 제품 활성화 필요
  *
- * 매칭 실패는 예외가 아니라 null 이다. 사용자 오타가 정상 경로이기 때문.
+ * ⚠️ 검색 API 는 유사 검색을 한다. "문덕리 1" 을 넣으면 "문덕리 301-1" 이 돌아온다.
+ *    엉뚱한 필지로 진단서를 만드는 건 결과가 없는 것보다 훨씬 나쁘므로,
+ *    입력 지번과 응답 지번을 대조해 다르면 strict 모드에서 버린다.
  */
 const PROVIDER = (process.env.ADDRESS_PROVIDER ?? 'juso') as 'juso' | 'kakao'
 
-export async function resolveAddress(query: string): Promise<ResolvedAddress | null> {
-  return PROVIDER === 'kakao' ? viaKakao(query) : viaJuso(query)
-}
-
 export function currentProvider() {
   return PROVIDER
+}
+
+export type ResolveOptions = {
+  /** true(기본) 면 지번이 어긋난 결과(fuzzy)를 null 로 버린다 */
+  strict?: boolean
+}
+
+export async function resolveAddress(
+  query: string,
+  opts: ResolveOptions = {},
+): Promise<ResolvedAddress | null> {
+  const { strict = true } = opts
+  const r = PROVIDER === 'kakao' ? await viaKakao(query) : await viaJuso(query)
+  if (!r) return null
+  if (strict && r.matchQuality === 'fuzzy') return null
+  return r
+}
+
+/** 응답 지번이 입력 지번과 같은지 판정한다. */
+function judge(
+  query: string,
+  got: { bun: number; ji: number; isMountain: boolean },
+): 'exact' | 'road' | 'fuzzy' {
+  const want = extractJibun(query)
+  if (!want) return 'road'
+  return want.bun === got.bun && want.ji === got.ji && want.isMountain === got.isMountain
+    ? 'exact'
+    : 'fuzzy'
 }
 
 /* ── 행정안전부 도로명주소 API ─────────────────────────────── */
 
 const JUSO_URL = 'https://business.juso.go.kr/addrlink/addrLinkApi.do'
 
-/** juso 오류코드 → 사람이 읽을 수 있는 원인 */
 const JUSO_HINTS: Record<string, string> = {
   E0013: '승인되지 않은 승인키입니다 — .env 의 JUSO_CONFM_KEY 확인',
   E0005: '검색어를 입력해 주세요',
@@ -39,7 +64,7 @@ type JusoItem = {
   admCd: string      // 법정동코드 10자리
   lnbrMnnm: string   // 지번 본번
   lnbrSlno: string   // 지번 부번
-  mtYn: '0' | '1'    // 산 여부 (0=대지, 1=산)
+  mtYn: '0' | '1'    // 산 여부
 }
 
 async function viaJuso(query: string): Promise<ResolvedAddress | null> {
@@ -50,7 +75,8 @@ async function viaJuso(query: string): Promise<ResolvedAddress | null> {
   url.searchParams.set('confmKey', key)
   url.searchParams.set('keyword', query)
   url.searchParams.set('currentPage', '1')
-  url.searchParams.set('countPerPage', '1')
+  // 여러 건을 받아 그중에서 지번이 맞는 것을 고른다. 1건만 받으면 유사 결과에 걸린다.
+  url.searchParams.set('countPerPage', '20')
   url.searchParams.set('resultType', 'json')
 
   const res = await fetch(url, { signal: AbortSignal.timeout(10_000) })
@@ -70,10 +96,26 @@ async function viaJuso(query: string): Promise<ResolvedAddress | null> {
     throw new Error(`[${code}] ${common?.errorMessage ?? ''}${hint ? ` — ${hint}` : ''}`)
   }
 
-  const it: JusoItem | undefined = json?.results?.juso?.[0]
-  if (!it) return null
+  const items: JusoItem[] = json?.results?.juso ?? []
+  if (!items.length) return null
 
+  const want = extractJibun(query)
+  const pick =
+    (want &&
+      items.find(
+        it =>
+          Number(it.lnbrMnnm) === want.bun &&
+          Number(it.lnbrSlno) === want.ji &&
+          (it.mtYn === '1') === want.isMountain,
+      )) ||
+    items[0]!
+
+  return toResolved(pick, query)
+}
+
+function toResolved(it: JusoItem, query: string): ResolvedAddress {
   const isMountain = it.mtYn === '1'
+  const got = { bun: Number(it.lnbrMnnm), ji: Number(it.lnbrSlno), isMountain }
 
   return {
     pnu: composePnu(it.admCd, it.lnbrMnnm, it.lnbrSlno, isMountain),
@@ -89,6 +131,7 @@ async function viaJuso(query: string): Promise<ResolvedAddress | null> {
     jibunAddress: it.jibunAddr,
     roadAddress: it.roadAddr || null,
     provider: 'juso',
+    matchQuality: judge(query, got),
   }
 }
 
@@ -115,7 +158,7 @@ async function viaKakao(query: string): Promise<ResolvedAddress | null> {
 
   const url = new URL(KAKAO_URL)
   url.searchParams.set('query', query)
-  url.searchParams.set('size', '1')
+  url.searchParams.set('size', '10')
 
   const res = await fetch(url, {
     headers: { Authorization: `KakaoAK ${key}` },
@@ -125,12 +168,28 @@ async function viaKakao(query: string): Promise<ResolvedAddress | null> {
     throw new Error(`카카오 주소검색 실패 ${res.status}: ${(await res.text()).slice(0, 200)}`)
   }
 
-  const payload = (await res.json()) as { documents?: KakaoDoc[] }
-  const doc = payload.documents?.[0]
-  const a = doc?.address
-  if (!doc || !a) return null
+  const docs = ((await res.json()) as { documents?: KakaoDoc[] }).documents ?? []
+  const withAddr = docs.filter(d => d.address)
+  if (!withAddr.length) return null
 
+  const want = extractJibun(query)
+  const doc =
+    (want &&
+      withAddr.find(
+        d =>
+          Number(d.address!.main_address_no) === want.bun &&
+          Number(d.address!.sub_address_no) === want.ji &&
+          (d.address!.mountain_yn === 'Y') === want.isMountain,
+      )) ||
+    withAddr[0]!
+
+  const a = doc.address!
   const isMountain = a.mountain_yn === 'Y'
+  const got = {
+    bun: Number(a.main_address_no),
+    ji: Number(a.sub_address_no),
+    isMountain,
+  }
 
   return {
     pnu: composePnu(a.b_code, a.main_address_no, a.sub_address_no, isMountain),
@@ -146,5 +205,6 @@ async function viaKakao(query: string): Promise<ResolvedAddress | null> {
     jibunAddress: a.address_name,
     roadAddress: doc.road_address?.address_name ?? null,
     provider: 'kakao',
+    matchQuality: judge(query, got),
   }
 }

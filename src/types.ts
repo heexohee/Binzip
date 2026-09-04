@@ -34,6 +34,13 @@ export type ResolvedAddress = {
   roadAddress: string | null
   /** 어느 창구로 해석했는지 */
   provider: 'juso' | 'kakao'
+  /**
+   * 입력 지번과 응답 지번이 일치하는지.
+   *   exact — 입력한 지번과 정확히 같은 필지
+   *   road  — 입력에 지번이 없어 도로명으로 찾음 (대조 불가)
+   *   fuzzy — 검색엔진이 다른 필지를 돌려줌. 절대 그대로 쓰면 안 된다
+   */
+  matchQuality: 'exact' | 'road' | 'fuzzy'
 }
 
 /** 세움터 대량자료에서 뽑아낸 건축물대장 1건 */
