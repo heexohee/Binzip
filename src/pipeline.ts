@@ -3,6 +3,7 @@ import { getLandChar } from './sources/landChar'
 import { getHousePrice } from './sources/housePrice'
 import { getLandUse } from './sources/landUse'
 import { getPossession } from './sources/possession'
+import { getBuilding } from './sources/building'
 import { checkGates, evaluate, rulesVersion, type Context } from './rules/engine'
 import { combine, type Diagnosis } from './verdict'
 import type { ResolvedAddress } from './types'
@@ -48,11 +49,12 @@ export async function diagnose(query: string): Promise<PipelineResult> {
   const address = await resolveAddress(query)
   if (!address) return { status: 'address_not_found', query }
 
-  const [landChar, housePrice, landUse, possession] = await Promise.all([
+  const [landChar, housePrice, landUse, possession, building] = await Promise.all([
     settle('토지특성', () => getLandChar(address.pnu), errors),
     settle('개별주택가격', () => getHousePrice(address.pnu), errors),
     settle('토지이용규제', () => getLandUse(address.pnu), errors),
     settle('토지소유정보', () => getPossession(address.pnu), errors),
+    settle('건축물', () => getBuilding(address.pnu), errors),
   ])
 
   const facts: Context = {
@@ -73,6 +75,15 @@ export async function diagnose(query: string): Promise<PipelineResult> {
     housePriceYear: housePrice?.year ?? null,
 
     zones: landUse?.zones ?? [],
+
+    hasBuilding: building?.exists ?? null,
+    mainPurpose: building?.mainPurpose ?? null,
+    purposeClass: building?.purposeClass ?? null,
+    useApprovalDate: building?.useApprovalDate ?? null,
+    structure: building?.structure ?? null,
+    buildingArea: building?.totalArea ?? null,
+    floors: building?.groundFloors ?? null,
+    buildingAge: building?.age ?? null,
 
     coOwnerCount: possession?.coOwnerCount ?? null,
     ownerResidence: possession?.ownerResidence ?? null,

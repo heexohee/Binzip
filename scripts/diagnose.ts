@@ -70,6 +70,11 @@ for (const a of d.axes) {
 line()
 console.log('  참고 정보')
 const show: [string, unknown][] = [
+  ['건축물 주용도', facts.mainPurpose],
+  ['사용승인일', facts.useApprovalDate],
+  ['건물연령', facts.buildingAge ? `${facts.buildingAge}년` : null],
+  ['구조', facts.structure],
+  ['연면적', facts.buildingArea ? `${facts.buildingArea}㎡ · 지상 ${facts.floors}층` : null],
   ['토지이용상황', facts.useSituation],
   ['도로접면', facts.roadSide],
   ['용도지역', facts.zone1],

@@ -1,30 +1,54 @@
 {
-  "version": "2026-09-04",
+  "version": "2026-09-04b",
   "note": "판정 기준. 코드를 고치지 않고 이 파일만 바꾼다. {필드} 는 실제 값으로 치환된다.",
-
   "gates": [
     {
       "id": "G-REGION",
-      "when": { "field": "sigunguCd", "op": "not-in", "value": ["47111", "47113"] },
+      "when": {
+        "field": "sigunguCd",
+        "op": "not-in",
+        "value": [
+          "47111",
+          "47113"
+        ]
+      },
       "reason": "포항시 남구·북구 밖의 주소입니다. 현재 이 지역만 진단합니다."
     },
     {
+      "id": "G-PURPOSE",
+      "when": {
+        "field": "mainPurpose",
+        "op": "not-matches",
+        "value": "단독주택|다가구주택"
+      },
+      "reason": "건축물대장 주용도가 '{mainPurpose}'입니다. 단독·다가구주택만 진단합니다."
+    },
+    {
       "id": "G-USE",
-      "when": { "field": "useSituation", "op": "not-matches", "value": "단독|주상용|주거" },
+      "when": {
+        "field": "useSituation",
+        "op": "not-matches",
+        "value": "단독|주상용|주거"
+      },
       "reason": "토지이용상황이 '{useSituation}'입니다. 주거용 필지만 진단합니다."
     },
     {
       "id": "G-PRICE",
-      "when": { "field": "housePrice", "op": "gt", "value": 100000000 },
+      "when": {
+        "field": "housePrice",
+        "op": "gt",
+        "value": 100000000
+      },
       "reason": "개별주택가격이 {housePriceEok}억 원으로 1억 원을 넘습니다. 이 경우 일반 중개로 거래가 됩니다."
     }
   ],
-
   "rules": [
     {
       "id": "L-REGISTRY",
       "axis": "legal",
-      "when": { "op": "always" },
+      "when": {
+        "op": "always"
+      },
       "verdict": "unknown",
       "label": "등기",
       "reason": "등기부는 공개 API가 없어 자동으로 확인할 수 없습니다.",
@@ -34,7 +58,11 @@
     {
       "id": "L-COOWNER",
       "axis": "legal",
-      "when": { "field": "coOwnerCount", "op": "gte", "value": 2 },
+      "when": {
+        "field": "coOwnerCount",
+        "op": "gte",
+        "value": 2
+      },
       "verdict": "suspect",
       "label": "공동소유",
       "reason": "공유인이 {coOwnerCount}명입니다. 매각에 공유자 전원의 합의가 필요합니다.",
@@ -44,18 +72,66 @@
     {
       "id": "L-INHERIT",
       "axis": "legal",
-      "when": { "field": "ownershipCause", "op": "matches", "value": "상속" },
+      "when": {
+        "field": "ownershipCause",
+        "op": "matches",
+        "value": "상속"
+      },
       "verdict": "suspect",
       "label": "상속",
       "reason": "소유권 변동 원인이 상속({ownershipDate})입니다.",
       "nextStep": "상속등기가 끝났는지, 공동상속인 간 합의가 됐는지 확인이 필요합니다.",
       "source": "토지소유정보"
     },
-
+    {
+      "id": "P-NOBUILDING",
+      "axis": "physical",
+      "when": {
+        "field": "hasBuilding",
+        "op": "eq",
+        "value": false
+      },
+      "verdict": "suspect",
+      "label": "건축물",
+      "reason": "건축물대장에서 건물이 확인되지 않습니다. 나대지이거나 미등재 건물일 수 있습니다.",
+      "nextStep": "현장에서 건물 존재와 무허가 여부를 확인합니다.",
+      "source": "건축물정보"
+    },
+    {
+      "id": "P-AGED",
+      "axis": "physical",
+      "when": {
+        "field": "buildingAge",
+        "op": "gte",
+        "value": 40
+      },
+      "verdict": "suspect",
+      "label": "노후",
+      "reason": "사용승인 {useApprovalDate} · 건축 후 {buildingAge}년 된 {structure}입니다.",
+      "nextStep": "구조 안전과 수선 범위를 현장에서 확인합니다.",
+      "source": "건축물정보"
+    },
+    {
+      "id": "P-BUILDING-OK",
+      "axis": "physical",
+      "when": {
+        "field": "hasBuilding",
+        "op": "eq",
+        "value": true
+      },
+      "verdict": "clear",
+      "label": "건축물",
+      "reason": "{mainPurpose} · {structure} · 지상 {floors}층 · 연면적 {buildingArea}㎡ (사용승인 {useApprovalDate})",
+      "source": "건축물정보"
+    },
     {
       "id": "P-MAENGJI",
       "axis": "physical",
-      "when": { "field": "roadSide", "op": "matches", "value": "맹지" },
+      "when": {
+        "field": "roadSide",
+        "op": "matches",
+        "value": "맹지"
+      },
       "verdict": "blocked",
       "label": "진입로",
       "reason": "지적상 도로에 접하지 않는 맹지입니다.",
@@ -65,7 +141,11 @@
     {
       "id": "P-NARROW",
       "axis": "physical",
-      "when": { "field": "roadSide", "op": "matches", "value": "\\(불\\)" },
+      "when": {
+        "field": "roadSide",
+        "op": "matches",
+        "value": "\\(불\\)"
+      },
       "verdict": "suspect",
       "label": "진입로",
       "reason": "도로접면이 '{roadSide}'로 자동차 진입이 어려울 수 있습니다.",
@@ -75,7 +155,11 @@
     {
       "id": "P-OK",
       "axis": "physical",
-      "when": { "field": "roadSide", "op": "matches", "value": "광대|중로|소로|세로한면|세각한면" },
+      "when": {
+        "field": "roadSide",
+        "op": "matches",
+        "value": "광대|중로|소로|세로한면|세각한면"
+      },
       "verdict": "clear",
       "label": "진입로",
       "reason": "도로접면 '{roadSide}' — 진입로가 확보되어 있습니다.",
@@ -84,21 +168,32 @@
     {
       "id": "P-SLOPE",
       "axis": "physical",
-      "when": { "field": "slope", "op": "matches", "value": "급경사|고지" },
+      "when": {
+        "field": "slope",
+        "op": "matches",
+        "value": "급경사|고지"
+      },
       "verdict": "suspect",
       "label": "지형",
       "reason": "지형이 '{slope}'입니다. 접근과 공사에 제약이 있을 수 있습니다.",
       "nextStep": "현장에서 실제 경사와 접근성을 확인합니다.",
       "source": "토지특성"
     },
-
     {
       "id": "R-BLOCK",
       "axis": "regulatory",
       "when": {
         "field": "zones",
         "op": "contains-any",
-        "value": ["개발제한구역", "보전산지", "문화재보호구역", "군사기지", "군사시설", "상수원보호구역", "비오톱"]
+        "value": [
+          "개발제한구역",
+          "보전산지",
+          "문화재보호구역",
+          "군사기지",
+          "군사시설",
+          "상수원보호구역",
+          "비오톱"
+        ]
       },
       "verdict": "blocked",
       "label": "규제",
@@ -112,7 +207,16 @@
       "when": {
         "field": "zones",
         "op": "contains-any",
-        "value": ["농업진흥구역", "농림지역", "보전관리지역", "자연환경보전지역", "생산관리지역", "절대보호구역", "접도구역", "도로구역"]
+        "value": [
+          "농업진흥구역",
+          "농림지역",
+          "보전관리지역",
+          "자연환경보전지역",
+          "생산관리지역",
+          "절대보호구역",
+          "접도구역",
+          "도로구역"
+        ]
       },
       "verdict": "suspect",
       "label": "규제",
@@ -123,11 +227,26 @@
     {
       "id": "R-CLEAR",
       "axis": "regulatory",
-      "when": { "field": "zones", "op": "exists" },
+      "when": {
+        "field": "zones",
+        "op": "exists"
+      },
       "verdict": "clear",
       "label": "규제",
       "reason": "{zone1} — 거래를 막는 규제가 확인되지 않았습니다.",
       "source": "토지이용규제"
+    },
+    {
+      "id": "L-VIOLATION-UNKNOWN",
+      "axis": "legal",
+      "when": {
+        "op": "always"
+      },
+      "verdict": "unknown",
+      "label": "위반건축물",
+      "reason": "위반건축물 등재 여부는 현재 자동으로 확인하지 않습니다.",
+      "nextStep": "건축물대장 열람으로 위반건축물 표시를 확인해야 합니다.",
+      "source": "—"
     }
   ]
 }
