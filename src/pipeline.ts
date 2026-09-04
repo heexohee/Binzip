@@ -11,7 +11,18 @@ import type { ResolvedAddress } from './types'
 
 export type PipelineResult =
   | { status: 'address_not_found'; query: string }
-  | { status: 'out_of_scope'; query: string; address: ResolvedAddress; reason: string; gateId: string }
+  | {
+      status: 'out_of_scope'
+      query: string
+      address: ResolvedAddress
+      reason: string
+      gateId: string
+      /** 대상은 아니지만 조회 중 확인된 사실 — 빈손으로 돌려보내지 않는다 */
+      facts: Context
+      observations: string[]
+      checkedAt: string
+      sourceErrors: string[]
+    }
   | {
       status: 'ok'
       query: string
@@ -108,7 +119,16 @@ export async function diagnose(query: string): Promise<PipelineResult> {
 
   const gate = checkGates(facts)
   if (gate) {
-    return { status: 'out_of_scope', query, address, reason: gate.reason, gateId: gate.id }
+    return {
+      status: 'out_of_scope',
+      query, address,
+      reason: gate.reason,
+      gateId: gate.id,
+      facts,
+      observations: observe(facts),
+      checkedAt,
+      sourceErrors: errors,
+    }
   }
 
   return {
@@ -121,4 +141,31 @@ export async function diagnose(query: string): Promise<PipelineResult> {
     rulesVersion,
     sourceErrors: errors,
   }
+}
+
+
+/**
+ * 대상이 아니어도 조회 중 알게 된 것은 알려준다.
+ * "대상 아님" 한 줄로 끝내면 소유주는 빈손으로 돌아가고,
+ * 우리는 이미 확인한 사실을 버리는 셈이 된다.
+ */
+function observe(f: Context): string[] {
+  const out: string[] = []
+
+  if (f.roadSide && String(f.roadSide).includes('맹지')) {
+    out.push('지적상 도로에 접하지 않는 맹지입니다.')
+  }
+  if (f.hasBuilding === false) {
+    out.push('건축물대장에 등재된 건물이 없습니다. 나대지이거나 미등재 건물일 수 있습니다.')
+  }
+  if (Array.isArray(f.zones) && f.zones.length) {
+    out.push(`토지이용규제 — ${f.zones.join(', ')}`)
+  }
+  if (f.category && f.useSituation && f.category !== f.useSituation) {
+    out.push(`지목은 '${f.category}', 실제 이용상황은 '${f.useSituation}'입니다.`)
+  }
+  if (typeof f.coOwnerCount === 'number' && f.coOwnerCount >= 2) {
+    out.push(`공유인이 ${f.coOwnerCount}명입니다.`)
+  }
+  return out
 }
