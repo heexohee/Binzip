@@ -56,7 +56,14 @@ const LIMITS = [
 ]
 
 const H2 = 'text-[clamp(24px,2.6vw,32px)] leading-[1.3]'
-const SECTION = 'px-6 py-[clamp(48px,6vw,80px)]'
+
+/**
+ * 공통 컨테이너.
+ * 배경은 바깥 section 이 전체 폭으로 깔고, 내용만 이 안에 넣는다.
+ * 섹션마다 max-w 를 따로 두면 왼쪽은 고정인데 오른쪽 끝이 들쭉날쭉해진다.
+ */
+const SHELL = 'mx-auto w-full max-w-[1040px] px-6 md:px-10 lg:px-14'
+const PAD = 'py-[clamp(48px,6vw,80px)]'
 
 function Lines({ items, className }: { items: string[]; className?: string }) {
   return (
@@ -72,13 +79,16 @@ export default function Home() {
   return (
     <>
       {/* (a) 헤더 — 네비게이션을 넣지 않는다. CTA는 하나다 */}
-      <header className="flex flex-wrap items-baseline gap-[14px] border-b border-line bg-paper px-6 py-[18px]">
-        <p className="font-serif text-[19px] font-semibold tracking-[-0.01em] text-ink">빈집이력서</p>
-        <p className="text-[13px] text-muted">포항에 있는 빈집을 진단합니다.</p>
+      <header className="border-b border-line bg-paper">
+        <div className={SHELL + ' flex flex-wrap items-baseline gap-[14px] py-[18px]'}>
+          <p className="font-serif text-[19px] font-semibold tracking-[-0.01em] text-ink">빈집이력서</p>
+          <p className="text-[13px] text-muted">포항에 있는 빈집을 진단합니다.</p>
+        </div>
       </header>
 
       {/* (b) Hero */}
-      <section className={SECTION + ' grid items-start gap-[clamp(36px,5vw,64px)] bg-paper [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]'}>
+      <section className="bg-paper">
+        <div className={SHELL + ' ' + PAD + ' grid items-start gap-[clamp(36px,5vw,64px)] [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]'}>
         <div className="max-w-[34rem]">
           <h1 className="flex flex-col text-[32px] md:text-[52px]">
             <span>그 집,</span>
@@ -120,12 +130,14 @@ export default function Home() {
             <span>2026.09.05 현장 방문하여 작성</span>
           </div>
         </div>
+        </div>
       </section>
 
       {/* (c) 이런 상태 아니신가요 */}
-      <section className={SECTION + ' border-y border-line bg-wash'}>
+      <section className="border-y border-line bg-wash">
+        <div className={SHELL + ' ' + PAD}>
         <h2 className={H2}>이런 상태 아니신가요?</h2>
-        <div className="mt-8 grid max-w-[900px] gap-[clamp(24px,3vw,40px)] [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
+        <div className="mt-8 grid gap-[clamp(24px,3vw,40px)] [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
           {STATES.map((lines) => (
             <div key={lines[0]} className="border-l-2 border-mid pl-5">
               <Lines className="text-[17px] leading-[1.75]" items={lines} />
@@ -136,14 +148,16 @@ export default function Home() {
           className="mt-10 max-w-[52ch] text-[17px]"
           items={['먼저 필요한 것은 결정이 아닙니다.', '지금 그 집이 어떤 상태인지 적힌 종이 한 장입니다.']}
         />
+        </div>
       </section>
 
       {/* (d) 진단서에 무엇이 작성되나요 */}
-      <section className={SECTION + ' bg-paper'}>
+      <section className="bg-paper">
+        <div className={SHELL + ' ' + PAD}>
         <h2 className={H2}>진단서에 무엇이 작성되나요?</h2>
         <Lines className="mt-5 max-w-[56ch]" items={['세 가지 중 하나로 판정됩니다.', '그리고 판정의 근거를 항목마다 따로 작성합니다.']} />
 
-        <div className="mt-9 max-w-[720px] border-t border-line">
+        <div className="mt-9 border-t border-line">
           {VERDICTS.map((v) => (
             <div key={v.label} className="flex flex-wrap items-baseline gap-x-4 gap-y-2 border-b border-line py-5">
               <span className="w-[52px] flex-none text-[14px] tracking-[0.2em] text-mid">{v.dots}</span>
@@ -154,7 +168,7 @@ export default function Home() {
         </div>
 
         {/* 근거 표 — 모바일에서는 가로 스크롤 컨테이너로 감싼다 (본문에 가로 스크롤이 생기지 않게) */}
-        <div className="mt-10 max-w-[820px] overflow-x-auto rounded-[4px] border border-line">
+        <div className="mt-10 overflow-x-auto rounded-[4px] border border-line">
           <div className="min-w-[640px]">
             <div className="grid bg-pale [grid-template-columns:1.1fr_1.6fr_1fr]">
               {['항목', '확인 내용', '출처와 확인일'].map((h) => (
@@ -196,16 +210,18 @@ export default function Home() {
           </span>{' '}
           이 붙은 항목은 확인하지 못한 것입니다. 확인하지 못한 것을 확인한 것처럼 적지 않습니다.
         </p>
+        </div>
       </section>
 
       {/* (e) 어떻게 확인하나요 — 다크 반전 */}
-      <section className={SECTION + ' bg-ink'}>
+      <section className="bg-ink">
+        <div className={SHELL + ' ' + PAD}>
         <h2 className={H2 + ' text-paper'}>어떻게 확인하나요?</h2>
         <Lines
           className="mt-5 max-w-[52ch] text-pale"
           items={['공개된 서류를 확인하고, 직접 해당 빈집에 방문합니다.', '이후 진단서를 발급합니다.']}
         />
-        <div className="mt-9 grid max-w-[960px] gap-[clamp(24px,3vw,44px)] [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
+        <div className="mt-9 grid gap-[clamp(24px,3vw,44px)] [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
           {[
             { label: '서류에서 무엇을 보나요?', items: PAPERS },
             { label: '현장에서 무엇을 보나요?', items: FIELDWORK },
@@ -223,12 +239,14 @@ export default function Home() {
         <p className="mt-8 max-w-[56ch] rounded-[4px] border border-dashed border-mid px-5 py-4 text-[14px] leading-[1.7] text-pale">
           항목마다 꼼꼼히 확인한 뒤 판단해 드립니다.
         </p>
+        </div>
       </section>
 
       {/* (f) 신청하면 어떻게 되나요 */}
-      <section className={SECTION + ' bg-paper'}>
+      <section className="bg-paper">
+        <div className={SHELL + ' ' + PAD}>
         <h2 className={H2}>신청하면 어떻게 되나요?</h2>
-        <div className="mt-9 grid max-w-[1000px] gap-[clamp(28px,3vw,48px)] [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
+        <div className="mt-9 grid gap-[clamp(28px,3vw,48px)] [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
           {STEPS.map((s) => (
             <div key={s.n} className="border-t-2 border-ink pt-[18px]">
               <p className="font-serif text-[28px] font-semibold text-deep">{s.n}</p>
@@ -238,25 +256,29 @@ export default function Home() {
             </div>
           ))}
         </div>
+        </div>
       </section>
 
       {/* (g) 할 수 있는 일과 할 수 없는 일 */}
-      <section className={SECTION + ' border-y border-line bg-wash'}>
+      <section className="border-y border-line bg-wash">
+        <div className={SHELL + ' ' + PAD}>
         <h2 className={H2}>이 진단서로 어떤 일을 할 수 있고, 어떤 일은 할 수 없나요?</h2>
-        <div className="mt-8 grid max-w-[900px] gap-4 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
+        <div className="mt-8 grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
           {LIMITS.map((lines) => (
             <div key={lines[0]} className="rounded-[4px] border border-line px-5 py-[18px]">
               <Lines className="text-[16px] leading-[1.7] text-body" items={lines} />
             </div>
           ))}
         </div>
+        </div>
       </section>
 
       {/* (h) 진단 신청 */}
       <section
         id="apply"
-        className="grid items-start gap-[clamp(32px,5vw,64px)] bg-ink px-6 pb-[clamp(56px,6vw,88px)] pt-[clamp(48px,6vw,80px)] [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]"
+        className="bg-ink"
       >
+        <div className={SHELL + ' grid items-start gap-[clamp(32px,5vw,64px)] pb-[clamp(56px,6vw,88px)] pt-[clamp(48px,6vw,80px)] [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]'}>
         <div className="max-w-[30rem]">
           <h2 className={H2 + ' text-paper'}>진단 신청</h2>
           <Lines
@@ -269,10 +291,12 @@ export default function Home() {
           />
         </div>
         <ApplyForm />
+        </div>
       </section>
 
       {/* (i) 푸터 */}
-      <footer className="flex flex-col gap-[18px] border-t border-deep bg-ink px-6 pb-11 pt-9">
+      <footer className="border-t border-deep bg-ink">
+        <div className={SHELL + ' flex flex-col gap-[18px] pb-11 pt-9'}>
         <p className="font-serif text-[17px] font-semibold text-pale">빈집이력서</p>
         <Lines
           className="max-w-[64ch] gap-1 text-[14px] leading-[1.75] text-dash"
@@ -285,6 +309,7 @@ export default function Home() {
           className="gap-1 text-[13px] leading-[1.7] text-dash"
           items={['정소희', '010-7428-2624 (평일 9시 - 18시)', 'rsoy2918@gmail.com', '경북 포항시 남구']}
         />
+        </div>
       </footer>
 
       {/* (j) 모바일 고정 CTA — 768px 미만에서만. 페이지에서 그림자를 쓰는 유일한 요소 */}
