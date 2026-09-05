@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { sbSelect } from '../../../src/supabase'
-import { approveReport, revertReport, rerunJudgment, saveNote } from '../actions'
+import { approveReport, revertReport, rerunJudgment, saveNote, saveRegistry } from '../actions'
 import {
   AXIS_LABEL, VERDICT_DOTS, VERDICT_LABEL,
   type ApplicationRow, type ReportRow,
@@ -197,6 +197,52 @@ export default async function Review({ params }: { params: Promise<{ id: string 
               >
                 메모 저장
               </button>
+            </form>
+
+            {/* ⑥ 등기 — 공개 API 가 없어 사람이 등기소에서 확인해 적는다 */}
+            <form
+              action={saveRegistry.bind(null, report.id, app.id)}
+              className="mt-6 flex flex-col gap-2 border-t border-line pt-5"
+            >
+              <label className="text-[15px] font-semibold" htmlFor="registryNote">
+                등기 확인 내용
+                <span className="ml-2 text-[13px] font-normal text-muted">
+                  적으면 진단서 ⑥번이 점선에서 실선으로 바뀝니다
+                </span>
+              </label>
+              <textarea
+                id="registryNote"
+                name="registryNote"
+                rows={3}
+                defaultValue={report.registry_note ?? ''}
+                placeholder="소유자 1인 단독. 근저당·가압류 없음. 상속 정리 완료."
+                className="rounded-[6px] border border-line bg-paper p-3 text-[15px] leading-[1.7] outline-none focus:border-2 focus:border-mid"
+              />
+              <div className="flex flex-wrap items-center gap-3">
+                <label className="text-[14px] text-muted" htmlFor="registryCheckedAt">확인일</label>
+                <input
+                  id="registryCheckedAt"
+                  name="registryCheckedAt"
+                  type="date"
+                  defaultValue={report.registry_checked_at ?? ''}
+                  className="h-[44px] rounded-[6px] border border-line bg-paper px-3 text-[15px] outline-none focus:border-2 focus:border-mid"
+                />
+                <button
+                  type="submit"
+                  className="rounded-[6px] border border-deep px-5 py-3 text-[15px] font-semibold text-deep hover:bg-pale"
+                >
+                  등기 확인 저장
+                </button>
+              </div>
+              <p className="text-[13px] leading-[1.6] text-muted">
+                내용과 확인일이 <strong>둘 다</strong> 있어야 실선이 됩니다. 출처를 못 쓰면 확인한
+                것으로 적지 않습니다. 실제로 열람한 뒤에만 적어 주세요.
+              </p>
+              {report.registry_note && report.registry_checked_at && (
+                <p className="text-[13px] font-semibold text-mid">
+                  ⑥ 등기 확인됨 — ①법적 축이 열려 판정이 올라갈 수 있습니다. 재판정을 눌러 보세요.
+                </p>
+              )}
             </form>
 
             <div className="mt-6 flex flex-wrap gap-3">

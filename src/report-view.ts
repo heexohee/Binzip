@@ -57,10 +57,13 @@ function findingsBy(axes: Axes | null, labels: string[]): Finding[] {
 }
 
 /** 진단서 1페이지 — 판정 근거 6항목 */
+export type RegistryCheck = { note: string | null; checkedAt: string | null }
+
 export function buildItems(
   axes: Axes | null,
   facts: Record<string, unknown>,
   note: string | null,
+  registry: RegistryCheck = { note: null, checkedAt: null },
 ): Item[] {
   const checked = axes?.checkedAt ? dot(axes.checkedAt) : null
   const src = (name: string) => (checked ? `${name} ${checked} 확인` : name)
@@ -78,6 +81,8 @@ export function buildItems(
     .filter(Boolean)
     .join(' · ')
 
+  // 내용과 확인일이 함께 있을 때만 확인된 것으로 본다 — 출처를 못 쓰면 실선이 될 수 없다
+  const registryDone = Boolean(registry.note && registry.checkedAt)
   const road = findingsBy(axes, ['진입로', '지형'])
   const legalUnknown = findingsBy(axes, ['등기', '공동소유', '상속', '위반건축물'])
 
@@ -121,12 +126,15 @@ export function buildItems(
     {
       no: '⑥',
       label: '등기',
-      lines: legalUnknown.length
-        ? legalUnknown.map((f) => f.reason ?? '')
-        : ['확인하지 못했습니다.'],
-      // 등기부는 공개 API 가 없다. 자동으로는 끝까지 미확인이다.
-      source: null,
-      unverified: true,
+      // 등기부는 공개 API 가 없다. 자동으로는 끝까지 미확인이고,
+      // 사람이 등기소에서 확인해 적었을 때만 실선이 된다.
+      lines: registryDone
+        ? registry.note!.split('\n').filter(Boolean)
+        : legalUnknown.length
+          ? legalUnknown.map((f) => f.reason ?? '')
+          : ['확인하지 못했습니다.'],
+      source: registryDone ? `등기사항증명서 ${dot(registry.checkedAt)} 확인` : null,
+      unverified: !registryDone,
     },
   ]
 }
@@ -137,9 +145,13 @@ export function buildPaths(
   axes: Axes | null,
   facts: Record<string, unknown>,
   concern: string | null,
+  registry: RegistryCheck = { note: null, checkedAt: null },
 ): PathItem[] {
   const legal = axes?.diagnosis?.axes?.find((a) => a.axis === 'legal')
-  const legalOpen = legal?.verdict === 'clear'
+  // 사람이 등기를 확인했으면 ①법적 축이 열린 것으로 본다.
+  // 자동 판정이 unknown 인 유일한 이유가 등기부 접근 불가였기 때문이다.
+  const registryDone = Boolean(registry.note && registry.checkedAt)
+  const legalOpen = legal?.verdict === 'clear' || registryDone
   const price = Number(facts.housePrice) || 0
   const age = Number(facts.buildingAge) || 0
   const zone = String(facts.zone1 ?? '')
@@ -151,7 +163,9 @@ export function buildPaths(
   items.push({
     key: 'rights',
     title: PATH_TITLE.rights,
-    lines: legalOpen
+    lines: registryDone
+      ? [registry.note!, `등기사항증명서 ${dot(registry.checkedAt)} 확인`]
+      : legalOpen
       ? ['권리관계에서 걸리는 것이 확인되지 않았습니다.']
       : [
           '등기부는 공개 자료로 확인할 수 없어 아직 남아 있습니다.',

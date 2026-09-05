@@ -16,8 +16,9 @@ const ORDER = ['possible', 'conditional', 'blocked']
 export function ReportDoc({ rep, app }: { rep: ReportRow; app: ApplicationRow }) {
   const axes = rep.axes ?? null
   const facts = (axes as unknown as { facts?: Record<string, unknown> })?.facts ?? {}
-  const items = buildItems(axes, facts, rep.note)
-  const paths = buildPaths(rep.verdict, axes, facts, app.concern)
+  const registry = { note: rep.registry_note, checkedAt: rep.registry_checked_at }
+  const items = buildItems(axes, facts, rep.note, registry)
+  const paths = buildPaths(rep.verdict, axes, facts, app.concern, registry)
   const docNo = '제' + new Date(rep.created_at).getFullYear() + '-' + rep.id.slice(0, 4)
   const day = (s: string) =>
     new Date(s).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })

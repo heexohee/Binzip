@@ -56,6 +56,11 @@ create table if not exists public.reports (
   paths             jsonb,   -- 6경로 + 정렬 결과
   note              text,    -- 운영자가 손으로 덧붙이는 말
 
+  -- ⑥ 등기. 공개 API 가 없어 사람이 등기소에서 확인해 적는다.
+  -- 채워지면 진단서 ⑥번이 점선에서 실선으로 바뀌고 ①법적 축이 열린다.
+  registry_note       text,
+  registry_checked_at date,
+
   issued_at         timestamptz,
   created_at        timestamptz not null default now(),
 

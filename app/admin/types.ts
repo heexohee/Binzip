@@ -46,6 +46,9 @@ export type ReportRow = {
   verdict: string | null
   axes: Axes | null
   note: string | null
+  /** ⑥ 등기 — 사람이 등기소에서 확인해 적는다 */
+  registry_note: string | null
+  registry_checked_at: string | null
   issued_at: string | null
   created_at: string
 }
