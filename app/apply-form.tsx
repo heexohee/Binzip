@@ -79,7 +79,6 @@ export function ApplyForm() {
   const lastQuery = useRef('')
   const addressRef = useRef<HTMLInputElement>(null)
 
-  const wantsEmail = channel === '이메일로 받겠습니다'
 
   async function checkAddress(raw: string) {
     const query = raw.trim()
@@ -248,7 +247,7 @@ export function ApplyForm() {
       {/* 6. 받을 방법 — 필수. 연락처 칸의 형식을 바꾼다 */}
       <fieldset className="m-0 flex flex-col gap-3 border-0 p-0">
         <legend className="mb-1 p-0">
-          <Legend text="진단서를 어디로 보내드릴까요?" need="must" />
+          <Legend text="어느 쪽이 편하신가요?" need="may" />
         </legend>
         <div className="flex flex-wrap gap-[10px]">
           {CHANNEL.map((o) => (
@@ -283,23 +282,23 @@ export function ApplyForm() {
         {err('contact')}
       </label>
 
-      {/* 이메일로 받겠다고 고른 경우에만 나타난다 */}
-      {wantsEmail && (
-        <label className="flex flex-col gap-2">
-          <Legend text="진단서를 받으실 이메일 주소를 알려주세요" need="must" />
-          <input
-            name="email"
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            placeholder="name@example.com"
-            aria-invalid={state.errors.email ? true : undefined}
-            className={state.errors.email ? INPUT + ' border-earth' : INPUT}
-          />
-          <span className="text-[13px] leading-[1.6] text-dash">이 주소로 진단서 링크를 보내드립니다.</span>
-          {err('email')}
-        </label>
-      )}
+      {/* 이메일 — 항상 필수. 진단서를 보낼 수 있는 유일한 경로다 */}
+      <label className="flex flex-col gap-2">
+        <Legend text="진단서를 받으실 이메일 주소를 알려주세요" need="must" />
+        <input
+          name="email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          placeholder="name@example.com"
+          aria-invalid={state.errors.email ? true : undefined}
+          className={state.errors.email ? INPUT + ' border-earth' : INPUT}
+        />
+        <span className="text-[13px] leading-[1.6] text-dash">
+          진단서는 이 주소로 보내드립니다. 문자로도 알려드릴 수 있습니다.
+        </span>
+        {err('email')}
+      </label>
 
       {/* 9. 희망 소요 — 문항이 길어 한 줄씩 쌓는다 */}
       <RadioGroup name="speed" label="진단서를 언제까지 받고 싶으신가요?" options={SPEED} layout="stack" />

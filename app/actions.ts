@@ -14,7 +14,7 @@ export async function submitApplication(
   const channel = text('channel')
   const email = text('email')
   const agreed = formData.get('agree') != null
-  const wantsEmail = channel === '이메일로 받겠습니다'
+
 
   const errors: Record<string, string> = {}
   if (!address) errors.address = '주소를 적어 주세요.'
@@ -24,13 +24,12 @@ export async function submitApplication(
   } else if (contact.replace(/\D/g, '').length < 9) {
     errors.contact = '전화번호를 다시 확인해 주세요. 예) 010-0000-0000'
   }
-  if (!channel) errors.channel = '진단서를 어디로 보내드릴지 골라 주세요.'
-  if (wantsEmail) {
-    if (!email) {
-      errors.email = '진단서를 받으실 이메일 주소를 적어 주세요.'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errors.email = '이메일 주소를 다시 확인해 주세요. 예) name@example.com'
-    }
+  // 이메일은 항상 받는다. 문자 발송은 발신번호 사전등록이 필요해 MVP 에서 불가능하므로,
+  // 진단서를 실제로 보낼 수 있는 경로가 이메일뿐이다.
+  if (!email) {
+    errors.email = '진단서를 받으실 이메일 주소를 적어 주세요.'
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errors.email = '이메일 주소를 다시 확인해 주세요. 예) name@example.com'
   }
   if (!agreed) errors.agree = '동의에 체크해 주세요.'
   if (Object.keys(errors).length > 0) {
@@ -48,7 +47,7 @@ export async function submitApplication(
       speed: text('speed') || null,
       channel: channel || null,
       contact,
-      email: wantsEmail ? email : null,
+      email,
       createdAt: now.toISOString(),
       expiresAt: expiryFrom(now),
       pnu: text('pnu') || null,
