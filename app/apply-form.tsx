@@ -6,13 +6,22 @@ import type { ApplyState } from '../src/application'
 
 const INITIAL: ApplyState = { ok: false, errors: {}, message: null }
 
-const POSSESSION = ['집주인입니다', '가족 소유입니다', '상속 정리 중입니다', '그 외입니다']
+const ACQUISITION = ['상속', '매입', '가족 소유', '기타']
+const OWNERSHIP = ['단독', '공동', '상속 정리 중', '잘 모름']
+const CONCERN = ['세금', '등기·상속', '건물 상태', '관리', '매각 가능성', '활용 방법', '잘 모르겠음']
 const CHANNEL = ['문자로 받겠습니다', '이메일로 받겠습니다']
+const SPEED = [
+  '빠를수록 좋습니다 — 서류로 확인되는 것만 (1~2일 안에)',
+  '정확한 게 좋습니다 — 집으로 담당자가 직접 가서 확인한 뒤 (일주일 안에)',
+  '상관없습니다',
+]
 
 const INPUT =
   'h-[52px] rounded-[6px] border border-line bg-paper px-4 text-[16px] text-body outline-none focus:border-2 focus:border-mid focus:px-[15px]'
+const CHIP =
+  'flex min-h-[48px] items-center gap-[10px] rounded-[6px] border border-mid bg-deep px-[14px] text-[16px] text-paper'
+const GRID = 'grid gap-[10px] [grid-template-columns:repeat(auto-fit,minmax(160px,1fr))]'
 
-/** 주소 확인 상태. 확인에 실패해도 신청은 막지 않는다 — "나머지는 저희가 찾습니다" */
 type AddrStatus =
   | { kind: 'idle' }
   | { kind: 'checking' }
@@ -20,23 +29,57 @@ type AddrStatus =
   | { kind: 'unsure'; addr: string; pnu: string; x: number | null; y: number | null }
   | { kind: 'notfound' }
 
+/** 라벨 + 필수/선택 표기. 기호가 아니라 말로 쓴다 */
+function Legend({ text, need }: { text: string; need?: 'must' | 'may' }) {
+  return (
+    <span className="text-[15px] font-semibold text-paper">
+      {text}{' '}
+      {need === 'must' && <span className="text-[13px] font-normal text-pale">꼭 필요합니다</span>}
+      {need === 'may' && <span className="text-[13px] font-normal text-dash">안 적으셔도 됩니다</span>}
+    </span>
+  )
+}
+
+function RadioGroup({
+  name, label, options, value, onChange, layout = 'grid',
+}: {
+  name: string; label: string; options: string[]
+  value?: string; onChange?: (v: string) => void
+  layout?: 'grid' | 'stack'
+}) {
+  return (
+    <fieldset className="m-0 flex flex-col gap-3 border-0 p-0">
+      <legend className="mb-1 p-0">
+        <Legend text={label} need="may" />
+      </legend>
+      <div className={layout === 'grid' ? GRID : 'flex flex-col gap-[10px]'}>
+        {options.map((o) => (
+          <label key={o} className={CHIP}>
+            <input
+              type="radio"
+              name={name}
+              value={o}
+              checked={value === undefined ? undefined : value === o}
+              onChange={onChange ? () => onChange(o) : undefined}
+              className="h-5 w-5 flex-none accent-pale"
+            />
+            {o}
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  )
+}
+
 export function ApplyForm() {
   const [state, action, pending] = useActionState(submitApplication, INITIAL)
   const [addr, setAddr] = useState<AddrStatus>({ kind: 'idle' })
   const [mapState, setMapState] = useState<'loading' | 'ok' | 'error'>('loading')
+  const [channel, setChannel] = useState('')
   const lastQuery = useRef('')
   const addressRef = useRef<HTMLInputElement>(null)
-  const [channel, setChannel] = useState('')
 
-  // 핸드오프 §(h): 연락처 칸은 '받을 방법' 선택에 따라 형식이 바뀌어야 한다.
-  // 이메일을 고른 사람에게 숫자 키패드를 띄우면 입력 자체가 불가능하다.
   const wantsEmail = channel === '이메일로 받겠습니다'
-  const wantsSms = channel === '문자로 받겠습니다'
-  const contactField = wantsEmail
-    ? { type: 'email', inputMode: 'email' as const, placeholder: 'name@example.com', hint: '진단서 링크를 이메일로 보내드립니다.' }
-    : wantsSms
-      ? { type: 'tel', inputMode: 'tel' as const, placeholder: '010-0000-0000', hint: '진단서 링크를 문자로 보내드립니다.' }
-      : { type: 'text', inputMode: 'text' as const, placeholder: '010-0000-0000 또는 name@example.com', hint: '전화번호와 이메일 주소 중 편하신 쪽을 적어 주세요.' }
 
   async function checkAddress(raw: string) {
     const query = raw.trim()
@@ -47,12 +90,8 @@ export function ApplyForm() {
     try {
       const res = await fetch('/api/address?q=' + encodeURIComponent(query))
       const data = await res.json()
-      // 그 사이 사용자가 주소를 또 고쳤으면 늦게 온 응답은 버린다
       if (lastQuery.current !== query) return
-      if (!data.found) {
-        setAddr({ kind: 'notfound' })
-        return
-      }
+      if (!data.found) return setAddr({ kind: 'notfound' })
       const shown: string = data.jibunAddress ?? data.roadAddress ?? query
       const at = { x: data.x ?? null, y: data.y ?? null }
       setAddr(
@@ -76,21 +115,22 @@ export function ApplyForm() {
 
   const resolved = addr.kind === 'found' || addr.kind === 'unsure' ? addr : null
   const coords = resolved && resolved.x != null && resolved.y != null ? resolved : null
+  const err = (k: string) =>
+    state.errors[k] ? (
+      <span className="text-[13px] font-semibold text-pale">{state.errors[k]}</span>
+    ) : null
 
   return (
     <form action={action} className="flex max-w-[520px] flex-col gap-[22px]" noValidate>
-      {/* 1. 주소 — 필수. blur 시 자동 확인하되 버튼을 새로 두지 않는다 */}
+      {/* 1. 주소 — 필수. 돋보기·엔터·포커스 이동 세 경로로 확인한다 */}
       <div className="flex flex-col gap-2">
         <label className="flex flex-col gap-2">
-          <span className="text-[15px] font-semibold text-paper">
-            빈집 주소가 어디인가요? <span className="text-[13px] font-normal text-pale">꼭 필요합니다</span>
-          </span>
+          <Legend text="빈집 주소가 어디인가요?" need="must" />
           <span className="flex gap-2">
             <input
               ref={addressRef}
               name="address"
               type="text"
-              inputMode="text"
               enterKeyHint="search"
               placeholder="경북 포항시 남구 ○○동 1○○-○"
               aria-invalid={state.errors.address ? true : undefined}
@@ -98,8 +138,7 @@ export function ApplyForm() {
               onBlur={(e) => void checkAddress(e.currentTarget.value)}
               onKeyDown={(e) => {
                 if (e.key !== 'Enter') return
-                // 엔터가 폼을 제출해 버리면 아직 안 채운 칸의 오류가 먼저 뜬다.
-                // 주소 칸에서 엔터는 '주소 확인'이지 '신청'이 아니다.
+                // 이 칸에서 엔터는 '신청'이 아니라 '확인'이다
                 e.preventDefault()
                 void checkAddress(e.currentTarget.value)
               }}
@@ -112,7 +151,6 @@ export function ApplyForm() {
               onClick={() => void checkAddress(addressRef.current?.value ?? '')}
               className="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-[6px] border border-mid bg-deep text-paper hover:bg-ink disabled:opacity-60"
             >
-              {/* 아이콘 세트를 들이지 않는다 — 원 하나와 선 하나로 직접 그린다 */}
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="2" />
                 <line x1="13.5" y1="13.5" x2="18" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -130,7 +168,6 @@ export function ApplyForm() {
         {addr.kind === 'checking' && (
           <span className="text-[13px] leading-[1.6] text-dash">주소를 확인하고 있습니다.</span>
         )}
-
         {addr.kind === 'found' && (
           <div className="rounded-[4px] border border-mid bg-deep px-4 py-3 text-[14px] leading-[1.7] text-pale">
             <span className="flex flex-col gap-1">
@@ -139,8 +176,6 @@ export function ApplyForm() {
             </span>
           </div>
         )}
-
-        {/* 점선 = 아직 확인되지 않은 것. 페이지 전체에서 이 규칙을 지킨다 */}
         {addr.kind === 'unsure' && (
           <div className="rounded-[4px] border border-dashed border-dash px-4 py-3 text-[14px] leading-[1.7] text-pale">
             <span className="flex flex-col gap-1">
@@ -150,7 +185,6 @@ export function ApplyForm() {
             </span>
           </div>
         )}
-
         {addr.kind === 'notfound' && (
           <span className="flex flex-col gap-1 text-[13px] leading-[1.6] text-dash">
             <span>주소를 찾지 못했습니다.</span>
@@ -158,13 +192,9 @@ export function ApplyForm() {
           </span>
         )}
 
-        {/* 주소 문자열보다 위에서 본 사진이 확인에 빠르다. 지붕·잡초·진입로가 함께 보인다 */}
         {coords && (
           <figure className="m-0 flex flex-col gap-2">
-            <div
-              className="relative w-full overflow-hidden rounded-[4px] border border-line"
-              style={{ aspectRatio: '560 / 320' }}
-            >
+            <div className="relative w-full overflow-hidden rounded-[4px] border border-line" style={{ aspectRatio: '560 / 320' }}>
               {mapState !== 'ok' && (
                 <span className="absolute inset-0 flex items-center justify-center px-4 text-center text-[13px] leading-[1.6] text-pale">
                   {mapState === 'error'
@@ -189,97 +219,92 @@ export function ApplyForm() {
             </figcaption>
           </figure>
         )}
-
-        {state.errors.address && (
-          <span className="text-[13px] font-semibold text-pale">{state.errors.address}</span>
-        )}
+        {err('address')}
       </div>
 
       {resolved && (
         <>
           <input type="hidden" name="pnu" value={resolved.pnu} />
           <input type="hidden" name="resolvedAddress" value={resolved.addr} />
-          <input
-            type="hidden"
-            name="matchQuality"
-            value={resolved.kind === 'unsure' ? 'fuzzy' : resolved.quality}
-          />
+          <input type="hidden" name="matchQuality" value={resolved.kind === 'unsure' ? 'fuzzy' : resolved.quality} />
         </>
       )}
 
-      {/* 2. 집 상태 — 선택 */}
+      {/* 2. 집 상태 */}
       <label className="flex flex-col gap-2">
-        <span className="text-[15px] font-semibold text-paper">
-          집 상태가 어떤가요? <span className="text-[13px] font-normal text-dash">안 적으셔도 됩니다</span>
-        </span>
-        <input
-          name="condition"
-          type="text"
-          placeholder="5년 정도 비어 있고, 지붕이 내려앉았습니다"
-          className={INPUT}
-        />
+        <Legend text="집 상태가 어떤가요?" need="may" />
+        <input name="condition" type="text" placeholder="5년 정도 비어 있고, 지붕이 내려앉았습니다" className={INPUT} />
       </label>
 
-      {/* 3. 소유 관계 — 판정 로직 ①칸(미등기) 입력이 된다 */}
-      <fieldset className="m-0 flex flex-col gap-3 border-0 p-0">
-        <legend className="mb-1 p-0 text-[15px] font-semibold text-paper">이 집은 누구 집인가요?</legend>
-        <div className="grid gap-[10px] [grid-template-columns:repeat(auto-fit,minmax(160px,1fr))]">
-          {POSSESSION.map((label) => (
-            <label
-              key={label}
-              className="flex min-h-[48px] items-center gap-[10px] rounded-[6px] border border-mid bg-deep px-[14px] text-[16px] text-paper"
-            >
-              <input type="radio" name="possession" value={label} className="h-5 w-5 accent-pale" />
-              {label}
-            </label>
-          ))}
-        </div>
-      </fieldset>
+      {/* 3. 취득 경위 — ①칸(법적) 판정의 입력이 된다 */}
+      <RadioGroup name="acquisition" label="이 집은 어떻게 갖게 되셨나요?" options={ACQUISITION} />
 
-      {/* 4. 받을 방법 */}
+      {/* 4. 소유관계 — 단독/공동이 미등기·공동상속 판정을 가른다 */}
+      <RadioGroup name="ownership" label="현재 소유관계를 알고 계신가요?" options={OWNERSHIP} />
+
+      {/* 5. 걱정거리 — 진단서에서 어느 경로를 맨 위에 놓을지 정한다 */}
+      <RadioGroup name="concern" label="가장 걱정되는 것은 무엇인가요?" options={CONCERN} />
+
+      {/* 6. 받을 방법 — 필수. 연락처 칸의 형식을 바꾼다 */}
       <fieldset className="m-0 flex flex-col gap-3 border-0 p-0">
-        <legend className="mb-1 p-0 text-[15px] font-semibold text-paper">진단서를 어디로 보내드릴까요?</legend>
+        <legend className="mb-1 p-0">
+          <Legend text="진단서를 어디로 보내드릴까요?" need="must" />
+        </legend>
         <div className="flex flex-wrap gap-[10px]">
-          {CHANNEL.map((label) => (
-            <label
-              key={label}
-              className="flex min-h-[48px] items-center gap-[10px] rounded-[6px] border border-mid bg-deep px-[18px] text-[16px] text-paper"
-            >
+          {CHANNEL.map((o) => (
+            <label key={o} className={CHIP.replace('px-[14px]', 'px-[18px]')}>
               <input
                 type="radio"
                 name="channel"
-                value={label}
-                checked={channel === label}
-                onChange={() => setChannel(label)}
-                className="h-5 w-5 accent-pale"
+                value={o}
+                checked={channel === o}
+                onChange={() => setChannel(o)}
+                className="h-5 w-5 flex-none accent-pale"
               />
-              {label}
+              {o}
             </label>
           ))}
         </div>
+        {err('channel')}
       </fieldset>
 
-      {/* 5. 연락처 — 필수 */}
+      {/* 7. 전화번호 — 항상 필수. 발송이 실패해도 닿을 수단이 하나는 있어야 한다 */}
       <label className="flex flex-col gap-2">
-        <span className="text-[15px] font-semibold text-paper">
-          어디로 연락드리면 되나요? <span className="text-[13px] font-normal text-pale">꼭 필요합니다</span>
-        </span>
+        <Legend text="연락받을 전화번호를 알려주세요" need="must" />
         <input
           name="contact"
-          type={contactField.type}
-          inputMode={contactField.inputMode}
-          autoComplete={wantsEmail ? 'email' : wantsSms ? 'tel' : 'on'}
-          placeholder={contactField.placeholder}
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          placeholder="010-0000-0000"
           aria-invalid={state.errors.contact ? true : undefined}
           className={state.errors.contact ? INPUT + ' border-earth' : INPUT}
         />
-        <span className="text-[13px] leading-[1.6] text-dash">{contactField.hint}</span>
-        {state.errors.contact && (
-          <span className="text-[13px] font-semibold text-pale">{state.errors.contact}</span>
-        )}
+        {err('contact')}
       </label>
 
-      {/* 6. 동의 — 보관 6개월. 그 전 삭제 요청 시 즉시 삭제(푸터의 전화·이메일이 창구) */}
+      {/* 이메일로 받겠다고 고른 경우에만 나타난다 */}
+      {wantsEmail && (
+        <label className="flex flex-col gap-2">
+          <Legend text="진단서를 받으실 이메일 주소를 알려주세요" need="must" />
+          <input
+            name="email"
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            placeholder="name@example.com"
+            aria-invalid={state.errors.email ? true : undefined}
+            className={state.errors.email ? INPUT + ' border-earth' : INPUT}
+          />
+          <span className="text-[13px] leading-[1.6] text-dash">이 주소로 진단서 링크를 보내드립니다.</span>
+          {err('email')}
+        </label>
+      )}
+
+      {/* 9. 희망 소요 — 문항이 길어 한 줄씩 쌓는다 */}
+      <RadioGroup name="speed" label="진단서를 언제까지 받고 싶으신가요?" options={SPEED} layout="stack" />
+
+      {/* 8. 동의 — 법적 확인이라 제출 버튼 바로 앞에 둔다 */}
       <div className="flex flex-col gap-2">
         <label className="flex items-start gap-3 text-[15px] leading-[1.7] text-pale">
           <input
@@ -293,9 +318,7 @@ export function ApplyForm() {
             <span>진단서를 보낸 뒤 6개월이 지나면 지웁니다.</span>
           </span>
         </label>
-        {state.errors.agree && (
-          <span className="text-[13px] font-semibold text-pale">{state.errors.agree}</span>
-        )}
+        {err('agree')}
       </div>
 
       <div className="flex flex-col gap-3">

@@ -11,19 +11,25 @@ export async function submitApplication(
 
   const address = text('address')
   const contact = text('contact')
+  const channel = text('channel')
+  const email = text('email')
   const agreed = formData.get('agree') != null
+  const wantsEmail = channel === '이메일로 받겠습니다'
 
   const errors: Record<string, string> = {}
   if (!address) errors.address = '주소를 적어 주세요.'
+  // 전화번호는 항상 받는다. 진단서 발송이 실패해도 닿을 수단이 하나는 있어야 한다.
   if (!contact) {
-    errors.contact = '연락받을 번호나 이메일 주소를 적어 주세요.'
-  } else {
-    // 어느 쪽을 골랐든 값으로 판별한다. 라디오를 안 고른 사람도 접수돼야 한다.
-    const looksLikeEmail = contact.includes('@')
-    if (looksLikeEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact)) {
-      errors.contact = '이메일 주소를 다시 확인해 주세요. 예) name@example.com'
-    } else if (!looksLikeEmail && contact.replace(/\D/g, '').length < 9) {
-      errors.contact = '연락받을 번호를 다시 확인해 주세요. 예) 010-0000-0000'
+    errors.contact = '연락받을 전화번호를 적어 주세요.'
+  } else if (contact.replace(/\D/g, '').length < 9) {
+    errors.contact = '전화번호를 다시 확인해 주세요. 예) 010-0000-0000'
+  }
+  if (!channel) errors.channel = '진단서를 어디로 보내드릴지 골라 주세요.'
+  if (wantsEmail) {
+    if (!email) {
+      errors.email = '진단서를 받으실 이메일 주소를 적어 주세요.'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.email = '이메일 주소를 다시 확인해 주세요. 예) name@example.com'
     }
   }
   if (!agreed) errors.agree = '동의에 체크해 주세요.'
@@ -36,9 +42,13 @@ export async function submitApplication(
     await saveApplication({
       address,
       condition: text('condition') || null,
-      possession: text('possession') || null,
-      channel: text('channel') || null,
+      acquisition: text('acquisition') || null,
+      ownership: text('ownership') || null,
+      concern: text('concern') || null,
+      speed: text('speed') || null,
+      channel: channel || null,
       contact,
+      email: wantsEmail ? email : null,
       createdAt: now.toISOString(),
       expiresAt: expiryFrom(now),
       pnu: text('pnu') || null,

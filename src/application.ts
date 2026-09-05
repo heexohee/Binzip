@@ -2,9 +2,16 @@
 export type Application = {
   address: string
   condition: string | null
-  possession: string | null
   channel: string | null
+  /** 항상 필수. 발송이 실패해도 닿을 수단이 하나는 있어야 한다 */
   contact: string
+  /** 이메일로 받겠다고 고른 경우에만 채워진다 */
+  email: string | null
+  acquisition: string | null
+  ownership: string | null
+  /** 진단서에서 어느 경로를 맨 위에 놓을지 정한다 */
+  concern: string | null
+  speed: string | null
   /** ISO 8601 */
   createdAt: string
   /** 파기 예정 시각. 보관 정책을 레코드에 못 박아 실제 만료가 가능하게 한다. */
@@ -92,12 +99,21 @@ async function notifyByEmail(app: Application): Promise<string | null> {
   const from = process.env.NOTIFY_FROM
   if (!key || !to || !from) return null
 
+  const or = (v: string | null) => v ?? '(적지 않음)'
   const lines = [
     '빈집 주소: ' + app.address,
-    '집 상태: ' + (app.condition ?? '(적지 않음)'),
-    '소유 관계: ' + (app.possession ?? '(고르지 않음)'),
-    '받을 방법: ' + (app.channel ?? '(고르지 않음)'),
-    '연락처: ' + app.contact,
+    '확인된 주소: ' + or(app.resolvedAddress) + (app.matchQuality ? ' [' + app.matchQuality + ']' : ''),
+    'PNU: ' + or(app.pnu),
+    '',
+    '집 상태: ' + or(app.condition),
+    '취득 경위: ' + or(app.acquisition),
+    '소유 관계: ' + or(app.ownership),
+    '가장 걱정되는 것: ' + or(app.concern),
+    '희망 소요: ' + or(app.speed),
+    '',
+    '받을 방법: ' + or(app.channel),
+    '전화번호: ' + app.contact,
+    '이메일: ' + or(app.email),
     '신청 시각: ' + app.createdAt,
   ]
 
