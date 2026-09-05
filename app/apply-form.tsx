@@ -168,27 +168,39 @@ export function ApplyForm() {
           <span className="text-[13px] leading-[1.6] text-dash">주소를 확인하고 있습니다.</span>
         )}
         {addr.kind === 'found' && (
-          <div className="rounded-[4px] border border-mid bg-deep px-4 py-3 text-[14px] leading-[1.7] text-pale">
+          <div className="rounded-[4px] border-l-[3px] border-mid bg-deep px-4 py-3 text-[14px] leading-[1.7] text-pale">
             <span className="flex flex-col gap-1">
-              <span>이 주소로 확인했습니다.</span>
-              <span className="font-semibold text-paper">{addr.addr}</span>
+              <span className="self-start rounded-[3px] bg-pale px-2 py-[2px] text-[12px] font-semibold text-ink">
+                확인했습니다
+              </span>
+              <span className="mt-1 font-semibold text-paper">{addr.addr}</span>
             </span>
           </div>
         )}
         {addr.kind === 'unsure' && (
-          <div className="rounded-[4px] border border-dashed border-dash px-4 py-3 text-[14px] leading-[1.7] text-pale">
+          <div className="rounded-[4px] border-l-[3px] border-dash bg-deep px-4 py-3 text-[14px] leading-[1.7] text-pale">
             <span className="flex flex-col gap-1">
-              <span>비슷한 주소를 찾았습니다. 맞는지 확인해 주세요.</span>
-              <span className="font-semibold text-paper">{addr.addr}</span>
-              <span className="text-[13px] text-dash">다르면 주소를 고쳐 주세요. 그대로 신청하셔도 됩니다.</span>
+              <span className="self-start rounded-[3px] bg-pale px-2 py-[2px] text-[12px] font-semibold text-ink">
+                맞는지 확인해 주세요
+              </span>
+              <span className="mt-1 font-semibold text-paper">{addr.addr}</span>
+              <span className="text-[13px] text-dash">
+                비슷한 주소를 찾았습니다. 다르면 주소를 고쳐 주세요. 그대로 신청하셔도 됩니다.
+              </span>
             </span>
           </div>
         )}
         {addr.kind === 'notfound' && (
-          <span className="flex flex-col gap-1 text-[13px] leading-[1.6] text-dash">
-            <span>주소를 찾지 못했습니다.</span>
-            <span>그대로 신청하셔도 됩니다. 저희가 찾습니다.</span>
-          </span>
+          <div className="rounded-[4px] border-l-[3px] border-dash bg-deep px-4 py-3 text-[14px] leading-[1.7] text-pale">
+            <span className="flex flex-col gap-1">
+              <span className="self-start rounded-[3px] bg-pale px-2 py-[2px] text-[12px] font-semibold text-ink">
+                찾지 못했습니다
+              </span>
+              <span className="mt-1 text-[13px] text-dash">
+                그대로 신청하셔도 됩니다. 저희가 찾습니다.
+              </span>
+            </span>
+          </div>
         )}
 
         {coords && (

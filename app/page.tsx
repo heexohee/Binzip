@@ -165,26 +165,37 @@ export default function Home() {
               <div
                 key={row.item}
                 className={
-                  'grid [grid-template-columns:1.1fr_1.6fr_1fr] border-t ' +
-                  (row.unverified ? 'border-dashed border-dash bg-paper text-muted' : 'border-line')
+                  'grid [grid-template-columns:1.1fr_1.6fr_1fr] border-t border-l-[3px] ' +
+                  // 진단서와 같은 언어를 쓴다 — 선 모양이 아니라 면과 바 굵기로 가른다
+                  (row.unverified
+                    ? 'border-t-line border-l-dash bg-wash text-muted'
+                    : 'border-t-line border-l-mid bg-paper')
                 }
               >
                 <div className="p-4 text-[15px]">{row.item}</div>
                 <div className={'p-4 text-[15px] ' + (row.earth ? 'text-earth' : '')}>
                   <Lines className="gap-1" items={row.detail} />
                 </div>
-                <div className="p-4 text-[13px] text-muted">{row.source}</div>
+                <div className="flex flex-col gap-2 p-4 text-[13px] text-muted">
+                  {row.unverified ? (
+                    <span className="self-start rounded-[3px] bg-pale px-2 py-[2px] text-[12px] font-semibold text-ink">
+                      아직 확인하지 못함
+                    </span>
+                  ) : (
+                    <span>{row.source}</span>
+                  )}
+                </div>
               </div>
             ))}
           </div>
         </div>
-        <Lines
-          className="mt-4 max-w-[68ch] gap-1 text-[13px] leading-[1.6] text-muted"
-          items={[
-            '실선으로 적힌 것은 확인한 항목이고, 점선으로 적힌 것은 확인하지 못한 항목입니다.',
-            '확인하지 못한 것을 확인한 것처럼 적지 않습니다.',
-          ]}
-        />
+        <p className="mt-4 max-w-[68ch] text-[13px] leading-[1.7] text-muted">
+          왼쪽에 진한 선이 그어진 항목은 확인한 것이고, 회색 바탕에{' '}
+          <span className="rounded-[3px] bg-pale px-[6px] py-[1px] text-[12px] font-semibold text-ink">
+            아직 확인하지 못함
+          </span>{' '}
+          이 붙은 항목은 확인하지 못한 것입니다. 확인하지 못한 것을 확인한 것처럼 적지 않습니다.
+        </p>
       </section>
 
       {/* (e) 어떻게 확인하나요 — 다크 반전 */}
