@@ -15,7 +15,17 @@ export async function submitApplication(
 
   const errors: Record<string, string> = {}
   if (!address) errors.address = '주소를 적어 주세요.'
-  if (!contact) errors.contact = '연락받을 번호를 적어 주세요.'
+  if (!contact) {
+    errors.contact = '연락받을 번호나 이메일 주소를 적어 주세요.'
+  } else {
+    // 어느 쪽을 골랐든 값으로 판별한다. 라디오를 안 고른 사람도 접수돼야 한다.
+    const looksLikeEmail = contact.includes('@')
+    if (looksLikeEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact)) {
+      errors.contact = '이메일 주소를 다시 확인해 주세요. 예) name@example.com'
+    } else if (!looksLikeEmail && contact.replace(/\D/g, '').length < 9) {
+      errors.contact = '연락받을 번호를 다시 확인해 주세요. 예) 010-0000-0000'
+    }
+  }
   if (!agreed) errors.agree = '동의에 체크해 주세요.'
   if (Object.keys(errors).length > 0) {
     return { ok: false, errors, message: null }

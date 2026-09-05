@@ -26,6 +26,17 @@ export function ApplyForm() {
   const [mapState, setMapState] = useState<'loading' | 'ok' | 'error'>('loading')
   const lastQuery = useRef('')
   const addressRef = useRef<HTMLInputElement>(null)
+  const [channel, setChannel] = useState('')
+
+  // 핸드오프 §(h): 연락처 칸은 '받을 방법' 선택에 따라 형식이 바뀌어야 한다.
+  // 이메일을 고른 사람에게 숫자 키패드를 띄우면 입력 자체가 불가능하다.
+  const wantsEmail = channel === '이메일로 받겠습니다'
+  const wantsSms = channel === '문자로 받겠습니다'
+  const contactField = wantsEmail
+    ? { type: 'email', inputMode: 'email' as const, placeholder: 'name@example.com', hint: '진단서 링크를 이메일로 보내드립니다.' }
+    : wantsSms
+      ? { type: 'tel', inputMode: 'tel' as const, placeholder: '010-0000-0000', hint: '진단서 링크를 문자로 보내드립니다.' }
+      : { type: 'text', inputMode: 'text' as const, placeholder: '010-0000-0000 또는 name@example.com', hint: '전화번호와 이메일 주소 중 편하신 쪽을 적어 주세요.' }
 
   async function checkAddress(raw: string) {
     const query = raw.trim()
@@ -234,7 +245,14 @@ export function ApplyForm() {
               key={label}
               className="flex min-h-[48px] items-center gap-[10px] rounded-[6px] border border-mid bg-deep px-[18px] text-[16px] text-paper"
             >
-              <input type="radio" name="channel" value={label} className="h-5 w-5 accent-pale" />
+              <input
+                type="radio"
+                name="channel"
+                value={label}
+                checked={channel === label}
+                onChange={() => setChannel(label)}
+                className="h-5 w-5 accent-pale"
+              />
               {label}
             </label>
           ))}
@@ -248,11 +266,14 @@ export function ApplyForm() {
         </span>
         <input
           name="contact"
-          type="tel"
-          placeholder="010-0000-0000"
+          type={contactField.type}
+          inputMode={contactField.inputMode}
+          autoComplete={wantsEmail ? 'email' : wantsSms ? 'tel' : 'on'}
+          placeholder={contactField.placeholder}
           aria-invalid={state.errors.contact ? true : undefined}
           className={state.errors.contact ? INPUT + ' border-earth' : INPUT}
         />
+        <span className="text-[13px] leading-[1.6] text-dash">{contactField.hint}</span>
         {state.errors.contact && (
           <span className="text-[13px] font-semibold text-pale">{state.errors.contact}</span>
         )}
