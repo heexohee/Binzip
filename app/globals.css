@@ -60,3 +60,13 @@ h1, h2, h3 {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Hero 진단서 카드 — 등장 1회(420ms). 회전은 유지한다 (핸드오프 §b) */
+@keyframes doc-in {
+  from { opacity: 0; transform: rotate(-1.2deg) translateY(8px); }
+  to   { opacity: 1; transform: rotate(-1.2deg) translateY(0); }
+}
+.doc-preview {
+  transform: rotate(-1.2deg);
+  animation: doc-in 420ms ease-out both;
+}
