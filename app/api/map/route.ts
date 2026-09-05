@@ -32,7 +32,9 @@ export async function GET(request: Request) {
   const params = new URLSearchParams({
     service: 'image',
     request: 'getmap',
-    format: 'png',
+    // 항공사진은 사진 데이터다. jpeg 가 png 의 1/12 (379KB → 31KB) —
+    // 시골 모바일 환경이 주 사용처라 용량이 곧 로딩 실패다.
+    format: 'jpeg',
     basemap: 'PHOTO',
     crs: 'EPSG:4326',
     center: x + ',' + y,

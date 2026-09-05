@@ -23,6 +23,7 @@ type AddrStatus =
 export function ApplyForm() {
   const [state, action, pending] = useActionState(submitApplication, INITIAL)
   const [addr, setAddr] = useState<AddrStatus>({ kind: 'idle' })
+  const [mapState, setMapState] = useState<'loading' | 'ok' | 'error'>('loading')
   const lastQuery = useRef('')
 
   async function checkAddress(raw: string) {
@@ -30,6 +31,7 @@ export function ApplyForm() {
     if (!query || query === lastQuery.current) return
     lastQuery.current = query
     setAddr({ kind: 'checking' })
+    setMapState('loading')
     try {
       const res = await fetch('/api/address?q=' + encodeURIComponent(query))
       const data = await res.json()
@@ -121,14 +123,28 @@ export function ApplyForm() {
         {/* 주소 문자열보다 위에서 본 사진이 확인에 빠르다. 지붕·잡초·진입로가 함께 보인다 */}
         {coords && (
           <figure className="m-0 flex flex-col gap-2">
-            <img
-              src={'/api/map?x=' + coords.x + '&y=' + coords.y + '&zoom=18'}
-              alt={coords.addr + ' 위에서 본 모습'}
-              width={560}
-              height={320}
-              loading="lazy"
-              className="w-full rounded-[4px] border border-line"
-            />
+            <div
+              className="relative w-full overflow-hidden rounded-[4px] border border-line"
+              style={{ aspectRatio: '560 / 320' }}
+            >
+              {mapState !== 'ok' && (
+                <span className="absolute inset-0 flex items-center justify-center px-4 text-center text-[13px] leading-[1.6] text-pale">
+                  {mapState === 'error'
+                    ? '위성 사진을 불러오지 못했습니다. 주소 확인에는 지장이 없습니다.'
+                    : '위성 사진을 불러오는 중입니다.'}
+                </span>
+              )}
+              <img
+                key={coords.x + ',' + coords.y}
+                src={'/api/map?x=' + coords.x + '&y=' + coords.y + '&zoom=18'}
+                alt={coords.addr + ' 위에서 본 모습'}
+                width={560}
+                height={320}
+                onLoad={() => setMapState('ok')}
+                onError={() => setMapState('error')}
+                className={'w-full ' + (mapState === 'ok' ? 'block' : 'invisible')}
+              />
+            </div>
             <figcaption className="flex flex-col gap-1 text-[13px] leading-[1.6] text-dash">
               <span>위에서 내려다본 모습입니다.</span>
               <span>다른 집이면 주소를 고쳐 주세요.</span>
