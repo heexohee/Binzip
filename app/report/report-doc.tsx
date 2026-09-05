@@ -52,8 +52,8 @@ export function ReportDoc({ rep, app }: { rep: ReportRow; app: ApplicationRow })
             )
           })}
           {items.some((i) => i.unverified) && (
-            <p className="mt-5 rounded-[3px] bg-wash px-4 py-3 text-[14px] leading-[1.7]">
-              점선으로 적힌 항목은 아직 확인하지 못한 것입니다. 확인되면 판정이 달라질 수 있습니다.
+            <p className="mt-5 rounded-[3px] border-l-[3px] border-dash bg-wash px-4 py-3 text-[14px] leading-[1.7]">
+              아직 확인하지 못한 항목이 있습니다. 확인되면 판정이 달라질 수 있습니다.
             </p>
           )}
         </section>
@@ -63,8 +63,10 @@ export function ReportDoc({ rep, app }: { rep: ReportRow; app: ApplicationRow })
             <div
               key={it.no}
               className={
-                'grid grid-cols-[24px_1fr] gap-x-[14px] py-[14px] md:grid-cols-[26px_118px_1fr] ' +
-                (it.unverified ? 'border-t border-dashed border-dash' : 'border-t border-line')
+                'mt-2 grid grid-cols-[24px_1fr] gap-x-[14px] border-l-[3px] py-[14px] pl-4 md:grid-cols-[26px_118px_1fr] ' +
+                // 확인 여부를 선 모양이 아니라 면과 바 굵기로 가른다.
+                // 점선은 한눈에 안 들어오고 인쇄에서 더 흐려진다.
+                (it.unverified ? 'border-dash bg-wash' : 'border-mid bg-paper')
               }
             >
               <span className={'font-serif text-[15px] ' + (it.unverified ? 'text-muted' : 'text-mid')}>
@@ -77,16 +79,26 @@ export function ReportDoc({ rep, app }: { rep: ReportRow; app: ApplicationRow })
                     {l}
                   </span>
                 ))}
-                {it.source ? (
-                  <span className="text-[13px] text-muted">{it.source}</span>
+                {it.unverified ? (
+                  // 시각 부호보다 글자가 확실하다. 주 독자가 40~70대다.
+                  <span className="mt-1 flex flex-wrap items-center gap-2">
+                    <span className="rounded-[3px] bg-pale px-2 py-[2px] text-[12px] font-semibold text-ink">
+                      아직 확인하지 못함
+                    </span>
+                    <span className="text-[13px] text-muted">{it.source ?? '출처 없음'}</span>
+                  </span>
                 ) : (
-                  <span className="text-[13px] text-muted">미확인</span>
+                  <span className="text-[13px] text-muted">{it.source}</span>
                 )}
               </div>
             </div>
           ))}
-          <p className="mt-4 border-t border-line pt-4 text-[13px] text-muted">
-            실선 항목은 확인한 것이고, 점선 항목은 아직 확인하지 못한 것입니다.
+          <p className="mt-5 border-t border-line pt-4 text-[13px] leading-[1.7] text-muted">
+            왼쪽에 진한 선이 그어진 항목은 확인한 것이고, 회색 바탕에{' '}
+            <span className="rounded-[3px] bg-pale px-[6px] py-[1px] text-[12px] font-semibold text-ink">
+              아직 확인하지 못함
+            </span>{' '}
+            이 붙은 항목은 확인하지 못한 것입니다. 확인하지 못한 것을 확인한 것처럼 적지 않습니다.
           </p>
         </section>
 
@@ -104,17 +116,22 @@ export function ReportDoc({ rep, app }: { rep: ReportRow; app: ApplicationRow })
             <div
               key={p.key}
               className={
-                'grid grid-cols-1 gap-x-4 gap-y-2 border-t py-4 md:grid-cols-[100px_1fr] ' +
-                (p.blocked ? 'border-dashed border-dash' : 'border-line')
+                'mt-2 grid grid-cols-1 gap-x-4 gap-y-2 border-l-[3px] py-4 pl-4 md:grid-cols-[100px_1fr] ' +
+                (p.blocked ? 'border-dash bg-wash' : 'border-line bg-paper')
               }
             >
               <h3
                 className={
-                  'font-serif text-[18px] font-semibold ' +
+                  'flex flex-wrap items-center gap-2 font-serif text-[18px] font-semibold ' +
                   (p.blocked ? 'text-muted' : p.tone === 'earth' ? 'text-earth' : p.tone === 'deep' ? 'text-deep' : 'text-ink')
                 }
               >
                 {p.title}
+                {p.blocked && (
+                  <span className="rounded-[3px] bg-pale px-2 py-[2px] font-sans text-[12px] font-semibold text-ink">
+                    지금은 어려움
+                  </span>
+                )}
               </h3>
               <div className="flex flex-col gap-1">
                 {p.lines.map((l, i) => (

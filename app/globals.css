@@ -79,4 +79,7 @@ h1, h2, h3 {
   .page:last-child { break-after: auto; }
   /* 인쇄 최소 12pt 유지 */
   body { font-size: 12pt; }
+  /* 확인/미확인을 면으로 가르므로 배경이 인쇄돼야 한다.
+     기본값이면 브라우저가 배경을 빼버려 구분이 사라진다. */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
