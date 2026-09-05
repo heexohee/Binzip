@@ -26,3 +26,6 @@ data/raw/
 *.log
 npm-debug.log*
 .DS_Store
+
+# Understand Anything 분석 결과 — /understand 로 언제든 재생성된다
+.ua/
