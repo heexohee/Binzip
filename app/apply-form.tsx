@@ -314,7 +314,7 @@ export function ApplyForm() {
             className="mt-[3px] h-5 w-5 flex-none accent-pale"
           />
           <span className="flex flex-col gap-1">
-            <span>주소와 연락처를 진단에만 쓰는 데 동의합니다.</span>
+            <span>주소와 연락처(전화번호·이메일)를 진단에만 쓰는 데 동의합니다.</span>
             <span>진단서를 보낸 뒤 6개월이 지나면 지웁니다.</span>
           </span>
         </label>
