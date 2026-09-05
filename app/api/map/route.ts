@@ -47,7 +47,13 @@ export async function GET(request: Request) {
     const upstream = await fetch(ENDPOINT + '?' + params.toString())
     const type = upstream.headers.get('content-type') ?? ''
     if (!upstream.ok || !type.startsWith('image/')) {
-      return NextResponse.json({ error: 'UPSTREAM_FAILED' }, { status: 502 })
+      // VWorld 응답 본문에는 키가 들어 있지 않다 (키는 요청 URL 에만 있다).
+      const detail = (await upstream.text().catch(() => '')).slice(0, 200)
+      console.error('[api/map] 상단 거부', upstream.status, type, detail)
+      return NextResponse.json(
+        { error: 'UPSTREAM_FAILED', status: upstream.status, detail },
+        { status: 502 },
+      )
     }
     return new NextResponse(upstream.body, {
       headers: {

@@ -28,12 +28,23 @@ export async function geocodeParcel(address: string): Promise<Coords | null> {
   if (domain) params.set('domain', domain)
 
   const res = await fetch(ENDPOINT + '?' + params.toString(), { cache: 'no-store' })
-  if (!res.ok) return null
+  if (!res.ok) {
+    console.error('[geocode] HTTP', res.status, (await res.text()).slice(0, 200))
+    return null
+  }
 
   const body = (await res.json()) as {
-    response?: { status?: string; result?: { point?: { x?: string; y?: string } } }
+    response?: { status?: string; error?: unknown; result?: { point?: { x?: string; y?: string } } }
   }
-  if (body.response?.status !== 'OK') return null
+  if (body.response?.status !== 'OK') {
+    // 도메인 미등록·키 오류가 여기로 온다. 원인을 삼키지 않는다.
+    console.error(
+      '[geocode] status',
+      body.response?.status,
+      JSON.stringify(body.response?.error ?? body).slice(0, 200),
+    )
+    return null
+  }
 
   const p = body.response.result?.point
   const x = Number(p?.x)
