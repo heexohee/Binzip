@@ -63,6 +63,11 @@ export async function saveApplication(app: Application): Promise<{ stored: strin
     ),
   ])
 
+  // 부분 실패도 반드시 남긴다. 한쪽이 성공하면 다른 쪽 실패가 묻혀서,
+  // 화면에는 '접수됐습니다'가 뜨는데 DB 에는 아무것도 없는 상태가 된다.
+  if (failures.length > 0) {
+    console.error('[application] 일부 저장 경로 실패', { stored, failures })
+  }
   if (stored.length === 0) {
     // 신청 유실은 되돌릴 수 없으므로 조용히 넘기지 않는다.
     console.error('[application] 저장 경로가 하나도 동작하지 않았다', failures)
@@ -84,7 +89,7 @@ async function saveToSupabase(app: Application): Promise<string | null> {
       'Content-Type': 'application/json',
       Prefer: 'return=minimal',
     },
-    body: JSON.stringify([app]),
+    body: JSON.stringify([toRow(app)]),
     cache: 'no-store',
   })
   if (!res.ok) {
@@ -132,6 +137,29 @@ async function notifyByEmail(app: Application): Promise<string | null> {
     throw new Error('resend ' + res.status + ' ' + (await res.text()).slice(0, 200))
   }
   return 'resend'
+}
+
+/**
+ * 코드는 camelCase, 테이블 컬럼은 snake_case 다.
+ * 그대로 보내면 PostgREST 가 '없는 컬럼'이라며 통째로 거부한다.
+ */
+function toRow(app: Application) {
+  return {
+    address: app.address,
+    resolved_address: app.resolvedAddress,
+    pnu: app.pnu,
+    match_quality: app.matchQuality,
+    condition: app.condition,
+    acquisition: app.acquisition,
+    ownership: app.ownership,
+    concern: app.concern,
+    speed: app.speed,
+    channel: app.channel,
+    contact: app.contact,
+    email: app.email,
+    created_at: app.createdAt,
+    expires_at: app.expiresAt,
+  }
 }
 
 function describe(e: unknown): string {
