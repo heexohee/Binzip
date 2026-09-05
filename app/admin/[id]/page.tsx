@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { sbSelect } from '../../../src/supabase'
 import { approveReport, revertReport, rerunJudgment, saveNote } from '../actions'
@@ -38,6 +39,12 @@ export default async function Review({ params }: { params: Promise<{ id: string 
   if (!app) notFound()
 
   const report = [...(app.reports ?? [])].sort((a, b) => b.version - a.version)[0]
+
+  // 수동 발송용 절대 URL. 도메인이 준비되기 전까지는 이걸 복사해 보낸다.
+  const h = await headers()
+  const origin =
+    (h.get('x-forwarded-proto') ?? 'http') + '://' + (h.get('host') ?? 'localhost:3000')
+  const publicUrl = report ? origin + '/report/' + report.id : null
   const axes = report?.axes ?? null
   const d = axes?.diagnosis
 
@@ -235,11 +242,51 @@ export default async function Review({ params }: { params: Promise<{ id: string 
           </form>
         )}
 
-        {report?.status === 'issued' && (
-          <p className="mt-4 text-[14px] text-muted">
-            승인됨 {report.issued_at && new Date(report.issued_at).toLocaleString('ko-KR')} · 진단서
-            링크는 다음 단계에서 붙습니다.
-          </p>
+        {report && (
+          <div className="mt-6 border-t border-line pt-5">
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href={'/admin/' + app.id + '/preview'}
+                className="rounded-[6px] border border-deep px-5 py-3 text-[15px] font-semibold text-deep hover:bg-pale"
+              >
+                진단서 미리보기
+              </Link>
+              {report.status === 'issued' && (
+                <Link
+                  href={'/report/' + report.id}
+                  className="rounded-[6px] border border-line px-5 py-3 text-[15px] text-body hover:bg-pale"
+                >
+                  공개 링크로 열기 ↗
+                </Link>
+              )}
+            </div>
+
+            {report.status === 'issued' ? (
+              <div className="mt-5 flex flex-col gap-2">
+                <p className="text-[15px] font-semibold">
+                  보내실 링크
+                  <span className="ml-2 text-[13px] font-normal text-muted">
+                    승인됨 {report.issued_at && new Date(report.issued_at).toLocaleString('ko-KR')}
+                  </span>
+                </p>
+                {/* 도메인 인증 전이라 자동 발송이 안 된다. 복사해서 직접 보낸다. */}
+                <input
+                  readOnly
+                  value={publicUrl ?? ''}
+                  className="w-full rounded-[6px] border border-line bg-paper px-3 py-2 text-[14px]"
+                />
+                <p className="text-[13px] leading-[1.6] text-muted">
+                  {app.email} 로 보내시면 됩니다. 전화는 {app.contact}.
+                  <br />
+                  이메일 자동 발송은 도메인 인증 후에 붙습니다.
+                </p>
+              </div>
+            ) : (
+              <p className="mt-4 text-[14px] text-muted">
+                승인하면 사용자에게 보낼 공개 링크가 생깁니다. 그 전에는 미리보기로만 볼 수 있습니다.
+              </p>
+            )}
+          </div>
         )}
       </section>
     </main>
