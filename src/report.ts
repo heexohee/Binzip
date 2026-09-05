@@ -1,5 +1,5 @@
 import { diagnose } from './pipeline'
-import { sbInsert, supabaseConfigured } from './supabase'
+import { sbInsert, sbSelect, supabaseConfigured } from './supabase'
 import type { Grade } from './verdict'
 
 /** 화면 등급 → DB 값. '대상 아님'은 셋 중 어디에도 없으므로 null 로 둔다. */
@@ -32,6 +32,10 @@ function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
 export async function createDraftReport(applicationId: string, query: string): Promise<void> {
   if (!supabaseConfigured()) return
 
+  // 재판정은 기존 진단서를 덮지 않고 새 버전으로 쌓는다.
+  // 무엇이 어떻게 바뀌었는지 남아야 하고, unique(application_id, version) 제약도 있다.
+  const version = await nextVersion(applicationId)
+
   try {
     const result = await withTimeout(diagnose(query), TIMEOUT_MS)
 
@@ -40,7 +44,7 @@ export async function createDraftReport(applicationId: string, query: string): P
 
     await sbInsert('reports', {
       application_id: applicationId,
-      version: 1,
+      version,
       status: 'draft',
       verdict,
       // 판정 전문을 그대로 담는다. 진단서 6항목·6경로는 여기서 만들어낸다.
@@ -53,7 +57,7 @@ export async function createDraftReport(applicationId: string, query: string): P
     try {
       await sbInsert('reports', {
         application_id: applicationId,
-        version: 1,
+        version,
         status: 'failed',
         verdict: null,
         axes: { error: reason },
@@ -62,5 +66,16 @@ export async function createDraftReport(applicationId: string, query: string): P
     } catch (inner) {
       console.error('[report] failed 기록마저 실패', inner)
     }
+  }
+}
+
+async function nextVersion(applicationId: string): Promise<number> {
+  try {
+    const rows = await sbSelect<{ version: number }>(
+      'reports?select=version&application_id=eq.' + applicationId + '&order=version.desc&limit=1',
+    )
+    return (rows[0]?.version ?? 0) + 1
+  } catch {
+    return 1
   }
 }

@@ -42,3 +42,43 @@ export async function sbInsert<T = Record<string, unknown>>(
   const rows = (await res.json()) as T[]
   return rows[0] ?? null
 }
+
+/** PostgREST 질의. path 예: "applications?select=*&order=created_at.desc" */
+export async function sbSelect<T = Record<string, unknown>>(path: string): Promise<T[]> {
+  const c = conn()
+  if (!c) return []
+  const res = await fetch(c.base + '/rest/v1/' + path, {
+    headers: { apikey: c.key, Authorization: 'Bearer ' + c.key },
+    cache: 'no-store',
+  })
+  if (!res.ok) {
+    throw new Error('select ' + res.status + ' ' + (await res.text()).slice(0, 300))
+  }
+  return (await res.json()) as T[]
+}
+
+/** filter 예: "id=eq.<uuid>" */
+export async function sbUpdate<T = Record<string, unknown>>(
+  table: string,
+  filter: string,
+  patch: Record<string, unknown>,
+): Promise<T | null> {
+  const c = conn()
+  if (!c) return null
+  const res = await fetch(c.base + '/rest/v1/' + table + '?' + filter, {
+    method: 'PATCH',
+    headers: {
+      apikey: c.key,
+      Authorization: 'Bearer ' + c.key,
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    },
+    body: JSON.stringify(patch),
+    cache: 'no-store',
+  })
+  if (!res.ok) {
+    throw new Error(table + ' update ' + res.status + ' ' + (await res.text()).slice(0, 300))
+  }
+  const rows = (await res.json()) as T[]
+  return rows[0] ?? null
+}
