@@ -22,10 +22,14 @@ create table if not exists public.applications (
   concern           text,                          -- 가장 걱정되는 것 → 6경로 정렬 기준
   speed             text,                          -- 희망 소요
 
-  -- 연락 (전화번호는 항상 받는다)
-  channel           text not null,
+  -- 연락
+  -- channel 은 '어느 쪽이 편하신가요' 선호 데이터라 비어 있을 수 있다.
+  -- 진단서는 이메일로 보내므로 라우팅 결정이 아니다.
+  channel           text,
+  -- 전화번호와 이메일은 항상 받는다.
+  -- 이메일은 진단서를 보낼 유일한 경로이고, 전화번호는 발송이 실패했을 때 닿을 수단이다.
   contact           text not null,
-  email             text,
+  email             text not null,
 
   created_at        timestamptz not null default now(),
   -- 발송 후 6개월 보관 뒤 파기. 화면 동의 문구에 약속한 값이다.

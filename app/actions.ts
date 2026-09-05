@@ -1,6 +1,7 @@
 'use server'
 
 import { expiryFrom, saveApplication, type ApplyState } from '../src/application'
+import { createDraftReport } from '../src/report'
 
 /** 필수는 주소·연락처·동의 셋뿐. 오류 문구는 사과하지 않고 무엇을 하면 되는지만 쓴다. */
 export async function submitApplication(
@@ -37,8 +38,9 @@ export async function submitApplication(
   }
 
   const now = new Date()
+  let applicationId: string | null = null
   try {
-    await saveApplication({
+    const saved = await saveApplication({
       address,
       condition: text('condition') || null,
       acquisition: text('acquisition') || null,
@@ -54,12 +56,18 @@ export async function submitApplication(
       resolvedAddress: text('resolvedAddress') || null,
       matchQuality: parseQuality(text('matchQuality')),
     })
+    applicationId = saved.applicationId
   } catch {
     return {
       ok: false,
       errors: {},
       message: '전송되지 않았습니다. 다시 눌러주시거나 010-7428-2624로 연락 주세요.',
     }
+  }
+
+  // 신청이 남은 뒤에만 판정을 돌린다. 판정이 실패해도 신청은 이미 안전하다.
+  if (applicationId) {
+    await createDraftReport(applicationId, address)
   }
 
   return { ok: true, errors: {}, message: null }

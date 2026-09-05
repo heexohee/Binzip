@@ -1,3 +1,5 @@
+import { sbInsert } from './supabase'
+
 /** 진단 신청 레코드. 개인정보는 주소와 연락처 둘뿐이다 — 이름·주민번호는 받지 않는다. */
 export type Application = {
   address: string
@@ -48,20 +50,29 @@ export type ApplyState = {
  * 서버리스는 파일 쓰기가 불가하므로 로컬 폴백을 두지 않는다 (docs/설계.md).
  * 의존성을 늘리지 않기 위해 SDK 없이 REST 로 호출한다.
  */
-export async function saveApplication(app: Application): Promise<{ stored: string[] }> {
+export async function saveApplication(
+  app: Application,
+): Promise<{ stored: string[]; applicationId: string | null }> {
   const stored: string[] = []
   const failures: string[] = []
+  let applicationId: string | null = null
 
-  await Promise.all([
-    saveToSupabase(app).then(
-      (name) => name && stored.push(name),
-      (e: unknown) => failures.push(describe(e)),
-    ),
-    notifyByEmail(app).then(
-      (name) => name && stored.push(name),
-      (e: unknown) => failures.push(describe(e)),
-    ),
-  ])
+  const [sb, mail] = await Promise.allSettled([saveToSupabase(app), notifyByEmail(app)])
+
+  if (sb.status === 'fulfilled') {
+    if (sb.value) {
+      stored.push('supabase')
+      applicationId = sb.value
+    }
+  } else {
+    failures.push(describe(sb.reason))
+  }
+
+  if (mail.status === 'fulfilled') {
+    if (mail.value) stored.push(mail.value)
+  } else {
+    failures.push(describe(mail.reason))
+  }
 
   // 부분 실패도 반드시 남긴다. 한쪽이 성공하면 다른 쪽 실패가 묻혀서,
   // 화면에는 '접수됐습니다'가 뜨는데 DB 에는 아무것도 없는 상태가 된다.
@@ -73,29 +84,13 @@ export async function saveApplication(app: Application): Promise<{ stored: strin
     console.error('[application] 저장 경로가 하나도 동작하지 않았다', failures)
     throw new Error('NO_STORAGE_CONFIGURED')
   }
-  return { stored }
+  return { stored, applicationId }
 }
 
+/** 생성된 신청 id 를 돌려준다. 진단서를 여기에 붙여야 한다. */
 async function saveToSupabase(app: Application): Promise<string | null> {
-  const base = process.env.SUPABASE_URL
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!base || !key) return null
-
-  const res = await fetch(base.replace(/\/+$/, '') + '/rest/v1/applications', {
-    method: 'POST',
-    headers: {
-      apikey: key,
-      Authorization: 'Bearer ' + key,
-      'Content-Type': 'application/json',
-      Prefer: 'return=minimal',
-    },
-    body: JSON.stringify([toRow(app)]),
-    cache: 'no-store',
-  })
-  if (!res.ok) {
-    throw new Error('supabase ' + res.status + ' ' + (await res.text()).slice(0, 200))
-  }
-  return 'supabase'
+  const row = await sbInsert<{ id: string }>('applications', toRow(app))
+  return row?.id ?? null
 }
 
 async function notifyByEmail(app: Application): Promise<string | null> {
