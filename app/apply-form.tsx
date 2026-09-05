@@ -25,6 +25,7 @@ export function ApplyForm() {
   const [addr, setAddr] = useState<AddrStatus>({ kind: 'idle' })
   const [mapState, setMapState] = useState<'loading' | 'ok' | 'error'>('loading')
   const lastQuery = useRef('')
+  const addressRef = useRef<HTMLInputElement>(null)
 
   async function checkAddress(raw: string) {
     const query = raw.trim()
@@ -73,20 +74,46 @@ export function ApplyForm() {
           <span className="text-[15px] font-semibold text-paper">
             빈집 주소가 어디인가요? <span className="text-[13px] font-normal text-pale">꼭 필요합니다</span>
           </span>
-          <input
-            name="address"
-            type="text"
-            placeholder="경북 포항시 남구 ○○동 1○○-○"
-            aria-invalid={state.errors.address ? true : undefined}
-            onChange={() => setAddr({ kind: 'idle' })}
-            onBlur={(e) => void checkAddress(e.currentTarget.value)}
-            className={state.errors.address ? INPUT + ' border-earth' : INPUT}
-          />
+          <span className="flex gap-2">
+            <input
+              ref={addressRef}
+              name="address"
+              type="text"
+              inputMode="text"
+              enterKeyHint="search"
+              placeholder="경북 포항시 남구 ○○동 1○○-○"
+              aria-invalid={state.errors.address ? true : undefined}
+              onChange={() => setAddr({ kind: 'idle' })}
+              onBlur={(e) => void checkAddress(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key !== 'Enter') return
+                // 엔터가 폼을 제출해 버리면 아직 안 채운 칸의 오류가 먼저 뜬다.
+                // 주소 칸에서 엔터는 '주소 확인'이지 '신청'이 아니다.
+                e.preventDefault()
+                void checkAddress(e.currentTarget.value)
+              }}
+              className={(state.errors.address ? INPUT + ' border-earth' : INPUT) + ' min-w-0 flex-1'}
+            />
+            <button
+              type="button"
+              aria-label="주소 확인"
+              disabled={addr.kind === 'checking'}
+              onClick={() => void checkAddress(addressRef.current?.value ?? '')}
+              className="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-[6px] border border-mid bg-deep text-paper hover:bg-ink disabled:opacity-60"
+            >
+              {/* 아이콘 세트를 들이지 않는다 — 원 하나와 선 하나로 직접 그린다 */}
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="2" />
+                <line x1="13.5" y1="13.5" x2="18" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+          </span>
         </label>
 
         <span className="flex flex-col gap-1 text-[13px] leading-[1.6] text-dash">
           <span>번지까지 모르시면 아는 데까지만 적어 주세요.</span>
           <span>나머지는 저희가 찾습니다.</span>
+          <span>돋보기를 누르거나 엔터를 치시면 위성 사진으로 확인해 드립니다.</span>
         </span>
 
         {addr.kind === 'checking' && (
