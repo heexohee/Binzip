@@ -16,6 +16,24 @@ export function supabaseConfigured(): boolean {
   return conn() !== null
 }
 
+/**
+ * 오류를 만든다. 응답 본문은 담지 않는다.
+ *
+ * 본문을 그대로 Error.message 에 넣으면 제약조건 위반 메시지에 섞인
+ * 신청자 입력값이 console.error 를 타고 Vercel 로그에 영구 저장된다.
+ * 디버깅에 필요한 건 PostgREST 코드(23502·42703 …)이고 그건 값이 아니다.
+ */
+async function failure(what: string, res: Response): Promise<Error> {
+  let code = ''
+  try {
+    const body = (await res.json()) as { code?: unknown }
+    if (typeof body.code === 'string' && body.code) code = ' ' + body.code
+  } catch {
+    // 본문이 JSON 이 아니면 상태 코드만 남긴다
+  }
+  return new Error(what + ' ' + res.status + code)
+}
+
 /** 한 행을 넣고 생성된 행을 돌려준다. 설정이 없으면 null. */
 export async function sbInsert<T = Record<string, unknown>>(
   table: string,
@@ -37,7 +55,7 @@ export async function sbInsert<T = Record<string, unknown>>(
     cache: 'no-store',
   })
   if (!res.ok) {
-    throw new Error(table + ' insert ' + res.status + ' ' + (await res.text()).slice(0, 300))
+    throw await failure(table + ' insert', res)
   }
   const rows = (await res.json()) as T[]
   return rows[0] ?? null
@@ -52,7 +70,7 @@ export async function sbSelect<T = Record<string, unknown>>(path: string): Promi
     cache: 'no-store',
   })
   if (!res.ok) {
-    throw new Error('select ' + res.status + ' ' + (await res.text()).slice(0, 300))
+    throw await failure('select', res)
   }
   return (await res.json()) as T[]
 }
@@ -77,7 +95,7 @@ export async function sbUpdate<T = Record<string, unknown>>(
     cache: 'no-store',
   })
   if (!res.ok) {
-    throw new Error(table + ' update ' + res.status + ' ' + (await res.text()).slice(0, 300))
+    throw await failure(table + ' update', res)
   }
   const rows = (await res.json()) as T[]
   return rows[0] ?? null

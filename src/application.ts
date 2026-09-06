@@ -127,9 +127,13 @@ async function notifyByEmail(app: Application): Promise<string | null> {
       text: lines.join('\n'),
     }),
     cache: 'no-store',
+    // 다른 외부 호출과 같은 상한을 둔다. 없으면 Resend 가 느려질 때
+    // allSettled 가 그만큼 기다리고 사용자 제출 응답이 늦어진다.
+    signal: AbortSignal.timeout(10_000),
   })
   if (!res.ok) {
-    throw new Error('resend ' + res.status + ' ' + (await res.text()).slice(0, 200))
+    // 응답 본문에 수신 주소가 담겨 나온다. 로그에 이메일을 남기지 않는다.
+    throw new Error('resend ' + res.status)
   }
   return 'resend'
 }
