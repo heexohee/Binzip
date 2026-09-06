@@ -309,6 +309,10 @@ export default function Home() {
           className="gap-1 text-[13px] leading-[1.7] text-dash"
           items={['정소희', '010-7428-2624 (평일 9시 - 18시)', 'rsoy2918@gmail.com', '경북 포항시 남구']}
         />
+        {/* 개인정보를 받는 서비스라 처리방침은 상시 접근이 가능해야 한다 */}
+        <a href="/privacy" className="text-[13px] leading-[1.7] text-dash underline">
+          개인정보 처리방침
+        </a>
         </div>
       </footer>
 

@@ -324,11 +324,32 @@ export function ApplyForm() {
             aria-invalid={state.errors.agree ? true : undefined}
             className="mt-[3px] h-5 w-5 flex-none accent-pale"
           />
+          {/*
+            개인정보보호법 §15·§22 의 고지사항 네 가지를 여기서 다 말한다 —
+            항목 · 목적 · 보유기간 · 거부 권리와 불이익.
+            나머지(위탁·국외이전·정보주체 권리)는 /privacy 로 넘긴다.
+            RETENTION_MONTHS 를 import 하지 않는다 — 클라이언트 컴포넌트라
+            application.ts 모듈 전체가 번들로 끌려온다.
+          */}
           <span className="flex flex-col gap-1">
-            <span>주소와 연락처(전화번호·이메일)를 진단에만 쓰는 데 동의합니다.</span>
-            <span>진단서를 보낸 뒤 6개월이 지나면 지웁니다.</span>
+            <span>
+              주소·연락처(전화번호·이메일)와 집에 대해 답해주신 내용을 진단에만 쓰는 데
+              동의합니다.
+            </span>
+            <span>진단서를 보낸 뒤 6개월이 지나면 지우고, 그 전에 말씀하시면 바로 지웁니다.</span>
+            <span className="text-dash">
+              동의하지 않으셔도 되지만, 그러면 신청 접수가 되지 않습니다.
+            </span>
           </span>
         </label>
+        <a
+          href="/privacy"
+          target="_blank"
+          rel="noreferrer"
+          className="ml-8 text-[14px] leading-[1.6] text-dash underline"
+        >
+          어떤 정보를 어디에 맡기는지 자세히 보기
+        </a>
         {err('agree')}
       </div>
 
