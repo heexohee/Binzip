@@ -135,7 +135,7 @@ export function ApplyForm() {
       {/* 1. 주소 — 필수. 돋보기·엔터·포커스 이동 세 경로로 확인한다 */}
       <div className="flex flex-col gap-2">
         <label className="flex flex-col gap-2">
-          <Legend text="어느 땅·집인가요?" need="must" />
+          <Legend text="빈집 주소가 어디인가요?" need="must" />
           <span className="flex gap-2">
             <input
               ref={addressRef}

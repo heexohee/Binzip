@@ -6,10 +6,10 @@ export const maxDuration = 60
 
 /** (c) 이런 상태 아니신가요 — 큰따옴표를 쓰지 않는다. 실제 인터뷰가 아니므로 인용처럼 보이면 안 된다 */
 const STATES = [
-  ['멀리 있어 일 년에 몇 번 못 가봅니다.', '지금 어떤 상태인지 모릅니다.'],
+  ['물려받은 집에 명절에만 내려가 풀을 베고 옵니다.', '팔 수 있는 집인지 아직 모릅니다.'],
   ['세금이 얼마나 나가는지 정확히 모릅니다.', '그냥 두는 것이 맞는지 판단이 서지 않습니다.'],
   ['형제들끼리 상속 정리가 아직 끝나지 않았습니다.', '이 상태로 무엇을 할 수 있는지 모릅니다.'],
-  ['규제가 걸려 있다고 들었는데, 무엇이 어떻게 걸리는지는 듣지 못했습니다.'],
+  ['철거하라는 말은 들었지만, 그게 이득인지는 모르겠습니다.'],
 ]
 
 /** (d) 판정 4등급 — 신호등을 쓰지 않는다. 한 계열의 명도만 쓴다 */
@@ -48,8 +48,8 @@ const FIELDWORK = [
 ]
 
 const STEPS = [
-  { n: '1', title: '주소를 입력합니다.', lines: ['아래 칸에 주소와 연락처만 남겨주세요.', '다른 서류는 필요하지 않습니다.'], when: '1분이면 됩니다' },
-  { n: '2', title: '서류를 확인하고 방문합니다.', lines: ['공개된 서류를 확인하고 정리한 뒤, 직접 현장에 방문합니다.', '소유주가 함께 가지 않아도 됩니다.'], when: '신청하신 날부터 5일 안에 방문합니다.' },
+  { n: '1', title: '주소를 입력합니다.', lines: ['아래 칸에 빈집 주소와 연락처만 남겨주세요.', '다른 서류는 필요하지 않습니다.'], when: '1분이면 됩니다' },
+  { n: '2', title: '서류를 확인하고 방문합니다.', lines: ['서류를 확인하고 정리한 뒤, 직접 빈집에 방문합니다.', '소유주가 함께 가지 않아도 됩니다.'], when: '신청하신 날부터 5일 안에 방문합니다.' },
   { n: '3', title: '진단서를 보내드립니다', lines: ['문자나 이메일을 통해 진단서를 보내드립니다.', '진단서를 받으신 후 전화로 물어보셔도 됩니다.'], when: '다녀온 날부터 3일 안에 보냅니다' },
 ]
 
@@ -87,7 +87,7 @@ export default function Home() {
       <header className="border-b border-line bg-paper">
         <div className={SHELL + ' flex flex-wrap items-baseline gap-[14px] py-[18px]'}>
           <p className="font-serif text-[19px] font-semibold tracking-[-0.01em] text-ink">빈집이력서</p>
-          <p className="text-[13px] text-muted">경북에 있는 땅과 집을 진단합니다.</p>
+          <p className="text-[13px] text-muted">포항에 있는 빈집을 진단합니다.</p>
         </div>
       </header>
 
@@ -96,14 +96,14 @@ export default function Home() {
         <div className={SHELL + ' ' + PAD + ' grid items-start gap-[clamp(36px,5vw,64px)] [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]'}>
         <div className="max-w-[34rem]">
           <h1 className="flex flex-col text-[32px] md:text-[52px]">
-            <span>그 땅과 집,</span>
-            <span>지금 어떤 상태인가요</span>
+            <span>갑자기 생긴 빈집,</span>
+            <span>어떻게 하실 건가요?</span>
           </h1>
           <Lines
             className="mt-6 max-w-[36ch]"
             items={[
-              '경북에 자주 못 가보는 땅이나 집이 있으신가요?',
-              '주소만 남겨 주시면 지금 세금이 얼마나 나가고 있는지, 어떤 규제가 걸려 있는지, 무엇부터 확인해야 하는지를 정리해 드립니다.',
+              '포항에 비어 있는 집이 있으신가요?',
+              '주소만 남겨 주시면 그대로 두는 것과 철거하는 것 중 무엇이 나은지, 받을 수 있는 지원은 무엇인지 정리해 드립니다.',
             ]}
           />
           <a
@@ -118,10 +118,10 @@ export default function Home() {
         {/* 오른쪽 — 진단서 실물 미리보기. 큰 숫자나 통계 카드를 쓰지 않는다 */}
         <div className="doc-preview max-w-[420px] rounded-[4px] border border-line bg-paper px-[26px] pb-[22px] pt-[26px]">
           <div className="flex items-baseline justify-between gap-3 border-b border-ink pb-3">
-            <p className="font-serif text-[18px] font-semibold text-ink">부동산 진단서</p>
+            <p className="font-serif text-[18px] font-semibold text-ink">빈집 진단서</p>
             <p className="text-[12px] text-muted">제2026-0141호</p>
           </div>
-          <p className="mt-4 text-[15px] leading-[1.6] text-body">경북 ○○시 ○○읍 ○○리 2○-○ 단독주택</p>
+          <p className="mt-4 text-[15px] leading-[1.6] text-body">경북 포항시 남구 ○○동 1○○-○ 단독주택</p>
           <div className="mt-4 flex items-center gap-3">
             <p className="font-serif text-[22px] font-semibold text-deep">조건부</p>
             <span className="text-[13px] tracking-[0.18em] text-mid">●●●○</span>
@@ -231,7 +231,7 @@ export default function Home() {
         <h2 className={H2 + ' text-paper'}>어떻게 확인하나요?</h2>
         <Lines
           className="mt-5 max-w-[52ch] text-pale"
-          items={['공개된 서류를 확인하고, 직접 현장에 방문합니다.', '이후 진단서를 발급합니다.']}
+          items={['공개된 서류를 확인하고, 직접 해당 빈집에 방문합니다.', '이후 진단서를 발급합니다.']}
         />
         <div className="mt-9 grid gap-[clamp(24px,3vw,44px)] [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
           {[
@@ -313,7 +313,7 @@ export default function Home() {
         <Lines
           className="max-w-[64ch] gap-1 text-[14px] leading-[1.75] text-dash"
           items={[
-            '본 서비스는 공개된 공적 자료와 현장 확인을 근거로 부동산의 현재 상태와 보유 비용을 정리해 제공합니다.',
+            '본 서비스는 공개된 공적 자료와 현장 확인을 근거로 빈집의 처분 가능성과 보유 비용을 정리해 제공합니다.',
             '중개대상물의 표시·광고나 거래 알선을 하지 않습니다.',
           ]}
         />
