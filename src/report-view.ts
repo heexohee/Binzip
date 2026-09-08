@@ -147,7 +147,7 @@ export function buildPaths(
   concern: string | null,
   registry: RegistryCheck = { note: null, checkedAt: null },
 ): PathItem[] {
-  const legal = axes?.diagnosis?.axes?.find((a) => a.axis === 'legal')
+  const legal = axes?.diagnosis?.axes?.find((a) => a.axis === 'rights')
   // 사람이 등기를 확인했으면 ①법적 축이 열린 것으로 본다.
   // 자동 판정이 unknown 인 유일한 이유가 등기부 접근 불가였기 때문이다.
   const registryDone = Boolean(registry.note && registry.checkedAt)

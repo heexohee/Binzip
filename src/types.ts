@@ -1,5 +1,13 @@
-/** 판정 축별 결과. unknown/suspect 가 하나라도 있으면 종합은 '가능'이 될 수 없다. */
-export type AxisVerdict = 'clear' | 'suspect' | 'blocked' | 'unknown'
+/**
+ * 판정 축별 결과. unknown/suspect 가 하나라도 있으면 종합은 '가능'이 될 수 없다.
+ *
+ * precondition — 절차를 밟으면 풀린다 (미등기, 공유 미합의).
+ *   blocked 와 다르다. blocked 는 "지금 구조로는 어렵다"이고
+ *   precondition 은 "이것부터 하면 됩니다"이다.
+ *   미등기를 blocked 로 두면 '불가' 도장이 찍히는데
+ *   할 말은 "보존등기 하나 하면 팔 수 있습니다"다.
+ */
+export type AxisVerdict = 'clear' | 'unknown' | 'suspect' | 'precondition' | 'blocked'
 
 export type AxisResult = {
   verdict: AxisVerdict

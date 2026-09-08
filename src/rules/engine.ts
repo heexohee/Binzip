@@ -12,7 +12,7 @@ type Cond = {
 
 export type Rule = {
   id: string
-  axis: 'legal' | 'physical' | 'regulatory'
+  axis: 'rights' | 'tax' | 'property' | 'market'
   when: Cond
   verdict: AxisVerdict
   label: string

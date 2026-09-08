@@ -73,7 +73,7 @@ export async function approveReport(reportId: string, applicationId: string) {
 function registryFinding(): Finding {
   return {
     ruleId: 'REG-CHECKED',
-    axis: 'legal',
+    axis: 'rights',
     verdict: 'clear',
     label: '등기',
     reason: '등기사항증명서를 열람해 확인했습니다.',

@@ -3,13 +3,14 @@ import { sbInsert, sbSelect, supabaseConfigured } from './supabase'
 import type { Grade } from './verdict'
 
 /**
- * 화면 등급 → DB 값. '대상 아님'은 셋 중 어디에도 없으므로 null 로 둔다.
+ * 화면 등급 → DB 값. '대상 아님'은 넷 중 어디에도 없으므로 null 로 둔다.
  * 승인 시 재판정하는 app/admin/actions.ts 도 같은 맵을 쓴다 —
  * 두 벌로 만들면 갈라진다.
  */
 export const VERDICT: Record<Grade, string> = {
   가능: 'possible',
   조건부: 'conditional',
+  선행필요: 'precondition',
   불가: 'blocked',
 }
 

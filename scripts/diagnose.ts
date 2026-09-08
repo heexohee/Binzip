@@ -24,8 +24,10 @@ if (JSON_OUT) {
 }
 
 const line = (c = '─') => console.log(c.repeat(64))
-const MARK = { clear: '●●●', suspect: '●●○', unknown: '●○○', blocked: '○○○' } as const
-const WORD = { clear: '확인됨', suspect: '조건 있음', unknown: '미확인', blocked: '막힘' } as const
+const MARK = { clear: '●●●', suspect: '●●○',
+  precondition: '●●○', unknown: '●○○', blocked: '○○○' } as const
+const WORD = { clear: '확인됨', suspect: '조건 있음',
+  precondition: '선행 필요', unknown: '미확인', blocked: '막힘' } as const
 
 const FOOTER = '  공개 자료 기반 정보 제공이며 중개대상물의 표시·광고나 거래 알선이 아닙니다.'
 

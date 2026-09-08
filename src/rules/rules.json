@@ -33,7 +33,7 @@
   "rules": [
     {
       "id": "L-REGISTRY",
-      "axis": "legal",
+      "axis": "rights",
       "when": {
         "op": "always"
       },
@@ -45,7 +45,7 @@
     },
     {
       "id": "L-COOWNER",
-      "axis": "legal",
+      "axis": "rights",
       "when": {
         "field": "coOwnerCount",
         "op": "gte",
@@ -59,7 +59,7 @@
     },
     {
       "id": "L-INHERIT",
-      "axis": "legal",
+      "axis": "rights",
       "when": {
         "field": "ownershipCause",
         "op": "matches",
@@ -73,7 +73,7 @@
     },
     {
       "id": "P-NOBUILDING",
-      "axis": "physical",
+      "axis": "rights",
       "when": {
         "field": "hasBuilding",
         "op": "eq",
@@ -87,7 +87,7 @@
     },
     {
       "id": "P-AGED",
-      "axis": "physical",
+      "axis": "property",
       "when": {
         "field": "buildingAge",
         "op": "gte",
@@ -101,7 +101,7 @@
     },
     {
       "id": "P-BUILDING-OK",
-      "axis": "physical",
+      "axis": "property",
       "when": {
         "field": "hasBuilding",
         "op": "eq",
@@ -114,7 +114,7 @@
     },
     {
       "id": "P-MAENGJI",
-      "axis": "physical",
+      "axis": "property",
       "when": {
         "field": "roadSide",
         "op": "matches",
@@ -128,7 +128,7 @@
     },
     {
       "id": "P-NARROW",
-      "axis": "physical",
+      "axis": "property",
       "when": {
         "field": "roadSide",
         "op": "matches",
@@ -142,7 +142,7 @@
     },
     {
       "id": "P-OK",
-      "axis": "physical",
+      "axis": "property",
       "when": {
         "field": "roadSide",
         "op": "matches",
@@ -155,7 +155,7 @@
     },
     {
       "id": "P-SLOPE",
-      "axis": "physical",
+      "axis": "property",
       "when": {
         "field": "slope",
         "op": "matches",
@@ -169,7 +169,7 @@
     },
     {
       "id": "R-BLOCK",
-      "axis": "regulatory",
+      "axis": "property",
       "when": {
         "field": "zones",
         "op": "contains-any",
@@ -191,7 +191,7 @@
     },
     {
       "id": "R-COND",
-      "axis": "regulatory",
+      "axis": "property",
       "when": {
         "field": "zones",
         "op": "contains-any",
@@ -214,7 +214,7 @@
     },
     {
       "id": "R-LIVESTOCK",
-      "axis": "regulatory",
+      "axis": "property",
       "when": {
         "field": "zones",
         "op": "contains-any",
@@ -230,7 +230,7 @@
     },
     {
       "id": "R-CLEAR",
-      "axis": "regulatory",
+      "axis": "property",
       "when": {
         "field": "zones",
         "op": "exists"
@@ -242,7 +242,7 @@
     },
     {
       "id": "L-VIOLATION-YES",
-      "axis": "legal",
+      "axis": "property",
       "when": {
         "field": "violation",
         "op": "eq",
@@ -256,7 +256,7 @@
     },
     {
       "id": "L-VIOLATION-NO",
-      "axis": "legal",
+      "axis": "property",
       "when": {
         "field": "violation",
         "op": "eq",
@@ -269,7 +269,7 @@
     },
     {
       "id": "L-VIOLATION-UNKNOWN",
-      "axis": "legal",
+      "axis": "property",
       "when": {
         "field": "violation",
         "op": "missing"
@@ -279,6 +279,84 @@
       "reason": "위반건축물 등재 여부는 공개 API 로 제공되지 않습니다.",
       "nextStep": "정부24 또는 세움터에서 건축물대장을 열람해 상단의 '위반건축물' 표시를 확인해야 합니다.",
       "source": "—"
+    },
+    {
+      "id": "T-PROPERTY-TAX",
+      "axis": "tax",
+      "when": {
+        "field": "taxSingle",
+        "op": "exists"
+      },
+      "verdict": "clear",
+      "label": "보유세",
+      "reason": "재산세는 1주택 기준 연 약 {taxSingleMan}만원, 다른 집이 있으시면 약 {taxGeneralMan}만원 수준입니다 (추정).",
+      "nextStep": "과세기준일은 {taxAssessmentDate}입니다. 그 전에 소유권을 넘기시면 그해 재산세는 매수인이 부담합니다.",
+      "source": "지방세법 §111·§111의2"
+    },
+    {
+      "id": "T-PROPERTY-TAX-UNKNOWN",
+      "axis": "tax",
+      "when": {
+        "field": "taxSingle",
+        "op": "missing"
+      },
+      "verdict": "unknown",
+      "label": "보유세",
+      "reason": "공시가격이 확인되지 않아 재산세를 계산하지 못했습니다.",
+      "nextStep": "위택스에서 조회하시거나 납세고지서를 확인하시면 됩니다.",
+      "source": "—"
+    },
+    {
+      "id": "T-DISPOSAL",
+      "axis": "tax",
+      "when": {
+        "op": "always"
+      },
+      "verdict": "unknown",
+      "label": "처분세",
+      "reason": "양도소득세는 다른 주택 보유 여부에 따라 갈려 이 진단서에서 계산하지 않습니다.",
+      "nextStep": "상속받으신 집이라면 상속개시 당시 이미 갖고 계셨던 집을 파실 때 1주택으로 보는 특례가 있습니다(소득세법 시행령 §155②). 읍·면 소재라면 농어촌주택 특례(조특법 §99의4)도 별도로 있습니다. 세무사 확인이 필요합니다.",
+      "source": "—"
+    },
+    {
+      "id": "M-DEALS",
+      "axis": "market",
+      "when": {
+        "field": "comparableCount",
+        "op": "gt",
+        "value": 0
+      },
+      "verdict": "clear",
+      "label": "주변 거래",
+      "reason": "최근 {dealMonths}개월간 같은 리에서 조건이 비슷한 거래가 {comparableCount}건 있습니다. 단가는 {unitPriceMinWon}~{unitPriceMaxWon}원/㎡ 입니다.",
+      "nextStep": "단가 폭이 넓은 것은 도로 접면·형상 차이 때문입니다. 이 값으로 내 땅 값을 곱하지 마시고, 정확한 금액은 감정평가를 받으셔야 합니다.",
+      "source": "국토교통부 실거래가"
+    },
+    {
+      "id": "M-NO-DEALS",
+      "axis": "market",
+      "when": {
+        "field": "comparableCount",
+        "op": "eq",
+        "value": 0
+      },
+      "verdict": "unknown",
+      "label": "주변 거래",
+      "reason": "최근 {dealMonths}개월간 같은 리에서 조건이 비슷한 거래가 확인되지 않았습니다.",
+      "nextStep": "거래가 드문 지역입니다. 기간을 넓히거나 인접 리까지 보셔야 참고할 사례가 나옵니다.",
+      "source": "국토교통부 실거래가"
+    },
+    {
+      "id": "M-MANAGE",
+      "axis": "market",
+      "when": {
+        "op": "always"
+      },
+      "verdict": "clear",
+      "label": "관리 부담",
+      "reason": "비워두시더라도 최소한의 관리는 필요합니다.",
+      "nextStep": "읍·면은 「농어촌 빈집 정비 및 관리에 관한 특별법」, 동은 「빈집 및 소규모주택 정비에 관한 특례법」이 적용됩니다. 특정빈집으로 판정되어 조치명령을 받고 60일 안에 이행하지 않으면 이행강제금이 부과됩니다.",
+      "source": "농어촌빈집특별법 §3·§45"
     }
   ]
 }

@@ -158,6 +158,12 @@ export async function diagnose(query: string): Promise<PipelineResult> {
     // 중앙값만 쓰면 단가 편차를 감춘다. 시골 토지는 수십 배 벌어진다.
     unitPriceMin: deals?.unitPriceRange?.min ?? null,
     unitPriceMax: deals?.unitPriceRange?.max ?? null,
+    unitPriceMinWon: deals?.unitPriceRange
+      ? Math.round(deals.unitPriceRange.min).toLocaleString('ko-KR')
+      : null,
+    unitPriceMaxWon: deals?.unitPriceRange
+      ? Math.round(deals.unitPriceRange.max).toLocaleString('ko-KR')
+      : null,
     dealMonths: deals?.months ?? null,
     dealFailures: deals?.failures.length ?? null,
 
@@ -165,6 +171,10 @@ export async function diagnose(query: string): Promise<PipelineResult> {
     // 주택 수를 모르므로 1주택/표준 두 값을 함께 싣는다.
     taxSingle: tax?.single ?? null,
     taxGeneral: tax?.general ?? null,
+    // 룰 문구가 {taxSingleMan} 으로 쓰므로 표시용 문자열도 함께 싣는다.
+    // 엔진의 fill() 은 숫자 포맷을 하지 않는다.
+    taxSingleMan: tax ? (tax.single / 10_000).toFixed(1) : null,
+    taxGeneralMan: tax ? (tax.general / 10_000).toFixed(1) : null,
     taxYear: tax?.year ?? null,
     taxAssessmentDate: tax?.assessmentDate ?? null,
     taxUrban: tax?.urbanIncluded ?? null,

@@ -2,17 +2,34 @@ import type { Finding } from './rules/engine'
 import type { AxisVerdict } from './types'
 
 /** 심각도. 축별로 가장 심한 것이 그 축의 판정이 된다. */
-const RANK: Record<AxisVerdict, number> = { clear: 0, unknown: 1, suspect: 2, blocked: 3 }
+const RANK: Record<AxisVerdict, number> = {
+  clear: 0,
+  unknown: 1,
+  suspect: 2,
+  precondition: 3,
+  blocked: 4,
+}
 
-export type Axis = 'legal' | 'physical' | 'regulatory'
+export type Axis = 'rights' | 'tax' | 'property' | 'market'
 
-/** W3 우선순위 — 한 집에 장애가 둘 이상이면 가장 먼저 걸리는 것 하나로 분류한다 */
-export const AXIS_ORDER: Axis[] = ['legal', 'physical', 'regulatory']
+/** 진단서 표시 순서. 4개 전부 나온다. */
+export const AXIS_ORDER: Axis[] = ['rights', 'tax', 'property', 'market']
+
+/**
+ * 등급을 결정하는 축.
+ *
+ * 세금이 나쁘다고 거래가 막히지는 않는다 — 셈법이 바뀔 뿐이다. 시장성도 같다.
+ * rights·property 는 '할 수 있느냐'를 막고,
+ * tax·market 은 '어느 쪽이 유리하냐'를 정한다.
+ * tax·market 도 축 판정은 내되 여기에는 들어오지 않는다.
+ */
+const GATING: Axis[] = ['rights', 'property']
 
 export const AXIS_LABEL: Record<Axis, string> = {
-  legal: '① 법적',
-  physical: '② 물리적',
-  regulatory: '③ 규제',
+  rights: '① 권리',
+  tax: '② 세금',
+  property: '③ 건물·토지',
+  market: '④ 시장·관리',
 }
 
 export type AxisSummary = {
@@ -21,7 +38,7 @@ export type AxisSummary = {
   findings: Finding[]
 }
 
-export type Grade = '가능' | '조건부' | '불가'
+export type Grade = '가능' | '조건부' | '선행필요' | '불가'
 
 export type Diagnosis = {
   grade: Grade
@@ -34,8 +51,8 @@ export type Diagnosis = {
 }
 
 export function summarize(findings: Finding[]): AxisSummary[] {
-  return AXIS_ORDER.map(axis => {
-    const own = findings.filter(f => f.axis === axis)
+  return AXIS_ORDER.map((axis) => {
+    const own = findings.filter((f) => f.axis === axis)
     const verdict = own.reduce<AxisVerdict>(
       (worst, f) => (RANK[f.verdict] > RANK[worst] ? f.verdict : worst),
       'clear',
@@ -43,12 +60,11 @@ export function summarize(findings: Finding[]): AxisSummary[] {
     // 같은 항목(label)에 문제가 잡혔으면 그 항목의 clear 는 지운다 — 상충 표시 방지.
     // 다른 항목의 clear 는 남긴다. '위반건축물 등재 없음' 같은 확인 사실은
     // 축 전체가 unknown 이라는 이유로 사라지면 안 된다.
-    const troubled = new Set(own.filter(f => f.verdict !== 'clear').map(f => f.label))
-    const findingsOut = own.filter(f => f.verdict !== 'clear' || !troubled.has(f.label))
+    const troubled = new Set(own.filter((f) => f.verdict !== 'clear').map((f) => f.label))
+    const findingsOut = own.filter((f) => f.verdict !== 'clear' || !troubled.has(f.label))
 
-    // 문제 → 미확인 → 확인됨 순으로 보여준다
-    const order: Record<AxisVerdict, number> = { blocked: 0, suspect: 1, unknown: 2, clear: 3 }
-    findingsOut.sort((a, b) => order[a.verdict] - order[b.verdict])
+    // 심각한 것부터 보여준다
+    findingsOut.sort((a, b) => RANK[b.verdict] - RANK[a.verdict])
 
     return { axis, verdict, findings: findingsOut }
   })
@@ -57,9 +73,11 @@ export function summarize(findings: Finding[]): AxisSummary[] {
 export function combine(findings: Finding[], fieldVerified = false): Diagnosis {
   const axes = summarize(findings)
 
-  const blocked = AXIS_ORDER.map(a => axes.find(x => x.axis === a)!).find(
-    x => x.verdict === 'blocked',
-  )
+  // 등급은 GATING 축만 본다. 우선순위는 앞선 축이 이긴다.
+  const gating = GATING.map((a) => axes.find((x) => x.axis === a)!)
+  const worstOf = (v: AxisVerdict) => gating.find((x) => x.verdict === v)
+
+  const blocked = worstOf('blocked')
   if (blocked) {
     return {
       grade: '불가',
@@ -70,10 +88,19 @@ export function combine(findings: Finding[], fieldVerified = false): Diagnosis {
     }
   }
 
-  // 구체적 문제(suspect)가 있으면 그것을 헤드라인으로 쓴다
-  const concern = AXIS_ORDER.map(a => axes.find(x => x.axis === a)!).find(
-    x => x.verdict === 'suspect',
-  )
+  // 해결형 — "불가"가 아니라 "이것부터 하면 됩니다"
+  const pre = worstOf('precondition')
+  if (pre) {
+    return {
+      grade: '선행필요',
+      decidedBy: pre.axis,
+      headline: pre.findings[0]?.reason ?? '먼저 정리해야 할 절차가 있습니다.',
+      axes,
+      fieldVerified,
+    }
+  }
+
+  const concern = worstOf('suspect')
   if (concern) {
     return {
       grade: '조건부',
@@ -86,20 +113,19 @@ export function combine(findings: Finding[], fieldVerified = false): Diagnosis {
 
   // 남은 게 '자동으로 확인 못 한 것'뿐이라면, 그 사실 자체가 좋은 소식이다.
   // 모든 진단서가 "등기부는 공개 API가 없어…" 로 시작하면 아무 정보가 안 된다.
-  const unknown = AXIS_ORDER.map(a => axes.find(x => x.axis === a)!).find(
-    x => x.verdict === 'unknown',
-  )
+  const unknown = worstOf('unknown')
   if (unknown) {
     return {
       grade: '조건부',
       decidedBy: unknown.axis,
-      headline: '공개 자료에서는 거래를 막는 사유가 확인되지 않았습니다. 등기와 현장 확인이 남았습니다.',
+      headline:
+        '공개 자료에서는 거래를 막는 사유가 확인되지 않았습니다. 등기와 현장 확인이 남았습니다.',
       axes,
       fieldVerified,
     }
   }
 
-  // 세 축이 모두 clear 여도 현장 확인 전에는 '가능'을 주지 않는다
+  // 두 축이 모두 clear 여도 현장 확인 전에는 '가능'을 주지 않는다
   if (!fieldVerified) {
     return {
       grade: '조건부',
