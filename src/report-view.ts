@@ -35,6 +35,7 @@ const PATH_TITLE: Record<PathKey, string> = {
 const CONCERN_TO_PATH: Record<string, PathKey> = {
   // 세금 걱정이 곧 매각 의사는 아니지만, ②세금축이 재산세 숫자로 이미 안심시킨다.
   // 경로 정렬까지 분기시키지 않는다.
+  '보유 비용': 'secondhome',
   '세금': 'sell',
   '등기·상속': 'rights',
   '건물 상태': 'repair',
