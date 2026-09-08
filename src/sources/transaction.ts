@@ -137,6 +137,11 @@ async function fetchMonth(kind: DealKind, sigunguCd: string, ymd: string): Promi
 }
 
 export type ComparableCriteria = {
+  /**
+   * 대상 자산의 종류. 다르면 비교 대상이 아니다.
+   * 축사 소유주에게 단독주택 거래는 비교가 되지 않는다 — 가격 성격이 다르다.
+   */
+  kind?: DealKind | null
   /** 대상 필지의 지목 */
   jimok?: string | null
   /** 대상 필지의 용도지역 */
@@ -162,6 +167,13 @@ export type DealResult = {
   comparable: Deal[]
   /** 비교 가능 거래의 원/㎡ 중앙값 */
   medianUnitPrice: number | null
+  /**
+   * 비교 가능 거래의 원/㎡ 최저·최고.
+   *
+   * 시골 토지는 도로 접면·형상에 따라 단가가 수십 배 벌어진다.
+   * 중앙값만 내보내면 소유주를 오도한다. 범위를 함께 보여줘야 한다.
+   */
+  unitPriceRange: { min: number; max: number } | null
   months: number
   /** 조회에 실패한 (종류/계약월). '자료 없음' 과 '조회 실패' 를 구분하기 위해 남긴다 */
   failures: string[]
@@ -174,6 +186,7 @@ export type DealResult = {
  */
 export function pickComparable(deals: Deal[], c: ComparableCriteria): Deal[] {
   return deals.filter((d) => {
+    if (c.kind && d.kind !== c.kind) return false
     if (d.kind === 'land') {
       if (c.jimok && d.jimok && d.jimok !== c.jimok) return false
       if (c.landUse && d.landUse && !d.landUse.includes(c.landUse) && !c.landUse.includes(d.landUse)) {
@@ -236,7 +249,21 @@ export async function getDeals(q: DealQuery): Promise<DealResult> {
 
   const comparable = pickComparable(nearby, q)
 
-  return { nearby, comparable, medianUnitPrice: medianUnitPrice(comparable), months, failures }
+  return {
+    nearby,
+    comparable,
+    medianUnitPrice: medianUnitPrice(comparable),
+    unitPriceRange: unitPriceRange(comparable),
+    months,
+    failures,
+  }
+}
+
+/** 원/㎡ 최저·최고. 중앙값과 함께 내보내야 단가 편차를 감추지 않는다 */
+export function unitPriceRange(deals: Deal[]): { min: number; max: number } | null {
+  const xs = deals.map((d) => d.unitPrice).filter((n): n is number => n != null && n > 0)
+  if (xs.length === 0) return null
+  return { min: Math.min(...xs), max: Math.max(...xs) }
 }
 
 /** '경상북도 경주시 안강읍 산대리 27-5' → '산대리' */

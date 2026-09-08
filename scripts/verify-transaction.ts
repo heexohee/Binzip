@@ -19,7 +19,8 @@ import {
   type Deal,
 } from '../src/sources/transaction'
 
-const [sigungu = '47130', ri = '산대리', monthsArg = '12'] = process.argv.slice(2)
+const [sigungu = '47130', ri = '산대리', monthsArg = '12', jimok = '', landUse = ''] =
+  process.argv.slice(2)
 const months = Number(monthsArg) || 12
 
 const man = (n: number | null) => (n == null ? '—' : (n / 10_000).toLocaleString('ko-KR') + '만원')
@@ -47,7 +48,13 @@ if (checks.some(([, ok]) => !ok)) {
 console.log()
 
 try {
-  const r = await getDeals({ sigunguCd: sigungu, umdName: ri || null, months })
+  const r = await getDeals({
+    sigunguCd: sigungu,
+    umdName: ri || null,
+    months,
+    jimok: jimok || null,
+    landUse: landUse || null,
+  })
 
   if (r.failures.length) {
     console.log(`  ⚠️ 조회 실패 ${r.failures.length}건`)
@@ -84,8 +91,12 @@ try {
       man(d.amount).padStart(12),
     ].join(' ')
 
-  for (const d of r.nearby.slice(0, 15)) console.log('  ' + show(d))
-  if (r.nearby.length > 15) console.log(`  … 외 ${r.nearby.length - 15}건`)
+  // 조건을 줬으면 비교 대상만, 안 줬으면 전체를 보여준다.
+  // 비교 대상이 맞게 걸렸는지는 눈으로 확인해야 한다 — 잘못된 단가는 소유주에게 바로 간다.
+  const list = jimok || landUse ? r.comparable : r.nearby
+  if (jimok || landUse) console.log(`  [비교 조건] 지목=${jimok || '무관'} · 용도지역=${landUse || '무관'}\n`)
+  for (const d of list.slice(0, 20)) console.log('  ' + show(d))
+  if (list.length > 20) console.log(`  … 외 ${list.length - 20}건`)
 
   // 명세에 없어 실호출로만 알 수 있는 것
   const umds = [...new Set(r.nearby.map((d) => d.umdNm).filter(Boolean))]

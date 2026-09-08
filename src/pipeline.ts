@@ -5,6 +5,7 @@ import { getLandUse } from './sources/landUse'
 import { getPossession } from './sources/possession'
 import { getBuilding } from './sources/building'
 import { getBuildingLedger, ledgerAvailable } from './sources/buildingLedger'
+import { getDeals, riFromJibunAddress, type DealResult } from './sources/transaction'
 import { checkGates, evaluate, rulesVersion, type Context } from './rules/engine'
 import { combine, type Diagnosis } from './verdict'
 import type { ResolvedAddress } from './types'
@@ -22,6 +23,8 @@ export type PipelineResult =
       observations: string[]
       checkedAt: string
       sourceErrors: string[]
+      /** 같은 리 실거래. facts 에는 개수·중앙단가만 싣고 목록은 여기에 둔다 */
+      deals: DealResult | null
     }
   | {
       status: 'ok'
@@ -33,6 +36,8 @@ export type PipelineResult =
       rulesVersion: string
       /** 조달에 실패한 소스가 있으면 여기 남는다 */
       sourceErrors: string[]
+      /** 같은 리 실거래. facts 에는 개수·중앙단가만 싣고 목록은 여기에 둔다 */
+      deals: DealResult | null
     }
 
 const settle = async <T,>(
@@ -75,6 +80,30 @@ export async function diagnose(query: string): Promise<PipelineResult> {
     ? await settle('건축물대장', () => getBuildingLedger(address), errors)
     : null
 
+  // 실거래는 앞 단계 결과(지목·용도지역·사용승인)를 비교 조건으로 쓰므로 뒤에 온다.
+  // 게이트 앞에 두는 이유 — 대상이 아니어도 소유주에게 보여줄 값이기 때문이다.
+  //
+  // API 가 시군구+계약월 단위라 12개월이면 24회 호출이지만,
+  // callDataGoKr 가 24시간 캐싱하므로 같은 시군구를 다시 볼 때는 재호출하지 않는다.
+  const approvalYear = Number(String(building?.useApprovalDate ?? '').slice(0, 4))
+  // 주택이면 주택 거래와, 아니면(축사·창고·나대지) 토지 거래와 비교한다.
+  // 축사 소유주에게 단독주택 거래를 보여주면 가격 성격이 달라 오도한다.
+  const isHouse = /주택|아파트|연립|다세대/.test(String(building?.mainPurpose ?? ''))
+  const deals = await settle(
+    '실거래가',
+    () =>
+      getDeals({
+        sigunguCd: address.sigunguCd,
+        umdName: riFromJibunAddress(address.jibunAddress),
+        months: 12,
+        kind: isHouse ? 'house' : 'land',
+        jimok: landChar?.category ?? null,
+        landUse: landChar?.zone1 ?? null,
+        buildYear: Number.isFinite(approvalYear) && approvalYear > 1900 ? approvalYear : null,
+      }),
+    errors,
+  )
+
   const facts: Context = {
     pnu: address.pnu,
     sigunguCd: address.sigunguCd,
@@ -115,6 +144,18 @@ export async function diagnose(query: string): Promise<PipelineResult> {
     ownerResidence: possession?.ownerResidence ?? null,
     ownershipCause: possession?.ownershipCause ?? null,
     ownershipDate: possession?.ownershipDate ?? null,
+
+    // 실거래 — 룰이 쓸 스칼라만 싣는다. 목록은 결과의 deals 에 있다.
+    // 0건과 조회실패(null)는 다르다. 0건을 '거래 없음'으로 단정하려면
+    // dealFailures 가 0인지 함께 봐야 한다.
+    dealCount: deals?.nearby.length ?? null,
+    comparableCount: deals?.comparable.length ?? null,
+    medianUnitPrice: deals?.medianUnitPrice ?? null,
+    // 중앙값만 쓰면 단가 편차를 감춘다. 시골 토지는 수십 배 벌어진다.
+    unitPriceMin: deals?.unitPriceRange?.min ?? null,
+    unitPriceMax: deals?.unitPriceRange?.max ?? null,
+    dealMonths: deals?.months ?? null,
+    dealFailures: deals?.failures.length ?? null,
   }
 
   const gate = checkGates(facts)
@@ -128,6 +169,7 @@ export async function diagnose(query: string): Promise<PipelineResult> {
       observations: observe(facts),
       checkedAt,
       sourceErrors: errors,
+      deals,
     }
   }
 
@@ -140,6 +182,7 @@ export async function diagnose(query: string): Promise<PipelineResult> {
     checkedAt,
     rulesVersion,
     sourceErrors: errors,
+    deals,
   }
 }
 
@@ -166,6 +209,20 @@ function observe(f: Context): string[] {
   }
   if (typeof f.coOwnerCount === 'number' && f.coOwnerCount >= 2) {
     out.push(`공유인이 ${f.coOwnerCount}명입니다.`)
+  }
+  // 지목·용도지역까지 맞은 거래만 말한다. '근처에 뭐가 팔렸다'는 정보가 안 된다.
+  if (typeof f.comparableCount === 'number' && f.comparableCount > 0) {
+    const won = (n: number) => Math.round(n).toLocaleString('ko-KR')
+    // 중앙값과 범위를 함께 낸다. 범위를 감추면 소유주가 중앙값을 자기 땅 값으로 읽는다.
+    const price =
+      typeof f.medianUnitPrice === 'number' &&
+      typeof f.unitPriceMin === 'number' &&
+      typeof f.unitPriceMax === 'number'
+        ? ` 단가는 ${won(f.unitPriceMin)}~${won(f.unitPriceMax)}원/㎡ 로 폭이 넓고 중앙값은 ${won(f.medianUnitPrice)}원/㎡ 입니다. 도로 접면·형상에 따라 크게 갈리므로 개별 확인이 필요합니다.`
+        : ''
+    out.push(
+      `최근 ${f.dealMonths}개월간 같은 리에서 조건이 비슷한 거래가 ${f.comparableCount}건 있습니다.${price}`,
+    )
   }
   return out
 }
