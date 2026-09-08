@@ -6,26 +6,31 @@ export const maxDuration = 60
 
 /** (c) 이런 상태 아니신가요 — 큰따옴표를 쓰지 않는다. 실제 인터뷰가 아니므로 인용처럼 보이면 안 된다 */
 const STATES = [
-  ['물려받은 집에 명절에만 내려가 풀을 베고 옵니다.', '팔 수 있는 집인지 아직 모릅니다.'],
-  ['안 팔린다는 말은 들었지만, 왜 안 되는지는 듣지 못했습니다.'],
+  ['멀리 있어 일 년에 몇 번 못 가봅니다.', '지금 어떤 상태인지 모릅니다.'],
+  ['세금이 얼마나 나가는지 정확히 모릅니다.', '그냥 두는 것이 맞는지 판단이 서지 않습니다.'],
   ['형제들끼리 상속 정리가 아직 끝나지 않았습니다.', '이 상태로 무엇을 할 수 있는지 모릅니다.'],
-  ['세금은 매년 나갑니다.', '그냥 두는 것이 맞는지 판단이 서지 않습니다.'],
+  ['규제가 걸려 있다고 들었는데, 무엇이 어떻게 걸리는지는 듣지 못했습니다.'],
 ]
 
-/** (d) 판정 3등급 — 신호등을 쓰지 않는다. 한 계열의 명도만 쓴다 */
+/** (d) 판정 4등급 — 신호등을 쓰지 않는다. 한 계열의 명도만 쓴다 */
 const VERDICTS = [
-  { dots: '●●●', label: '지금 처분 가능', tone: 'text-deep', lines: ['서류와 현장에서 걸리는 것이 없습니다.', '바로 다음 단계로 가면 됩니다.'] },
-  { dots: '●●○', label: '조건부', tone: 'text-mid', lines: ['먼저 정리할 것이 한두 가지 있습니다.', '무엇인지 적어 드립니다.'] },
-  { dots: '●○○', label: '지금은 불가', tone: 'text-muted', lines: ['지금 상태로는 어렵습니다.', '그래도 다음에 할 일은 남아 있습니다.'] },
+  { dots: '●●●●', label: '지금 처분 가능', tone: 'text-deep', lines: ['서류와 현장에서 걸리는 것이 없습니다.', '바로 다음 단계로 가면 됩니다.'] },
+  { dots: '●●●○', label: '조건부', tone: 'text-mid', lines: ['먼저 확인할 것이 한두 가지 있습니다.', '무엇인지 적어 드립니다.'] },
+  { dots: '●●○○', label: '먼저 정리할 것이 있음', tone: 'text-mid', lines: ['절차 하나를 밟으시면 나머지가 열립니다.', '무엇부터 해야 하는지 적어 드립니다.'] },
+  { dots: '●○○○', label: '지금은 불가', tone: 'text-muted', lines: ['지금 상태로는 어렵습니다.', '그래도 다음에 할 일은 남아 있습니다.'] },
 ]
 
+/** 진단서와 같은 4축으로 보여준다. 랜딩과 실물이 다르면 신뢰를 잃는다 */
 const EVIDENCE = [
-  { item: '소유 관계', detail: ['미확인 — 소유주 확인이 필요합니다.'], source: '미확인', unverified: true },
-  { item: '건물 상태', detail: ['지붕 일부 파손, 구조는 유지'], source: '현장 방문 2026.09.05 확인' },
-  { item: '진입로', detail: ['폭 3m 사도, 일부 타인 토지'], source: '지적도 2026.09.03 확인' },
-  { item: '용도지역', detail: ['제1종일반주거지역'], source: '토지이용계획 2026.09.03 확인' },
-  { item: '철거 시 유의', detail: ['슬레이트 지붕입니다.', '석면 처리 절차가 따로 있습니다.'], source: '현장 방문 2026.09.05 확인', earth: true },
-  { item: '경계 측량', detail: ['확인하지 못했습니다.', '측량이 필요합니다.'], source: '미확인', unverified: true },
+  { axis: '① 권리', item: '등기', detail: ['확인하지 못했습니다.', '등기소에서 확인이 필요합니다.'], source: '미확인', unverified: true },
+  { axis: '① 권리', item: '토지 소유', detail: ['소유구분 개인 · 소유권 변동 원인 상속'], source: '토지소유정보 2026.09.03 확인' },
+  { axis: '② 세금', item: '보유세', detail: ['재산세는 1주택 기준 연 약 1.6만원,', '다른 집이 있으시면 약 4.4만원 수준입니다 (추정).'], source: '지방세법 §111·§111의2' },
+  { axis: '② 세금', item: '처분세', detail: ['다른 주택 보유 여부에 따라 갈려 계산하지 않습니다.', '어느 특례를 보셔야 하는지까지만 적어 드립니다.'], source: '미확인', unverified: true },
+  { axis: '③ 건물·토지', item: '건축물', detail: ['단독주택 · 사용승인 1999. 04. 26. · 지상 1층'], source: '건축물대장 2026.09.03 확인' },
+  { axis: '③ 건물·토지', item: '진입로', detail: ['도로접면 세로한면(가) — 진입로가 확보되어 있습니다.'], source: '토지특성 2026.09.03 확인' },
+  { axis: '③ 건물·토지', item: '현장 상태', detail: ['확인하지 못했습니다.', '현장 방문이 필요합니다.'], source: '미확인', unverified: true },
+  { axis: '④ 시장·관리', item: '주변 거래', detail: ['최근 12개월간 같은 리에서 조건이 비슷한 거래 10건.', '단가는 5,621~227,409원/㎡ 로 폭이 넓습니다.'], source: '국토교통부 실거래가 2026.09.03 확인' },
+  { axis: '④ 시장·관리', item: '관리 부담', detail: ['비워두시더라도 최소한의 관리는 필요합니다.', '조치명령을 이행하지 않으면 이행강제금이 부과됩니다.'], source: '농어촌빈집특별법 §3·§45', earth: true },
 ]
 
 const PAPERS = [
@@ -43,14 +48,14 @@ const FIELDWORK = [
 ]
 
 const STEPS = [
-  { n: '1', title: '주소를 입력합니다.', lines: ['아래 칸에 빈집 주소와 연락처만 남겨주세요.', '다른 서류는 필요하지 않습니다.'], when: '1분이면 됩니다' },
-  { n: '2', title: '서류를 확인하고 방문합니다.', lines: ['서류를 확인하고 정리한 뒤, 직접 빈집에 방문합니다.', '소유주가 함께 가지 않아도 됩니다.'], when: '신청하신 날부터 5일 안에 방문합니다.' },
+  { n: '1', title: '주소를 입력합니다.', lines: ['아래 칸에 주소와 연락처만 남겨주세요.', '다른 서류는 필요하지 않습니다.'], when: '1분이면 됩니다' },
+  { n: '2', title: '서류를 확인하고 방문합니다.', lines: ['공개된 서류를 확인하고 정리한 뒤, 직접 현장에 방문합니다.', '소유주가 함께 가지 않아도 됩니다.'], when: '신청하신 날부터 5일 안에 방문합니다.' },
   { n: '3', title: '진단서를 보내드립니다', lines: ['문자나 이메일을 통해 진단서를 보내드립니다.', '진단서를 받으신 후 전화로 물어보셔도 됩니다.'], when: '다녀온 날부터 3일 안에 보냅니다' },
 ]
 
 const LIMITS = [
   ['집을 대신 팔아 드리지 않습니다.', '진단서는 거래를 알선하는 서류가 아닙니다.'],
-  ['얼마를 받을 수 있는지 금액으로 적지 않습니다.'],
+  ['얼마를 받을 수 있는지 금액으로 적지 않습니다.', '주변 거래는 참고 자료일 뿐 감정평가가 아닙니다.'],
   ['공사 비용을 계산해 드리지 않습니다.', '철거는 별도 절차가 필요하다는 사실만 알려드립니다.'],
   ['세금과 상속 문제의 결론을 내려 드리지 않습니다.', '세무사나 변호사를 만나야 하는 지점만 표시해 드립니다.'],
 ]
@@ -82,7 +87,7 @@ export default function Home() {
       <header className="border-b border-line bg-paper">
         <div className={SHELL + ' flex flex-wrap items-baseline gap-[14px] py-[18px]'}>
           <p className="font-serif text-[19px] font-semibold tracking-[-0.01em] text-ink">빈집이력서</p>
-          <p className="text-[13px] text-muted">포항에 있는 빈집을 진단합니다.</p>
+          <p className="text-[13px] text-muted">경북에 있는 땅과 집을 진단합니다.</p>
         </div>
       </header>
 
@@ -91,14 +96,14 @@ export default function Home() {
         <div className={SHELL + ' ' + PAD + ' grid items-start gap-[clamp(36px,5vw,64px)] [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]'}>
         <div className="max-w-[34rem]">
           <h1 className="flex flex-col text-[32px] md:text-[52px]">
-            <span>그 집,</span>
-            <span>이제 정리합시다</span>
+            <span>그 땅과 집,</span>
+            <span>지금 어떤 상태인가요</span>
           </h1>
           <Lines
             className="mt-6 max-w-[36ch]"
             items={[
-              '포항에 비어 있는 집이 있으신가요?',
-              '주소만 남겨 주시면 그 집을 지금 팔 수 있는지, 빌려줄 수 있는지, 무엇부터 정리해야 하는지를 진단해 드립니다.',
+              '경북에 자주 못 가보는 땅이나 집이 있으신가요?',
+              '주소만 남겨 주시면 지금 세금이 얼마나 나가고 있는지, 어떤 규제가 걸려 있는지, 무엇부터 확인해야 하는지를 정리해 드립니다.',
             ]}
           />
           <a
@@ -113,21 +118,21 @@ export default function Home() {
         {/* 오른쪽 — 진단서 실물 미리보기. 큰 숫자나 통계 카드를 쓰지 않는다 */}
         <div className="doc-preview max-w-[420px] rounded-[4px] border border-line bg-paper px-[26px] pb-[22px] pt-[26px]">
           <div className="flex items-baseline justify-between gap-3 border-b border-ink pb-3">
-            <p className="font-serif text-[18px] font-semibold text-ink">빈집 진단서</p>
+            <p className="font-serif text-[18px] font-semibold text-ink">부동산 진단서</p>
             <p className="text-[12px] text-muted">제2026-0141호</p>
           </div>
-          <p className="mt-4 text-[15px] leading-[1.6] text-body">경북 포항시 남구 ○○동 1○○-○ 단독주택</p>
+          <p className="mt-4 text-[15px] leading-[1.6] text-body">경북 ○○시 ○○읍 ○○리 2○-○ 단독주택</p>
           <div className="mt-4 flex items-center gap-3">
-            <p className="font-serif text-[22px] font-semibold text-deep">지금 처분 가능</p>
-            <span className="text-[13px] tracking-[0.18em] text-mid">●●●</span>
+            <p className="font-serif text-[22px] font-semibold text-deep">조건부</p>
+            <span className="text-[13px] tracking-[0.18em] text-mid">●●●○</span>
           </div>
           <div className="mt-3 flex flex-col gap-1 text-[13px] text-muted">
-            <span>6항목 확인</span>
+            <span>4개 축 · 재산세 연 1.6만원 (추정)</span>
             <span>확인일: 2026. 9. 5.</span>
           </div>
           <div className="mt-4 flex flex-col gap-1 border-t border-dashed border-dash pt-3 text-[12px] leading-[1.6] text-muted">
-            <span>점선으로 적힌 항목은 아직 확인하지 못한 것입니다.</span>
-            <span>2026.09.05 현장 방문하여 작성</span>
+            <span>바탕이 흐린 항목은 아직 확인하지 못한 것입니다.</span>
+            <span>공개 자료 확인 후 현장 방문하여 작성</span>
           </div>
         </div>
         </div>
@@ -155,7 +160,7 @@ export default function Home() {
       <section className="bg-paper">
         <div className={SHELL + ' ' + PAD}>
         <h2 className={H2}>진단서에 무엇이 작성되나요?</h2>
-        <Lines className="mt-5 max-w-[56ch]" items={['세 가지 중 하나로 판정됩니다.', '그리고 판정의 근거를 항목마다 따로 작성합니다.']} />
+        <Lines className="mt-5 max-w-[56ch]" items={['네 가지 중 하나로 판정됩니다.', '그리고 판정의 근거를 항목마다 따로 작성합니다.']} />
 
         <div className="mt-9 border-t border-line">
           {VERDICTS.map((v) => (
@@ -175,11 +180,17 @@ export default function Home() {
                 <div key={h} className="px-4 py-3 text-[13px] font-semibold text-ink">{h}</div>
               ))}
             </div>
-            {EVIDENCE.map((row) => (
+            {EVIDENCE.map((row, i) => (
+              <div key={row.axis + row.item} className="contents">
+                {/* 축이 바뀔 때만 헤더를 낸다. 진단서와 같은 계층이다 */}
+                {(i === 0 || EVIDENCE[i - 1]!.axis !== row.axis) && (
+                  <div className="col-span-3 border-t border-line bg-wash px-4 py-2 font-serif text-[14px] font-semibold text-ink">
+                    {row.axis}
+                  </div>
+                )}
               <div
-                key={row.item}
                 className={
-                  'grid [grid-template-columns:1.1fr_1.6fr_1fr] border-t border-l-[3px] ' +
+                  'col-span-3 grid [grid-template-columns:1.1fr_1.6fr_1fr] border-t border-l-[3px] ' +
                   // 진단서와 같은 언어를 쓴다 — 선 모양이 아니라 면과 바 굵기로 가른다
                   (row.unverified
                     ? 'border-t-line border-l-dash bg-wash text-muted'
@@ -200,6 +211,7 @@ export default function Home() {
                   )}
                 </div>
               </div>
+              </div>
             ))}
           </div>
         </div>
@@ -219,7 +231,7 @@ export default function Home() {
         <h2 className={H2 + ' text-paper'}>어떻게 확인하나요?</h2>
         <Lines
           className="mt-5 max-w-[52ch] text-pale"
-          items={['공개된 서류를 확인하고, 직접 해당 빈집에 방문합니다.', '이후 진단서를 발급합니다.']}
+          items={['공개된 서류를 확인하고, 직접 현장에 방문합니다.', '이후 진단서를 발급합니다.']}
         />
         <div className="mt-9 grid gap-[clamp(24px,3vw,44px)] [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
           {[
@@ -301,7 +313,7 @@ export default function Home() {
         <Lines
           className="max-w-[64ch] gap-1 text-[14px] leading-[1.75] text-dash"
           items={[
-            '본 서비스는 공개된 공적 자료와 현장 확인을 근거로 빈집의 처분 가능성을 정리해 제공합니다.',
+            '본 서비스는 공개된 공적 자료와 현장 확인을 근거로 부동산의 현재 상태와 보유 비용을 정리해 제공합니다.',
             '중개대상물의 표시·광고나 거래 알선을 하지 않습니다.',
           ]}
         />
