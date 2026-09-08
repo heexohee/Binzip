@@ -1,36 +1,24 @@
 {
-  "version": "2026-09-04d",
-  "note": "판정 기준. 코드를 고치지 않고 이 파일만 바꾼다. {필드} 는 실제 값으로 치환된다.",
+  "version": "2026-09-08-cost",
+  "note": "판정 기준. 코드를 고치지 않고 이 파일만 바꾼다. {필드} 는 실제 값으로 치환된다. 게이트는 '허용 목록'이 아니라 '제외 목록'이다 — 대상은 시세가 형성되지 않는 부동산이고, 시세가 있는 것(아파트·연립·다세대)은 은행과 부동산 앱이 이미 다룬다.",
   "gates": [
     {
       "id": "G-REGION",
       "when": {
         "field": "sigunguCd",
-        "op": "not-in",
-        "value": [
-          "47111",
-          "47113"
-        ]
+        "op": "not-matches",
+        "value": "^47"
       },
-      "reason": "포항시 남구·북구 밖의 주소입니다. 현재 이 지역만 진단합니다."
+      "reason": "경상북도 밖의 주소입니다. 현재 이 지역만 진단합니다."
     },
     {
-      "id": "G-PURPOSE",
+      "id": "G-APARTMENT",
       "when": {
         "field": "mainPurpose",
-        "op": "not-matches",
-        "value": "단독주택|다가구주택"
+        "op": "matches",
+        "value": "아파트|연립주택|다세대주택|오피스텔"
       },
-      "reason": "건축물대장 주용도가 '{mainPurpose}'입니다. 단독·다가구주택만 진단합니다."
-    },
-    {
-      "id": "G-USE",
-      "when": {
-        "field": "useSituation",
-        "op": "not-matches",
-        "value": "단독|주상용|주거"
-      },
-      "reason": "토지이용상황이 '{useSituation}'입니다. 주거용 필지만 진단합니다."
+      "reason": "주용도가 '{mainPurpose}'입니다. 시세가 형성되어 있어 은행·부동산 앱에서 더 정확한 정보를 보실 수 있습니다."
     },
     {
       "id": "G-PRICE",
@@ -222,6 +210,22 @@
       "label": "규제",
       "reason": "{matched} — 용도 변경과 신축에 조건이 붙습니다.",
       "nextStep": "허용 행위 범위를 시청 건축과에서 확인합니다.",
+      "source": "토지이용규제"
+    },
+    {
+      "id": "R-LIVESTOCK",
+      "axis": "regulatory",
+      "when": {
+        "field": "zones",
+        "op": "contains-any",
+        "value": [
+          "가축사육제한구역"
+        ]
+      },
+      "verdict": "suspect",
+      "label": "가축사육",
+      "reason": "{matched}에 해당합니다. 축사를 새로 짓거나 늘리는 데 제한이 있을 수 있습니다.",
+      "nextStep": "이미 축사가 있으시면 기존 시설로 인정받는지, 증축·재건축이 되는지 시청 환경부서에 확인하셔야 합니다. 제한구역 도면은 고시로 바뀌기 때문에 지은 뒤에 편입됐을 수도 있습니다.",
       "source": "토지이용규제"
     },
     {
