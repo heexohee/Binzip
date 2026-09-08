@@ -6,6 +6,7 @@ import { getPossession } from './sources/possession'
 import { getBuilding } from './sources/building'
 import { getBuildingLedger, ledgerAvailable } from './sources/buildingLedger'
 import { getDeals, riFromJibunAddress, type DealResult } from './sources/transaction'
+import { propertyTax } from './tax'
 import { checkGates, evaluate, rulesVersion, type Context } from './rules/engine'
 import { combine, type Diagnosis } from './verdict'
 import type { ResolvedAddress } from './types'
@@ -104,6 +105,9 @@ export async function diagnose(query: string): Promise<PipelineResult> {
     errors,
   )
 
+  // 재산세는 공시가격과 용도지역만 있으면 계산된다. 외부 호출이 없다.
+  const tax = propertyTax(housePrice?.value, landChar?.zone1)
+
   const facts: Context = {
     pnu: address.pnu,
     sigunguCd: address.sigunguCd,
@@ -156,6 +160,14 @@ export async function diagnose(query: string): Promise<PipelineResult> {
     unitPriceMax: deals?.unitPriceRange?.max ?? null,
     dealMonths: deals?.months ?? null,
     dealFailures: deals?.failures.length ?? null,
+
+    // 재산세 — 소유주가 제일 모르면서 제일 무서워하는 숫자.
+    // 주택 수를 모르므로 1주택/표준 두 값을 함께 싣는다.
+    taxSingle: tax?.single ?? null,
+    taxGeneral: tax?.general ?? null,
+    taxYear: tax?.year ?? null,
+    taxAssessmentDate: tax?.assessmentDate ?? null,
+    taxUrban: tax?.urbanIncluded ?? null,
   }
 
   const gate = checkGates(facts)
@@ -209,6 +221,17 @@ function observe(f: Context): string[] {
   }
   if (typeof f.coOwnerCount === 'number' && f.coOwnerCount >= 2) {
     out.push(`공유인이 ${f.coOwnerCount}명입니다.`)
+  }
+  // 재산세를 먼저 말한다. 소유주가 제일 무서워하는데 실제로는 제일 작은 숫자다.
+  if (typeof f.taxSingle === 'number' && typeof f.taxGeneral === 'number') {
+    const man = (n: number) => (n / 10_000).toFixed(1)
+    const range =
+      f.taxSingle === f.taxGeneral
+        ? `연 약 ${man(f.taxSingle)}만원`
+        : `1주택이시면 연 약 ${man(f.taxSingle)}만원, 다른 집이 있으시면 약 ${man(f.taxGeneral)}만원`
+    out.push(
+      `재산세는 ${range} 수준입니다 (추정). 과세기준일은 ${f.taxAssessmentDate} 이라 그 전에 넘기시면 그해 분은 매수인이 냅니다.`,
+    )
   }
   // 지목·용도지역까지 맞은 거래만 말한다. '근처에 뭐가 팔렸다'는 정보가 안 된다.
   if (typeof f.comparableCount === 'number' && f.comparableCount > 0) {

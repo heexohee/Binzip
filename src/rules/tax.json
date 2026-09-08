@@ -1,0 +1,28 @@
+{
+  "version": "2026",
+  "note": "재산세 산정 기준. 지방세법 §111·§111의2·§112·§151, 시행령 §109. 원문 대조 완료 (2026-09-06). 비율과 세율은 매년 시행령으로 바뀌므로 코드가 아니라 여기서 고친다.",
+  "singleHomeCeiling": 900000000,
+  "fairMarketRatio": {
+    "single": 0.43,
+    "general": 0.6
+  },
+  "rates": {
+    "single": [
+      { "upto": 60000000, "base": 0, "rate": 0.0005 },
+      { "upto": 150000000, "base": 30000, "rate": 0.001 },
+      { "upto": 300000000, "base": 120000, "rate": 0.002 },
+      { "upto": null, "base": 420000, "rate": 0.0035 }
+    ],
+    "general": [
+      { "upto": 60000000, "base": 0, "rate": 0.001 },
+      { "upto": 150000000, "base": 60000, "rate": 0.0015 },
+      { "upto": 300000000, "base": 195000, "rate": 0.0025 },
+      { "upto": null, "base": 570000, "rate": 0.004 }
+    ]
+  },
+  "localEduTaxRate": 0.2,
+  "urbanAreaRate": 0.0014,
+  "urbanZones": ["주거지역", "상업지역", "공업지역", "녹지지역"],
+  "assessmentDate": "매년 6월 1일",
+  "paymentPeriod": "7월 16~31일 · 9월 16~30일"
+}
