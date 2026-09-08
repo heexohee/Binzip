@@ -1,4 +1,4 @@
-import { buildAxisBlocks, buildPaths } from '../../src/report-view'
+import { buildAxisBlocks, buildPaths, buildSupports } from '../../src/report-view'
 import { VERDICT_LABEL, type ApplicationRow, type ReportRow } from '../admin/types'
 
 const GRADE_DESC: Record<string, string> = {
@@ -21,6 +21,7 @@ export function ReportDoc({ rep, app }: { rep: ReportRow; app: ApplicationRow })
   const blocks = buildAxisBlocks(axes, facts, rep.note, registry)
   const anyUnverified = blocks.some((b) => b.items.some((i) => i.unverified))
   const paths = buildPaths(rep.verdict, axes, facts, app.concern, registry)
+  const supports = buildSupports(facts)
   const docNo = '제' + new Date(rep.created_at).getFullYear() + '-' + rep.id.slice(0, 4)
   const day = (s: string) =>
     new Date(s).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -155,6 +156,47 @@ export function ReportDoc({ rep, app }: { rep: ReportRow; app: ApplicationRow })
             </div>
           ))}
         </div>
+
+        {supports.length > 0 && (
+          <>
+            <h2 className="mt-10 font-serif text-[20px] font-semibold text-ink">
+              지금 받으실 수 있는 지원
+            </h2>
+            <p className="mt-2 text-[15px] leading-[1.7] text-muted">
+              제도가 부처별로 흩어져 있어 한 번에 보기 어렵습니다. 이 집에 해당되는 것만 모았습니다.
+            </p>
+            <div className="mt-4 flex flex-col gap-3">
+              {supports.map((sp) => (
+                <div
+                  key={sp.title}
+                  className="break-inside-avoid rounded-[4px] border-l-[3px] border-mid bg-paper py-[14px] pl-4 pr-4"
+                >
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <span className="font-serif text-[17px] font-semibold text-ink">{sp.title}</span>
+                    <span className="text-[16px] font-semibold text-deep">
+                      {sp.capText ?? (sp.cap != null ? `최대 ${(sp.cap / 10000).toLocaleString('ko-KR')}만원` : '')}
+                    </span>
+                  </div>
+                  {sp.lines.map((l, i) => (
+                    <p key={i} className="mt-2 text-[15px] leading-[1.7]">
+                      {l}
+                    </p>
+                  ))}
+                  {/* 놓치면 손해 보는 조건은 흘려 읽히면 안 된다. 면으로 가른다 */}
+                  {sp.warn && (
+                    <p className="mt-2 rounded-[3px] bg-wash px-3 py-2 text-[15px] leading-[1.7] text-earth">
+                      {sp.warn}
+                    </p>
+                  )}
+                  <p className="mt-2 text-[13px] text-muted">신청 · {sp.where}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 text-[13px] leading-[1.7] text-muted">
+              금액은 제도상 상한이며 실제 지원액은 심사에 따라 달라집니다. 예산이 소진되면 접수가 마감됩니다.
+            </p>
+          </>
+        )}
 
         <h2 className="mt-10 font-serif text-[20px] font-semibold text-ink">이 진단서가 못 하는 것</h2>
         <div className="mt-4 grid gap-3 md:grid-cols-2">

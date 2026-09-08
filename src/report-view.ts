@@ -211,3 +211,80 @@ export function buildPaths(
 
   return items
 }
+/**
+ * 진단서 — 현재 이용 가능한 제도.
+ *
+ * 제도가 부처별로 흩어져 있는 게 이 블록의 존재 이유다.
+ * 환경부(슬레이트) · 국토부·농식품부(철거비) · 행안부(감면) 가 각각 하니
+ * 소유주는 "내 집에 뭐가 해당되나" 를 한 번에 알 수 없다.
+ *
+ * 해당되는 것만 낸다. 전부 나열하면 목록이지 진단이 아니다.
+ */
+export type Support = {
+  title: string
+  /** 원 단위 상한. 금액이 없는 제도(감면)는 null */
+  cap: number | null
+  /** 상한 대신 쓸 표현 */
+  capText: string | null
+  lines: string[]
+  /** 신청처 */
+  where: string
+  /** 소유주가 놓치면 손해 보는 조건 */
+  warn: string | null
+}
+
+export function buildSupports(facts: Record<string, unknown>): Support[] {
+  const hasBuilding = facts.hasBuilding === true
+  const isHouse = /주택/.test(String(facts.mainPurpose ?? ''))
+  const slate = /슬레이트/.test(String(facts.structure ?? ''))
+  const out: Support[] = []
+
+  if (hasBuilding) {
+    out.push({
+      title: '빈집 철거비 지원',
+      cap: 16_000_000,
+      capText: null,
+      lines: ['중앙정부와 지자체가 각각 50%씩 부담합니다.'],
+      where: '빈집애 binzibe.kr — 2026년 5월 25일부터 온라인 신청',
+      warn:
+        '철거 후 일정 기간 주차장·텃밭 등 공공용도로 써야 합니다. 그 기간에는 파실 수 없으니, 매각 생각이 있으시면 신청 전에 정하셔야 합니다.',
+    })
+  }
+
+  if (slate) {
+    out.push({
+      title: '슬레이트 처리 지원',
+      cap: isHouse ? 7_000_000 : 5_400_000,
+      capText: null,
+      lines: [
+        isHouse
+          ? '주택 기준 상한입니다. 석면이라 처리 절차가 따로 있습니다.'
+          : '비주택(창고·축사) 기준 상한입니다. 석면이라 처리 절차가 따로 있습니다.',
+      ],
+      where: '시·군·구청 환경 또는 건축 부서',
+      warn: null,
+    })
+  }
+
+  if (hasBuilding) {
+    out.push({
+      title: '철거 후 재산세 감면',
+      cap: null,
+      capText: '5년간 50%',
+      lines: ['2026년 1월 1일부터 시행됐습니다.'],
+      where: '별도 신청 없이 적용 — 해당 여부는 시청 세무부서 확인',
+      warn:
+        '감면이 끝나면 종합합산으로 넘어가 보유세가 다시 오릅니다. 5년 뒤를 함께 보셔야 합니다.',
+    })
+    out.push({
+      title: '철거 후 신축 시 취득세 감면',
+      cap: 1_500_000,
+      capText: '최대 50% · 150만원 한도',
+      lines: ['철거일로부터 3년 안에 새로 지으셔야 합니다.'],
+      where: '시·군·구청 세무부서',
+      warn: null,
+    })
+  }
+
+  return out
+}
