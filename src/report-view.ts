@@ -1,4 +1,4 @@
-import type { Axes, Finding } from '../app/admin/types'
+import type { Axes } from '../app/admin/types'
 
 export type Item = {
   label: string
@@ -8,7 +8,8 @@ export type Item = {
   unverified: boolean
 }
 
-export type PathKey = 'rights' | 'sell' | 'rent' | 'repair' | 'hold' | 'demolish'
+export type PathKey =
+  | 'rights' | 'sell' | 'rent' | 'repair' | 'secondhome' | 'manage' | 'demolish'
 
 export type PathItem = {
   key: PathKey
@@ -21,39 +22,28 @@ export type PathItem = {
 }
 
 const PATH_TITLE: Record<PathKey, string> = {
-  rights: '권리관계 선행',
+  rights: '권리정리 우선',
   sell: '매각',
-  rent: '임대 활용',
-  repair: '수리 후 사용',
-  hold: '당분간 보유',
-  demolish: '철거 검토',
+  rent: '임대·활용',
+  repair: '정비',
+  secondhome: '보유·세컨드하우스',
+  manage: '관리',
+  demolish: '철거',
 }
 
 /** 소유주가 고른 걱정거리가 어느 경로를 맨 위로 올릴지 정한다 */
 const CONCERN_TO_PATH: Record<string, PathKey> = {
-  '세금': 'rights',
+  // 세금 걱정이 곧 매각 의사는 아니지만, ②세금축이 재산세 숫자로 이미 안심시킨다.
+  // 경로 정렬까지 분기시키지 않는다.
+  '세금': 'sell',
   '등기·상속': 'rights',
   '건물 상태': 'repair',
-  '관리': 'hold',
+  '관리': 'manage',
   '매각 가능성': 'sell',
   '활용 방법': 'rent',
 }
 
-const won = (v: unknown): string | null => {
-  const n = Number(v)
-  if (!Number.isFinite(n) || n <= 0) return null
-  return (n / 10_000).toLocaleString('ko-KR') + '만원'
-}
-
 const dot = (s: unknown): string => String(s ?? '').replace(/-/g, '. ') + '.'
-
-function findingsBy(axes: Axes | null, labels: string[]): Finding[] {
-  const out: Finding[] = []
-  for (const ax of axes?.diagnosis?.axes ?? []) {
-    for (const f of ax.findings ?? []) if (f.label && labels.includes(f.label)) out.push(f)
-  }
-  return out
-}
 
 /**
  * 진단서 1페이지 — 4축.
@@ -141,7 +131,13 @@ export function buildAxisBlocks(
   return blocks
 }
 
-/** 진단서 2페이지 — 이 집으로 할 수 있는 것 */
+/**
+ * 진단서 2페이지 — 이 자산으로 할 수 있는 것.
+ *
+ * 피벗 이후 순서가 바뀌었다. '무엇을 확인하세요'가 아니라
+ * '지금 얼마가 나가고, 그걸 바꾸려면 무엇을 하면 되는가'다.
+ * 그래서 각 경로가 가능하면 금액을 먼저 말한다.
+ */
 export function buildPaths(
   verdict: string | null,
   axes: Axes | null,
@@ -149,46 +145,48 @@ export function buildPaths(
   concern: string | null,
   registry: RegistryCheck = { note: null, checkedAt: null },
 ): PathItem[] {
-  const legal = axes?.diagnosis?.axes?.find((a) => a.axis === 'rights')
-  // 사람이 등기를 확인했으면 ①법적 축이 열린 것으로 본다.
-  // 자동 판정이 unknown 인 유일한 이유가 등기부 접근 불가였기 때문이다.
+  const rightsAxis = axes?.diagnosis?.axes?.find((a) => a.axis === 'rights')
   const registryDone = Boolean(registry.note && registry.checkedAt)
-  const legalOpen = legal?.verdict === 'clear' || registryDone
+  const rightsOpen =
+    rightsAxis?.verdict === 'clear' || (registryDone && rightsAxis?.verdict !== 'precondition')
+
+  // 선행필요·불가면 실행 경로를 닫는다. 등기가 안 풀리면 매각도 임대도 못 한다.
+  const canAct = verdict !== 'blocked' && verdict !== 'precondition'
+
   const price = Number(facts.housePrice) || 0
   const age = Number(facts.buildingAge) || 0
   const zone = String(facts.zone1 ?? '')
+  const taxSingle = Number(facts.taxSingle) || 0
+  const hasBuilding = facts.hasBuilding === true
+  const man = (n: number) => Math.round(n / 10_000).toLocaleString('ko-KR')
 
   const items: PathItem[] = []
 
-  // ①이 막혔거나 미확인이면 권리관계 선행이 1순위다. 예외 없다 —
-  // 등기가 안 풀리면 매각도 임대도 못 한다.
+  // 권리가 안 풀리면 1순위다. 예외 없다 — 등기가 막히면 나머지가 다 막힌다.
   items.push({
     key: 'rights',
     title: PATH_TITLE.rights,
     lines: registryDone
       ? [registry.note!, `등기사항증명서 ${dot(registry.checkedAt)} 확인`]
-      : legalOpen
-      ? ['권리관계에서 걸리는 것이 확인되지 않았습니다.']
-      : [
-          '등기부는 공개 자료로 확인할 수 없어 아직 남아 있습니다.',
-          '소유주께서 등기사항증명서를 확인하시거나, 열람 동의를 주시면 저희가 확인해 드립니다.',
-          '공동소유나 상속 정리가 남아 있으면 이것부터 끝나야 나머지가 진행됩니다.',
-        ],
+      : rightsOpen
+        ? ['권리관계에서 걸리는 것이 확인되지 않았습니다.']
+        : [
+            '등기부는 공개 자료로 확인할 수 없어 아직 남아 있습니다.',
+            '소유주께서 등기사항증명서를 확인하시거나, 열람 동의를 주시면 저희가 확인해 드립니다. 열람 수수료는 700원입니다.',
+            '공동소유나 상속 정리가 남아 있으면 이것부터 끝나야 나머지가 진행됩니다.',
+          ],
     blocked: false,
-    tone: legalOpen ? 'muted' : 'deep',
+    tone: rightsOpen ? 'muted' : 'deep',
   })
-
-  const canAct = verdict !== 'blocked'
 
   items.push({
     key: 'sell',
     title: PATH_TITLE.sell,
     lines: canAct
       ? [
-          price > 0 && price <= 400_000_000
-            ? '공시가격이 4억원 이하여서 2027년 1월 1일 취득분부터 세컨드홈 특례 대상입니다. 수도권 1주택자가 사더라도 다주택으로 보지 않습니다.'
-            : '세컨드홈 특례 요건은 공시가격 기준으로 따로 확인이 필요합니다.',
-          ...(legalOpen ? [] : ['다만 등기 확인이 끝난 뒤에 진행하실 수 있습니다.']),
+          '공개 자료에서 매각을 막는 사유는 확인되지 않았습니다.',
+          '재산세 과세기준일이 6월 1일입니다. 그 전에 잔금을 넘기시면 그해 재산세는 매수인이 냅니다.',
+          ...(rightsOpen ? [] : ['다만 등기 확인이 끝난 뒤에 진행하실 수 있습니다.']),
         ]
       : ['지금 상태로는 어렵습니다. 위 권리관계를 먼저 정리하셔야 합니다.'],
     blocked: !canAct,
@@ -201,9 +199,9 @@ export function buildPaths(
     lines: canAct
       ? [
           zone
-            ? `${zone}입니다. 거주 목적 사용을 막는 규제는 확인되지 않았습니다.`
+            ? `${zone}입니다. 사용을 막는 규제는 확인되지 않았습니다.`
             : '용도지역을 확인하지 못했습니다.',
-          '사람이 살 수 있는 상태로 만들려면 어디를 손봐야 하는지는 현장 확인에서 정리해 드립니다.',
+          '용도를 바꾸실 생각이면 허가가 필요한지 먼저 보셔야 합니다. 같은 시설군 안에서 바꾸는 것은 건축물대장 기재 변경만으로 됩니다.',
         ]
       : ['권리관계가 정리된 뒤에 검토하실 수 있습니다.'],
     blocked: !canAct,
@@ -215,48 +213,67 @@ export function buildPaths(
     title: PATH_TITLE.repair,
     lines: [
       age > 0 ? `사용승인으로부터 ${age}년 지났습니다.` : '건축 연도를 확인하지 못했습니다.',
-      '수리에 드는 금액은 확인하지 않았습니다. 이 진단서에서는 계산해 드리지 않습니다.',
+      '연면적 200㎡ 미만이고 3층 미만이면 대수선은 허가가 아니라 신고로 됩니다. 관리·농림·자연환경보전지역이면 신축도 신고 대상입니다.',
+      '수리에 드는 금액은 이 진단서에서 계산해 드리지 않습니다.',
     ],
     blocked: false,
     tone: 'muted',
+  })
+
+  // '그대로 두셔도 됩니다' 로 끝내면 아무 정보가 아니다. 숫자를 준다.
+  items.push({
+    key: 'secondhome',
+    title: PATH_TITLE.secondhome,
+    lines: [
+      taxSingle > 0
+        ? `10년 보유하셔도 재산세 총액은 약 ${man(taxSingle * 10)}만원입니다. 보유 비용이 계획을 접을 수준은 아닙니다.`
+        : '공시가격을 확인하지 못해 보유세를 계산하지 못했습니다.',
+      price > 0 && price <= 400_000_000
+        ? '공시가격이 4억원 이하라 2027년 1월 1일 취득분부터 세컨드홈 특례 대상입니다.'
+        : '세컨드홈 특례 요건은 공시가격 기준으로 따로 확인이 필요합니다.',
+    ],
+    blocked: false,
+    tone: 'deep',
   })
 
   items.push({
-    key: 'hold',
-    title: PATH_TITLE.hold,
-    // 법명 정정 2026-09-06 — 「빈 건축물 정비 특별법」은 존재하지 않는 법이었다.
-    // 국가법령정보센터에서 확인된 것은 법명과 시행일뿐이다.
-    // 소유주 관리의무·이행강제금의 유무는 조문을 못 봤으므로 문장에서 뺐다.
-    // laws.json 의 확인일이 채워지면 다시 넣는다.
+    key: 'manage',
+    title: PATH_TITLE.manage,
     lines: [
-      '그대로 두셔도 됩니다. 다만 재산세는 매년 나갑니다.',
-      '빈집 관련 제도는 정비되는 중입니다. 읍·면 지역은 「농어촌 빈집 정비 및 관리에 관한 특별법」이 2027년 6월 17일 시행되고, 동 지역은 「빈집 및 소규모주택 정비에 관한 특례법」이 이미 시행 중입니다.',
+      '비워두시더라도 최소한의 관리는 필요합니다.',
+      '읍·면은 「농어촌 빈집 정비 및 관리에 관한 특별법」, 동은 「빈집 및 소규모주택 정비에 관한 특례법」이 적용됩니다. 특정빈집으로 판정되어 조치명령을 받고 60일 안에 이행하지 않으면 이행강제금이 부과됩니다.',
+      '지붕·배수·잠금 세 가지만 유지해도 급격한 노후를 늦출 수 있습니다.',
     ],
     blocked: false,
     tone: 'muted',
   })
 
-  // 철거 — 소유주가 돈을 받는 구조가 아니다. 국토부 사업비 단가를 오적용하지 않는다.
+  // 철거 — 소유주가 돈을 받는 구조가 아니라고만 하면 한쪽만 보여주는 것이다.
+  // 2026-01-01 부터 감면이 생겼으므로 함께 말한다.
   items.push({
     key: 'demolish',
     title: PATH_TITLE.demolish,
     lines: [
-      '포항시 빈집 정비는 두 계통입니다.',
-      '시 사업은 철거비를 부담하지만 보상은 없고, 지상권 등기(읍·면 5년)와 공익용도 유지 의무가 따릅니다.',
-      '구 사업은 보조금 최대 200만원에 자부담 10%가 있습니다.',
+      hasBuilding
+        ? '2026년 1월 1일부터 빈집을 철거한 뒤의 토지에 재산세를 5년간 50% 감면합니다. 철거일로부터 3년 안에 새로 지으시면 취득세도 최대 50%(150만원 한도) 감면됩니다.'
+        : '건축물이 확인되지 않아 철거 대상 여부부터 확인이 필요합니다.',
+      '다만 철거 후 소유권을 넘기시거나 개발사업으로 철거된 경우는 감면에서 빠집니다. 법적 빈집으로 인정받는 절차가 먼저인지 시청에 확인하셔야 합니다.',
       '지붕이 슬레이트인 경우 석면 처리 절차가 따로 있습니다.',
     ],
     blocked: false,
     tone: 'earth',
   })
 
-  // 정렬 — 1순위 권리관계(막혔을 때), 2순위 걱정거리가 지목한 경로, 그다음 나머지, 맨 아래 막힌 것
+  // 정렬 — 권리가 막혔으면 1순위, 그다음 걱정거리가 지목한 경로, 맨 아래 막힌 것
   const wanted = concern ? CONCERN_TO_PATH[concern] : undefined
   const rank = (p: PathItem) => {
     if (p.blocked) return 100
-    if (p.key === 'rights' && !legalOpen) return 0
+    if (p.key === 'rights' && !rightsOpen) return 0
     if (wanted && p.key === wanted) return 1
     return 10
   }
-  return items.map((p, i) => ({ p, i })).sort((a, b) => rank(a.p) - rank(b.p) || a.i - b.i).map((x) => x.p)
+  return items
+    .map((p, i) => ({ p, i }))
+    .sort((a, b) => rank(a.p) - rank(b.p) || a.i - b.i)
+    .map((x) => x.p)
 }
