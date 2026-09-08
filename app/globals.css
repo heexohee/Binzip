@@ -73,6 +73,11 @@ h1, h2, h3 {
 
 /* 진단서 — 인쇄가 1차 매체다. 화면에서는 A4 고정폭을 쓰지 않는다 (핸드오프 §2) */
 @media print {
+  /* 4축 진단서 — 축 하나가 페이지에 걸쳐 끊기지 않게 한다.
+     ④시장·관리는 등급에 참여하지 않으므로 넘칠 때 2페이지로 내린다. */
+  .break-inside-avoid { break-inside: avoid; }
+  .break-before-page { break-before: page; }
+
   @page { size: A4; margin: 14mm; }
   .doc { max-width: none; padding: 0; }
   .page { break-after: page; }

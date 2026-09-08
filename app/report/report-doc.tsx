@@ -1,13 +1,14 @@
-import { buildItems, buildPaths } from '../../src/report-view'
+import { buildAxisBlocks, buildPaths } from '../../src/report-view'
 import { VERDICT_LABEL, type ApplicationRow, type ReportRow } from '../admin/types'
 
 const GRADE_DESC: Record<string, string> = {
   possible: '서류와 현장에서 걸리는 것이 없습니다.',
   conditional: '먼저 정리할 것이 한두 가지 있습니다.',
+  precondition: '절차 하나를 먼저 밟으시면 나머지가 열립니다.',
   blocked: '지금 상태로는 어렵습니다. 그래도 다음에 할 일은 남아 있습니다.',
 }
 
-const ORDER = ['possible', 'conditional', 'blocked']
+const ORDER = ['possible', 'conditional', 'precondition', 'blocked']
 
 /**
  * 진단서 본문. 공개 라우트(/report/[id])와 관리자 미리보기가 같은 화면을 쓴다.
@@ -17,7 +18,8 @@ export function ReportDoc({ rep, app }: { rep: ReportRow; app: ApplicationRow })
   const axes = rep.axes ?? null
   const facts = (axes as unknown as { facts?: Record<string, unknown> })?.facts ?? {}
   const registry = { note: rep.registry_note, checkedAt: rep.registry_checked_at }
-  const items = buildItems(axes, facts, rep.note, registry)
+  const blocks = buildAxisBlocks(axes, facts, rep.note, registry)
+  const anyUnverified = blocks.some((b) => b.items.some((i) => i.unverified))
   const paths = buildPaths(rep.verdict, axes, facts, app.concern, registry)
   const docNo = '제' + new Date(rep.created_at).getFullYear() + '-' + rep.id.slice(0, 4)
   const day = (s: string) =>
@@ -51,7 +53,7 @@ export function ReportDoc({ rep, app }: { rep: ReportRow; app: ApplicationRow })
               </p>
             )
           })}
-          {items.some((i) => i.unverified) && (
+          {anyUnverified && (
             <p className="mt-5 rounded-[3px] border-l-[3px] border-dash bg-wash px-4 py-3 text-[14px] leading-[1.7]">
               아직 확인하지 못한 항목이 있습니다. 확인되면 판정이 달라질 수 있습니다.
             </p>
@@ -59,47 +61,57 @@ export function ReportDoc({ rep, app }: { rep: ReportRow; app: ApplicationRow })
         </section>
 
         <section className="mt-8">
-          {items.map((it) => (
+          {blocks.map((b) => (
             <div
-              key={it.no}
+              key={b.axis}
               className={
-                'mt-2 grid grid-cols-[24px_1fr] gap-x-[14px] border-l-[3px] py-[14px] pl-4 md:grid-cols-[26px_118px_1fr] ' +
-                // 확인 여부를 선 모양이 아니라 면과 바 굵기로 가른다.
-                // 점선은 한눈에 안 들어오고 인쇄에서 더 흐려진다.
-                (it.unverified ? 'border-dash bg-wash' : 'border-mid bg-paper')
+                'mt-7 first:mt-0 break-inside-avoid ' +
+                // 스펙 §5.1 사전 결정 — 넘치면 ④시장·관리를 2페이지로 내린다
+                (b.axis === 'market' ? 'break-before-page' : '')
               }
             >
-              <span className={'font-serif text-[15px] ' + (it.unverified ? 'text-muted' : 'text-mid')}>
-                {it.no}
-              </span>
-              <span className="text-[15px] text-muted md:col-auto">{it.label}</span>
-              <div className="col-span-2 flex flex-col gap-1 md:col-auto">
-                {it.lines.map((l, i) => (
-                  <span key={i} className={'text-[16px] leading-[1.6] ' + (it.unverified ? 'text-muted' : '')}>
-                    {l}
-                  </span>
-                ))}
-                {it.unverified ? (
-                  // 시각 부호보다 글자가 확실하다. 주 독자가 40~70대다.
-                  <span className="mt-1 flex flex-wrap items-center gap-2">
-                    <span className="rounded-[3px] bg-pale px-2 py-[2px] text-[12px] font-semibold text-ink">
-                      아직 확인하지 못함
-                    </span>
-                    <span className="text-[13px] text-muted">{it.source ?? '출처 없음'}</span>
-                  </span>
-                ) : (
-                  <span className="text-[13px] text-muted">{it.source}</span>
-                )}
+              {/* 축 헤더가 판정을 진다. 훑는 사람은 이 4줄만 봐도 된다 */}
+              <div className="flex items-baseline justify-between border-b border-mid pb-2">
+                <h2 className="font-serif text-[18px] font-semibold text-ink">{b.label}</h2>
+                <span className="text-[13px] text-muted">{b.badge}</span>
               </div>
+
+              {b.items.map((it, n) => (
+                <div
+                  key={b.axis + n}
+                  className={
+                    'mt-2 grid grid-cols-1 gap-x-[14px] border-l-[3px] py-[12px] pl-4 md:grid-cols-[118px_1fr] ' +
+                    // 확인 여부를 선 모양이 아니라 면과 바 굵기로 가른다.
+                    // 점선은 한눈에 안 들어오고 인쇄에서 더 흐려진다.
+                    (it.unverified ? 'border-dash bg-wash' : 'border-mid bg-paper')
+                  }
+                >
+                  <span className="text-[15px] text-muted">{it.label}</span>
+                  <div className="flex flex-col gap-1">
+                    {it.lines.map((l, i) => (
+                      <span
+                        key={i}
+                        className={'text-[16px] leading-[1.6] ' + (it.unverified ? 'text-muted' : '')}
+                      >
+                        {l}
+                      </span>
+                    ))}
+                    {it.unverified ? (
+                      // 시각 부호보다 글자가 확실하다. 주 독자가 40~70대다.
+                      <span className="mt-1 flex flex-wrap items-center gap-2">
+                        <span className="rounded-[3px] bg-pale px-2 py-[2px] text-[12px] font-semibold text-ink">
+                          아직 확인하지 못함
+                        </span>
+                        <span className="text-[13px] text-muted">{it.source ?? '출처 없음'}</span>
+                      </span>
+                    ) : (
+                      it.source && <span className="mt-1 text-[13px] text-muted">{it.source}</span>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           ))}
-          <p className="mt-5 border-t border-line pt-4 text-[13px] leading-[1.7] text-muted">
-            왼쪽에 진한 선이 그어진 항목은 확인한 것이고, 회색 바탕에{' '}
-            <span className="rounded-[3px] bg-pale px-[6px] py-[1px] text-[12px] font-semibold text-ink">
-              아직 확인하지 못함
-            </span>{' '}
-            이 붙은 항목은 확인하지 못한 것입니다. 확인하지 못한 것을 확인한 것처럼 적지 않습니다.
-          </p>
         </section>
 
         <footer className="mt-8 flex justify-between border-t border-line pt-4 text-[12px] text-muted">

@@ -51,7 +51,9 @@ create table if not exists public.reports (
   status            text not null default 'draft'
                     check (status in ('draft','issued','failed')),
 
-  verdict           text check (verdict in ('possible','conditional','blocked')),
+  -- precondition = '선행필요'. 절차를 밟으면 풀리는 것(미등기·공유 미합의)이라
+  -- blocked 와 분리한다. 미등기에 '불가' 도장을 찍으면 메시지가 틀린다.
+  verdict           text check (verdict in ('possible','conditional','precondition','blocked')),
   axes              jsonb,   -- 6항목 판정 근거
   paths             jsonb,   -- 6경로 + 정렬 결과
   note              text,    -- 운영자가 손으로 덧붙이는 말

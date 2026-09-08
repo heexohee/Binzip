@@ -1,11 +1,10 @@
 import type { Axes, Finding } from '../app/admin/types'
 
 export type Item = {
-  no: string
   label: string
   lines: string[]
   source: string | null
-  /** 확인하지 못한 항목. 화면에서 점선으로 그린다 */
+  /** 확인하지 못한 항목. 화면에서 면과 왼쪽 바로 구분한다 */
   unverified: boolean
 }
 
@@ -56,87 +55,90 @@ function findingsBy(axes: Axes | null, labels: string[]): Finding[] {
   return out
 }
 
-/** 진단서 1페이지 — 판정 근거 6항목 */
+/**
+ * 진단서 1페이지 — 4축.
+ *
+ * 룰 엔진이 이미 축별 근거를 만들어 두므로 facts 에서 손으로 조립하지 않는다.
+ * 예전에는 6항목을 여기서 하나씩 짰는데, 그러면 룰과 화면이 두 벌이 되어
+ * 룰을 고쳐도 진단서가 안 바뀌었다. 이제 룰이 유일한 출처다.
+ */
 export type RegistryCheck = { note: string | null; checkedAt: string | null }
 
-export function buildItems(
+export type AxisBlock = {
+  axis: string
+  /** '① 권리' */
+  label: string
+  /** 축 헤더에 붙는 한국어 배지 */
+  badge: string
+  items: Item[]
+}
+
+const AXIS_LABEL: Record<string, string> = {
+  rights: '① 권리',
+  tax: '② 세금',
+  property: '③ 건물·토지',
+  market: '④ 시장·관리',
+}
+
+const BADGE: Record<string, string> = {
+  clear: '확인됨',
+  unknown: '확인 필요',
+  suspect: '조건 있음',
+  precondition: '선행 필요',
+  blocked: '막힘',
+}
+
+export function buildAxisBlocks(
   axes: Axes | null,
-  facts: Record<string, unknown>,
+  _facts: Record<string, unknown>,
   note: string | null,
   registry: RegistryCheck = { note: null, checkedAt: null },
-): Item[] {
+): AxisBlock[] {
   const checked = axes?.checkedAt ? dot(axes.checkedAt) : null
   const src = (name: string) => (checked ? `${name} ${checked} 확인` : name)
-
-  const building: string[] = []
-  if (facts.useApprovalDate) building.push(`사용승인 ${dot(facts.useApprovalDate)}`)
-  const spec = [facts.mainPurpose, facts.structure, facts.floors && `지상 ${facts.floors}층`]
-    .filter(Boolean)
-    .join(' · ')
-  if (spec) building.push(spec)
-  if (facts.buildingArea) building.push(`연면적 ${facts.buildingArea}㎡`)
-
-  const price = won(facts.housePrice)
-  const regulation = [facts.zone1, ...(Array.isArray(facts.zones) ? facts.zones.slice(1) : [])]
-    .filter(Boolean)
-    .join(' · ')
-
   // 내용과 확인일이 함께 있을 때만 확인된 것으로 본다 — 출처를 못 쓰면 실선이 될 수 없다
   const registryDone = Boolean(registry.note && registry.checkedAt)
-  const road = findingsBy(axes, ['진입로', '지형'])
-  const legalUnknown = findingsBy(axes, ['등기', '공동소유', '상속', '위반건축물'])
 
-  return [
-    {
-      no: '①',
-      label: '건축물 정보',
-      lines: building.length ? building : ['확인하지 못했습니다.'],
-      source: building.length ? src('건축물대장') : null,
-      unverified: building.length === 0,
-    },
-    {
-      no: '②',
-      label: '공시가격',
-      lines: price ? [price] : ['확인하지 못했습니다.'],
-      source: price ? `개별주택가격 ${facts.housePriceYear ?? ''}년 공시`.trim() : null,
-      unverified: !price,
-    },
-    {
-      no: '③',
-      label: '진입로',
-      lines: road.length ? road.map((f) => f.reason ?? '') : ['확인하지 못했습니다.'],
-      source: road.length ? src('토지특성') : null,
-      unverified: road.length === 0 || road.some((f) => f.verdict === 'unknown'),
-    },
-    {
-      no: '④',
-      label: '규제',
-      lines: regulation ? [regulation] : ['확인하지 못했습니다.'],
-      source: regulation ? src('토지이용규제') : null,
-      unverified: !regulation,
-    },
-    {
-      no: '⑤',
-      label: '건물 상태',
-      // 자동으로는 알 수 없다. 사람이 다녀와야 채워진다.
-      lines: note ? note.split('\n').filter(Boolean) : ['현장 확인이 필요합니다.'],
-      source: note ? src('현장 방문') : null,
-      unverified: !note,
-    },
-    {
-      no: '⑥',
-      label: '등기',
-      // 등기부는 공개 API 가 없다. 자동으로는 끝까지 미확인이고,
-      // 사람이 등기소에서 확인해 적었을 때만 실선이 된다.
-      lines: registryDone
-        ? registry.note!.split('\n').filter(Boolean)
-        : legalUnknown.length
-          ? legalUnknown.map((f) => f.reason ?? '')
-          : ['확인하지 못했습니다.'],
-      source: registryDone ? `등기사항증명서 ${dot(registry.checkedAt)} 확인` : null,
-      unverified: !registryDone,
-    },
-  ]
+  const blocks = (axes?.diagnosis?.axes ?? []).map((a) => {
+    const items: Item[] = (a.findings ?? []).map((f) => ({
+      label: f.label ?? '',
+      lines: [f.reason ?? '', ...(f.nextStep ? [f.nextStep] : [])].filter(Boolean),
+      source: f.source && f.source !== '—' ? src(f.source) : null,
+      unverified: f.verdict === 'unknown',
+    }))
+
+    // ① 권리 — 사람이 등기소에서 확인해 적었으면 그 내용이 자동 판정을 대체한다
+    if (a.axis === 'rights' && registryDone) {
+      const idx = items.findIndex((i) => i.label === '등기')
+      const filled: Item = {
+        label: '등기',
+        lines: registry.note!.split('\n').filter(Boolean),
+        source: `등기사항증명서 ${dot(registry.checkedAt)} 확인`,
+        unverified: false,
+      }
+      if (idx >= 0) items[idx] = filled
+      else items.unshift(filled)
+    }
+
+    // ③ 건물·토지 — 현장 메모는 룰이 만들 수 없다. 사람이 다녀와야 채워진다
+    if (a.axis === 'property') {
+      items.push({
+        label: '현장 상태',
+        lines: note ? note.split('\n').filter(Boolean) : ['현장 확인이 필요합니다.'],
+        source: note ? src('현장 방문') : null,
+        unverified: !note,
+      })
+    }
+
+    return {
+      axis: a.axis,
+      label: AXIS_LABEL[a.axis] ?? a.axis,
+      badge: BADGE[a.verdict ?? 'unknown'] ?? '확인 필요',
+      items,
+    }
+  })
+
+  return blocks
 }
 
 /** 진단서 2페이지 — 이 집으로 할 수 있는 것 */

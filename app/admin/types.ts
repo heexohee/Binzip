@@ -17,7 +17,14 @@ export type ApplicationRow = {
   expires_at: string
 }
 
-export type Finding = { label?: string; reason?: string; verdict?: string; source?: string }
+export type Finding = {
+  label?: string
+  reason?: string
+  /** 그래서 무엇을 하면 되는가. 룰이 만들고 진단서가 그대로 보여준다 */
+  nextStep?: string
+  verdict?: string
+  source?: string
+}
 export type AxisSummary = { axis: string; verdict: string; findings?: Finding[] }
 
 /** reports.axes 에 판정 전문이 그대로 들어 있다 */
