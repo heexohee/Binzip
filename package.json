@@ -13,6 +13,7 @@
     "ledger:build": "tsx scripts/build-ledger.ts",
     "verify:g1": "tsx --env-file=.env scripts/verify-g1.ts",
     "verify:address": "tsx --env-file=.env scripts/verify-address.ts",
+    "verify:transaction": "tsx --env-file=.env scripts/verify-transaction.ts",
     "collect:addresses": "tsx --env-file=.env scripts/collect-addresses.ts",
     "diagnose": "tsx --env-file=.env scripts/diagnose.ts"
   },
