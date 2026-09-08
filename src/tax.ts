@@ -263,7 +263,6 @@ export function compareScenarios(input: ScenarioInput): Scenario[] {
       upfrontCost: null,
       support: slateSupport,
       caveats: [
-        '주택으로 남으므로 보유세는 그대로입니다.',
         '연면적 200㎡ 미만이고 3층 미만이면 대수선은 허가가 아니라 신고로 됩니다.',
         '공사비는 현장 견적이 필요합니다. 이 진단서에서 계산하지 않습니다.',
       ],

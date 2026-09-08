@@ -96,8 +96,8 @@ export default function Home() {
         <div className={SHELL + ' ' + PAD + ' grid items-start gap-[clamp(36px,5vw,64px)] [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]'}>
         <div className="max-w-[34rem]">
           <h1 className="flex flex-col text-[32px] md:text-[52px]">
-            <span>그 빈집,</span>
-            <span>어떻게 하실 건가요</span>
+            <span>갑자기 생긴 빈집,</span>
+            <span>어떻게 하실 건가요?</span>
           </h1>
           <Lines
             className="mt-6 max-w-[36ch]"

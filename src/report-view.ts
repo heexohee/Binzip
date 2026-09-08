@@ -1,4 +1,5 @@
 import type { Axes } from '../app/admin/types'
+import { compareScenarios, type Scenario } from './tax'
 
 export type Item = {
   label: string
@@ -8,8 +9,11 @@ export type Item = {
   unverified: boolean
 }
 
-export type PathKey =
-  | 'rights' | 'sell' | 'rent' | 'repair' | 'secondhome' | 'manage' | 'demolish'
+/**
+ * 소유주가 실제로 고르는 것은 셋뿐이다.
+ * rights 는 선택지가 아니라 셋 앞에 오는 선행 조건이다.
+ */
+export type PathKey = 'rights' | 'keep' | 'demolish' | 'renovate'
 
 export type PathItem = {
   key: PathKey
@@ -19,29 +23,6 @@ export type PathItem = {
   blocked: boolean
   /** 철거만 earth 를 쓴다 — 페이지 전체 2곳 이하 규칙 */
   tone: 'deep' | 'earth' | 'muted'
-}
-
-const PATH_TITLE: Record<PathKey, string> = {
-  rights: '권리정리 우선',
-  sell: '매각',
-  rent: '임대·활용',
-  repair: '정비',
-  secondhome: '보유·세컨드하우스',
-  manage: '관리',
-  demolish: '철거',
-}
-
-/** 소유주가 고른 걱정거리가 어느 경로를 맨 위로 올릴지 정한다 */
-const CONCERN_TO_PATH: Record<string, PathKey> = {
-  // 세금 걱정이 곧 매각 의사는 아니지만, ②세금축이 재산세 숫자로 이미 안심시킨다.
-  // 경로 정렬까지 분기시키지 않는다.
-  '보유 비용': 'secondhome',
-  '세금': 'sell',
-  '등기·상속': 'rights',
-  '건물 상태': 'repair',
-  '관리': 'manage',
-  '매각 가능성': 'sell',
-  '활용 방법': 'rent',
 }
 
 const dot = (s: unknown): string => String(s ?? '').replace(/-/g, '. ') + '.'
@@ -133,11 +114,12 @@ export function buildAxisBlocks(
 }
 
 /**
- * 진단서 2페이지 — 이 자산으로 할 수 있는 것.
+ * 진단서 2페이지 — 이 빈집을 어떻게 할 것인가.
  *
- * 피벗 이후 순서가 바뀌었다. '무엇을 확인하세요'가 아니라
- * '지금 얼마가 나가고, 그걸 바꾸려면 무엇을 하면 되는가'다.
- * 그래서 각 경로가 가능하면 금액을 먼저 말한다.
+ * 예전에는 경로 7개를 나열했다. 나열은 결정을 돕지 않는다.
+ * 소유주가 실제로 고르는 것은 셋뿐이고, 그 셋은 서로 배타적이다 —
+ * 철거 지원을 받으면 공공활용 의무가 붙어 그 기간에는 못 판다.
+ * 그래서 같은 잣대로 나란히 놓는 것이 이 장의 일이다.
  */
 export function buildPaths(
   verdict: string | null,
@@ -151,130 +133,81 @@ export function buildPaths(
   const rightsOpen =
     rightsAxis?.verdict === 'clear' || (registryDone && rightsAxis?.verdict !== 'precondition')
 
-  // 선행필요·불가면 실행 경로를 닫는다. 등기가 안 풀리면 매각도 임대도 못 한다.
-  const canAct = verdict !== 'blocked' && verdict !== 'precondition'
-
   const price = Number(facts.housePrice) || 0
   const age = Number(facts.buildingAge) || 0
-  const zone = String(facts.zone1 ?? '')
-  const taxSingle = Number(facts.taxSingle) || 0
   const hasBuilding = facts.hasBuilding === true
-  const man = (n: number) => Math.round(n / 10_000).toLocaleString('ko-KR')
+  const isHouse = /주택/.test(String(facts.mainPurpose ?? ''))
+  const slate = /슬레이트/.test(String(facts.structure ?? ''))
+
+  const s = compareScenarios({
+    housePrice: price || null,
+    landPrice: price || null,
+    zone1: (facts.zone1 as string) ?? null,
+    slate,
+    isHouse,
+  })
+  const pick = (k: Scenario['key']) => s.find((x) => x.key === k)!
+  const man = (n: number | null) => (n == null ? '확인 필요' : (n / 10_000).toFixed(1) + '만원')
 
   const items: PathItem[] = []
 
-  // 권리가 안 풀리면 1순위다. 예외 없다 — 등기가 막히면 나머지가 다 막힌다.
-  items.push({
-    key: 'rights',
-    title: PATH_TITLE.rights,
-    lines: registryDone
-      ? [registry.note!, `등기사항증명서 ${dot(registry.checkedAt)} 확인`]
-      : rightsOpen
-        ? ['권리관계에서 걸리는 것이 확인되지 않았습니다.']
+  // 권리가 안 풀렸으면 셋 다 못 한다. 맨 앞에 둔다.
+  if (!rightsOpen) {
+    items.push({
+      key: 'rights',
+      title: '먼저 — 권리관계 확인',
+      lines: registryDone
+        ? [registry.note!, `등기사항증명서 ${dot(registry.checkedAt)} 확인`]
         : [
-            '등기부는 공개 자료로 확인할 수 없어 아직 남아 있습니다.',
-            '소유주께서 등기사항증명서를 확인하시거나, 열람 동의를 주시면 저희가 확인해 드립니다. 열람 수수료는 700원입니다.',
-            '공동소유나 상속 정리가 남아 있으면 이것부터 끝나야 나머지가 진행됩니다.',
+            '등기부를 확인하기 전에는 아래 셋 중 무엇도 진행할 수 없습니다.',
+            '상속 정리가 안 됐거나 공유자가 여럿이면 그것부터입니다.',
+            '인터넷등기소 열람 수수료는 700원입니다.',
           ],
-    blocked: false,
-    tone: rightsOpen ? 'muted' : 'deep',
-  })
+      blocked: false,
+      tone: 'deep',
+    })
+  }
 
+  const keep = pick('keep')
   items.push({
-    key: 'sell',
-    title: PATH_TITLE.sell,
-    lines: canAct
-      ? [
-          '공개 자료에서 매각을 막는 사유는 확인되지 않았습니다.',
-          '재산세 과세기준일이 6월 1일입니다. 그 전에 잔금을 넘기시면 그해 재산세는 매수인이 냅니다.',
-          ...(rightsOpen ? [] : ['다만 등기 확인이 끝난 뒤에 진행하실 수 있습니다.']),
-        ]
-      : ['지금 상태로는 어렵습니다. 위 권리관계를 먼저 정리하셔야 합니다.'],
-    blocked: !canAct,
-    tone: canAct ? 'deep' : 'muted',
-  })
-
-  items.push({
-    key: 'rent',
-    title: PATH_TITLE.rent,
-    lines: canAct
-      ? [
-          zone
-            ? `${zone}입니다. 사용을 막는 규제는 확인되지 않았습니다.`
-            : '용도지역을 확인하지 못했습니다.',
-          '용도를 바꾸실 생각이면 허가가 필요한지 먼저 보셔야 합니다. 같은 시설군 안에서 바꾸는 것은 건축물대장 기재 변경만으로 됩니다.',
-        ]
-      : ['권리관계가 정리된 뒤에 검토하실 수 있습니다.'],
-    blocked: !canAct,
-    tone: canAct ? 'deep' : 'muted',
-  })
-
-  items.push({
-    key: 'repair',
-    title: PATH_TITLE.repair,
+    key: 'keep',
+    title: '① 그대로 둔다',
     lines: [
-      age > 0 ? `사용승인으로부터 ${age}년 지났습니다.` : '건축 연도를 확인하지 못했습니다.',
-      '연면적 200㎡ 미만이고 3층 미만이면 대수선은 허가가 아니라 신고로 됩니다. 관리·농림·자연환경보전지역이면 신축도 신고 대상입니다.',
-      '수리에 드는 금액은 이 진단서에서 계산해 드리지 않습니다.',
+      `보유세는 연 ${man(keep.annualTaxSingle)} 수준입니다 (1주택 기준·추정). 다른 집이 있으시면 ${man(keep.annualTaxGeneral)}입니다.`,
+      ...keep.caveats,
     ],
     blocked: false,
     tone: 'muted',
   })
 
-  // '그대로 두셔도 됩니다' 로 끝내면 아무 정보가 아니다. 숫자를 준다.
-  items.push({
-    key: 'secondhome',
-    title: PATH_TITLE.secondhome,
-    lines: [
-      taxSingle > 0
-        ? `10년 보유하셔도 재산세 총액은 약 ${man(taxSingle * 10)}만원입니다. 보유 비용이 계획을 접을 수준은 아닙니다.`
-        : '공시가격을 확인하지 못해 보유세를 계산하지 못했습니다.',
-      price > 0 && price <= 400_000_000
-        ? '공시가격이 4억원 이하라 2027년 1월 1일 취득분부터 세컨드홈 특례 대상입니다.'
-        : '세컨드홈 특례 요건은 공시가격 기준으로 따로 확인이 필요합니다.',
-    ],
-    blocked: false,
-    tone: 'deep',
-  })
-
-  items.push({
-    key: 'manage',
-    title: PATH_TITLE.manage,
-    lines: [
-      '비워두시더라도 최소한의 관리는 필요합니다.',
-      '읍·면은 「농어촌 빈집 정비 및 관리에 관한 특별법」, 동은 「빈집 및 소규모주택 정비에 관한 특례법」이 적용됩니다. 특정빈집으로 판정되어 조치명령을 받고 60일 안에 이행하지 않으면 이행강제금이 부과됩니다.',
-      '지붕·배수·잠금 세 가지만 유지해도 급격한 노후를 늦출 수 있습니다.',
-    ],
-    blocked: false,
-    tone: 'muted',
-  })
-
-  // 철거 — 소유주가 돈을 받는 구조가 아니라고만 하면 한쪽만 보여주는 것이다.
-  // 2026-01-01 부터 감면이 생겼으므로 함께 말한다.
+  const dem = pick('demolish')
   items.push({
     key: 'demolish',
-    title: PATH_TITLE.demolish,
-    lines: [
-      hasBuilding
-        ? '2026년 1월 1일부터 빈집을 철거한 뒤의 토지에 재산세를 5년간 50% 감면합니다. 철거일로부터 3년 안에 새로 지으시면 취득세도 최대 50%(150만원 한도) 감면됩니다.'
-        : '건축물이 확인되지 않아 철거 대상 여부부터 확인이 필요합니다.',
-      '다만 철거 후 소유권을 넘기시거나 개발사업으로 철거된 경우는 감면에서 빠집니다. 법적 빈집으로 인정받는 절차가 먼저인지 시청에 확인하셔야 합니다.',
-      '지붕이 슬레이트인 경우 석면 처리 절차가 따로 있습니다.',
-    ],
+    title: '② 철거한다',
+    lines: hasBuilding
+      ? [
+          `철거하면 보유세가 연 ${man(dem.annualTaxSingle)}이 되고, 감면이 끝나면 ${man(dem.annualTaxAfterRelief)}입니다.`,
+          ...dem.caveats,
+          ...(dem.support ? [`슬레이트 지붕이라 처리 지원 최대 ${man(dem.support)}을 별도로 받을 수 있습니다.`] : []),
+          '철거비 지원은 최대 1,600만원입니다. 신청은 빈집애(binzibe.kr)에서 합니다.',
+        ]
+      : ['건축물이 확인되지 않아 철거 대상 여부부터 확인이 필요합니다.'],
     blocked: false,
     tone: 'earth',
   })
 
-  // 정렬 — 권리가 막혔으면 1순위, 그다음 걱정거리가 지목한 경로, 맨 아래 막힌 것
-  const wanted = concern ? CONCERN_TO_PATH[concern] : undefined
-  const rank = (p: PathItem) => {
-    if (p.blocked) return 100
-    if (p.key === 'rights' && !rightsOpen) return 0
-    if (wanted && p.key === wanted) return 1
-    return 10
-  }
+  const ren = pick('renovate')
+  items.push({
+    key: 'renovate',
+    title: '③ 고쳐서 쓴다',
+    lines: [
+      age > 0 ? `사용승인으로부터 ${age}년 지났습니다.` : '건축 연도를 확인하지 못했습니다.',
+      `보유세는 ${man(ren.annualTaxSingle)}으로 그대로입니다. 주택으로 남기 때문입니다.`,
+      ...ren.caveats,
+    ],
+    blocked: false,
+    tone: 'muted',
+  })
+
   return items
-    .map((p, i) => ({ p, i }))
-    .sort((a, b) => rank(a.p) - rank(b.p) || a.i - b.i)
-    .map((x) => x.p)
 }
