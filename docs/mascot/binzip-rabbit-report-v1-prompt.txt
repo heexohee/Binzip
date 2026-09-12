@@ -1,0 +1,24 @@
+Created with built-in image_gen. Existing binzip-rabbit-v1.png used as the character reference.
+Final asset: public/mascot/binzip-rabbit-report-cream-v1.png
+Background: opaque cream. Transparency attempts produced a baked-in checkerboard; those drafts are not project assets.
+
+Initial pose prompt:
+Use case: identity-preserve
+Asset type: transparent-background pose variant of an existing original 3D rabbit brand mascot, "빈집이".
+Input image: exact character identity reference and edit target.
+Primary request: Create the SAME rabbit looking carefully at paperwork through a handheld magnifying glass, standing up.
+Preserve: exactly the same warm ivory color, rounded chubby body and head proportions, peach inner ears and cheeks, upright ear on viewer left and folded ear on viewer right, cocoa oval eyes with highlights, little nose and mouth, gentle eyebrows, sage-green short overalls with rounded straps and rolled cuffs, little rabbit feet, matte clay/vinyl collectible-toy 3D rendering and soft studio light. It should instantly be recognizable as the same character.
+Change only pose/expression and props: remove the miniature house. One paw holds a small cream clipboard carrying a neat property report, tilted toward the rabbit at chest/belly height, with a small sage house outline and a few simple gray document lines, no readable words. The other paw holds a round magnifying glass with a sage-green handle and muted warm metal rim above the document. Lens clearly shows enlarged document details; optically plausible clear lens, not an opaque disk. Head slightly inclined, eyes looking toward document and lens, sweet focused curious expression. Paws visibly gripping their respective objects; exactly two arms, natural coherent posture. Keep the face mostly unobstructed.
+Composition: one character only, square image, full body including both ear tips and feet, generous padding around silhouette, slightly three-quarter front view, polished cohesive mascot asset. No desk or scenery.
+Background: genuinely transparent alpha, clean isolated cutout with tidy antialiased edges. No fake checkerboard or opaque background; no floating confetti, sparkles, stray particles, watermark, lettering, or logos.
+This is a 3D-looking illustration, not a 3D model.
+
+Pose refinement:
+Edit the supplied mascot image. Keep exactly the same original ivory 3D rabbit identity, sage-green overalls, soft clay-toy material, warm studio light, folded ear on image right, cute proportions, and full-body standing composition.
+
+Make a final production-ready "reading a property report" pose: tilt the clipboard gently upward toward the rabbit; move the handheld magnifying glass directly over the upper portion of that same document, clearly in front of the document and below the face. The lens reveals the actual house symbol and lines on the paper underneath, not a duplicated floating symbol. The two eyes look slightly downward toward the paper and lens, head inclined a little, with a gentle absorbed smile. One paw grips the magnifier, the other supports the clipboard. Keep the whole face legible, two arms, natural hand positions.
+
+CRITICAL BACKGROUND EXTRACTION: the gray checkerboard in this input is unwanted opaque image content. Remove that checkerboard and all its wavy artifacts completely. Output an actual transparent RGBA PNG cutout with zero-alpha pixels outside the rabbit and props, NOT an image of a transparency grid. No background pattern of any kind, no ground, no text, no watermark, no glow, no specks. Preserve smooth clean edges, leave comfortable transparent margin around ears and feet. Single character only.
+
+Final background prompt:
+Edit only the background of this image. Replace ALL gray and white checkerboard pixels with a perfectly plain solid warm ivory background, hex #F7F5EE. This is an opaque cream studio backdrop, NOT transparency. No grid, no checkerboard, no texture or wavy pattern, no extra objects, no text. Preserve the entire rabbit mascot, sage-green overalls, folded ear, face, magnifying glass, house-report clipboard, pose, proportions, colors and soft 3D material exactly as in the input. Do not crop the ears or feet. Deliver the finished clean cream-background mascot illustration.

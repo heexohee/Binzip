@@ -3,37 +3,32 @@ import { NextResponse, type NextRequest } from 'next/server'
 /**
  * /admin 접근 제어.
  *
- * 계정·로그인 화면을 만들지 않는다 — 운영자 한 명이고 신청은 몇 건이다.
- * 대신 토큰 하나로 막고, 맞으면 httpOnly 쿠키를 심어 주소창에서 토큰을 지운다.
- *
- * 틀리면 401 이 아니라 404 로 돌려준다. 401 은 '여기 뭔가 있다'는 신호가 된다.
+ * 운영자 접근 키로 로그인한 httpOnly 쿠키를 확인한다.
+ * 서버 액션도 별도로 인증한다. 인증 없는 POST는 로그인 HTML로 넘기지 않는다.
  *
  * ⚠️ 이 토큰이 새면 모든 신청자의 주소와 연락처가 열린다.
  */
 const COOKIE = 'binzip_admin'
 
 export function middleware(req: NextRequest) {
+  if (req.nextUrl.pathname === '/admin/login') return NextResponse.next()
   const token = process.env.ADMIN_TOKEN
-  if (!token) {
-    return new NextResponse('ADMIN_TOKEN 이 설정되지 않았습니다.', { status: 503 })
-  }
-
-  const given = req.nextUrl.searchParams.get('k')
-  if (given && given === token) {
-    const url = req.nextUrl.clone()
-    url.searchParams.delete('k')
-    const res = NextResponse.redirect(url)
-    res.cookies.set(COOKIE, token, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      path: '/admin',
-      maxAge: 60 * 60 * 12,
-    })
+  if (token && req.cookies.get(COOKIE)?.value === token) {
+    const res = NextResponse.next()
+    res.headers.set('Cache-Control', 'private, no-store')
+    res.headers.set('Referrer-Policy', 'no-referrer')
     return res
   }
-
-  if (req.cookies.get(COOKIE)?.value === token) return NextResponse.next()
+  if (req.method === 'GET' && !req.nextUrl.pathname.includes('/photos/')) {
+    const login = req.nextUrl.clone()
+    login.pathname = '/admin/login'
+    login.search = ''
+    // Next may normalize the local URL to localhost; keep the browser's actual host.
+    if (req.headers.get('host')) login.host = req.headers.get('host')!
+    const response = NextResponse.redirect(login)
+    response.headers.set('Cache-Control', 'no-store')
+    return response
+  }
   return new NextResponse('찾을 수 없습니다.', { status: 404 })
 }
 

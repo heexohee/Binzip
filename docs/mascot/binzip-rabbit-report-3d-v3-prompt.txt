@@ -1,0 +1,17 @@
+Tool: built-in image_gen (reference-based image edit).
+Reference 1 (authoritative 3D style): public/mascot/binzip-rabbit-v1.png
+Reference 2 (expression and pose): public/mascot/binzip-rabbit-report-squint-v2.png
+Output: public/mascot/binzip-rabbit-report-3d-v3.png
+Background: opaque warm ivory.
+
+Use case: style-transfer / identity-preserve.
+Two reference images:
+IMAGE 1 is the authoritative reference for the character identity, material, lighting, rounded volume, and premium fully 3D rendering.
+IMAGE 2 supplies ONLY the pose, props and expression: standing rabbit holding a magnifying glass and property-report clipboard, one eye squinted in concentration, the other looking down at the document.
+
+Re-render the rabbit from image 1 in the pose and expression of image 2, as a softly sculpted three-dimensional collectible figurine photographed in a studio. The priority is matching the genuine 3D appearance of IMAGE 1. Preserve the warm ivory chubby body and head, thick softly curved ears (one folded), cocoa eyes, peach cheeks, sage-green short overalls, and tactile matte vinyl/clay material. Retain the magnifying glass and house-icon document, tiny focused mouth, asymmetrical concentrating brows, one eye gently squeezed closed and other eye looking at the paperwork. Full body, ears and feet in frame.
+
+CRITICAL CORRECTION: IMAGE 2 has unwanted thin dark pencil-like outlines around the ears, face, arms, feet and clothes. Remove ALL of those outlines. There must be ZERO drawn contour lines, ink strokes, stroke borders, dark cutout edge, sticker border, cartoon edge shader, cel shading, or flat illustration treatment. Define every silhouette ONLY by natural material color, continuous curved surface shading, soft diffuse lighting, subtle subsurface scattering and realistic rounded volume as in IMAGE 1. The limbs and ears must have convincing thickness and depth. Clothing seams should be softly modeled 3D seams, never dark drawn outlines. Small eyes, nose and mouth remain naturally defined facial features, not a line-art face.
+
+Lighting: large softbox key light and warm fill, soft physically based shadows and gentle ambient occlusion at the hands, props, overalls and folded ear, like image 1. Polished high-quality 3D toy render.
+Background: clean seamless warm ivory background, no pattern, no checkerboard, no frame, no visible outline around the character. Keep the entire character comfortably within a square image with padding. No extra objects, no text, no watermark.

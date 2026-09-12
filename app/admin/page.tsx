@@ -1,80 +1,28 @@
 import Link from 'next/link'
-import { sbSelect } from '../../src/supabase'
-import { VERDICT_LABEL, type ApplicationRow, type ReportRow } from './types'
+import { requireAdmin } from '../../src/admin-auth'
+import { summarizeApplication, type AdminApplication } from '../../src/admin-workflow'
+import { sbSelect, supabaseConfigured } from '../../src/supabase'
+import { AdminFrame, AdminTitle } from './admin-frame'
+import { ApplicationList } from './application-list'
+import { LogoutButton } from './logout-button'
+import styles from './admin.module.css'
 
 export const dynamic = 'force-dynamic'
-export const metadata = { title: '검토 — 빈집이력서', robots: { index: false, follow: false } }
-
-type Row = ApplicationRow & { reports: ReportRow[] }
-
-const badge = (status?: string) =>
-  status === 'issued'
-    ? { text: '발송 완료', cls: 'border-mid bg-deep text-paper' }
-    : status === 'failed'
-      ? { text: '판정 실패', cls: 'border-earth text-earth' }
-      : status === 'draft'
-        ? { text: '검토 대기', cls: 'border-mid text-mid' }
-        : { text: '판정 없음', cls: 'border-dash border-dashed text-muted' }
+export const metadata = { title: '신청 관리 — 빈집진단서', robots: { index: false, follow: false }, referrer: 'no-referrer' as const }
 
 export default async function AdminList() {
-  const rows = await sbSelect<Row>(
-    'applications?select=*,reports(id,status,verdict,version,created_at)&order=created_at.desc&limit=100',
-  )
-
-  const latest = (r: Row) =>
-    [...(r.reports ?? [])].sort((a, b) => b.version - a.version)[0]
-
-  const waiting = rows.filter((r) => latest(r)?.status !== 'issued')
-  const done = rows.filter((r) => latest(r)?.status === 'issued')
-
-  const Section = ({ title, items }: { title: string; items: Row[] }) => (
-    <section className="mt-10">
-      <h2 className="text-[20px]">
-        {title} <span className="text-[15px] font-normal text-muted">{items.length}건</span>
-      </h2>
-      {items.length === 0 ? (
-        <p className="mt-4 text-[15px] text-muted">아직 없습니다.</p>
-      ) : (
-        <div className="mt-4 border-t border-line">
-          {items.map((r) => {
-            const rep = latest(r)
-            const b = badge(rep?.status)
-            return (
-              <Link
-                key={r.id}
-                href={'/admin/' + r.id}
-                className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-line py-4 hover:bg-wash"
-              >
-                <span className={'rounded-[3px] border px-2 py-[2px] text-[12px] ' + b.cls}>
-                  {b.text}
-                </span>
-                <span className="text-[16px] font-semibold">
-                  {r.resolved_address || r.address}
-                </span>
-                {rep?.verdict && (
-                  <span className="text-[14px] text-mid">{VERDICT_LABEL[rep.verdict]}</span>
-                )}
-                {r.concern && <span className="text-[13px] text-muted">걱정: {r.concern}</span>}
-                <span className="ml-auto text-[13px] text-muted">
-                  {new Date(r.created_at).toLocaleString('ko-KR')}
-                </span>
-              </Link>
-            )
-          })}
-        </div>
-      )}
-    </section>
-  )
-
-  return (
-    <main className="mx-auto max-w-[900px] px-6 py-12">
-      <p className="text-[13px] text-muted">빈집이력서 · 관리자</p>
-      <h1 className="mt-2 text-[32px]">진단 신청 검토</h1>
-      <p className="mt-3 max-w-[60ch] text-[15px] leading-[1.75] text-muted">
-        자동 판정은 초안일 뿐입니다. 현장을 확인하고 승인해야 사용자에게 나갑니다.
-      </p>
-      <Section title="검토 대기" items={waiting} />
-      <Section title="발송 완료" items={done} />
-    </main>
-  )
+  await requireAdmin()
+  let rows: AdminApplication[] = []
+  let error = !supabaseConfigured() ? '접수 데이터베이스가 연결되지 않았어요. 연결 후 실제 신청을 조회하고 저장할 수 있습니다.' : ''
+  if (!error) {
+    try {
+      rows = await sbSelect<AdminApplication>('applications?select=*,reports(id,status,version,created_at)&order=created_at.desc&expires_at=gt.' + encodeURIComponent(new Date().toISOString()) + '&limit=100')
+    } catch { error = '신청 목록을 불러오지 못했어요. 데이터 연결 상태를 확인한 뒤 새로고침해 주세요.' }
+  }
+  return <AdminFrame navigation={<LogoutButton />}><AdminTitle />
+    {error ? <section className={styles.panel}><h2>신청 목록을 확인할 수 없어요</h2><p className={styles.description}>{error}</p><div className={styles.actions}><Link href="/admin" className={styles.secondary}>다시 불러오기</Link><Link href="/admin-preview" className={styles.button}>가상 신청으로 화면 둘러보기</Link></div></section> : <>
+      {rows.some(row => row.review_status === undefined) && <p className={styles.notice}>관리 상태 저장을 위한 데이터베이스 업데이트가 필요합니다. 기존 신청 내용과 진단서는 확인할 수 있습니다.</p>}
+      <ApplicationList rows={rows.map(summarizeApplication)} />
+    </>}
+  </AdminFrame>
 }

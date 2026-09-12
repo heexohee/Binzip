@@ -1,0 +1,8 @@
+.sheet { max-width: 820px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sheet); box-shadow: var(--shadow-sheet); }
+.main { padding: var(--space-6) var(--space-10) var(--space-12); }
+.main h1 { font-size: var(--type-page); }
+.main h2 { font-size: var(--type-section); }
+.main p, .main td { font-size: var(--type-body); }
+.main footer p { font-size: var(--type-help); }
+@media (max-width: 620px) { .main { padding: var(--space-5) var(--space-6) var(--space-8); } }
+@media print { .sheet { max-width: none; border: 0; box-shadow: none; } .main { padding: 0; } }

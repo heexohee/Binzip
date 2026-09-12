@@ -1,4 +1,4 @@
--- 빈집이력서 — Supabase 스키마
+-- 빈집진단서 — Supabase 스키마
 -- Supabase 대시보드 → SQL Editor 에 붙여넣고 Run.
 -- 여러 번 실행해도 안전하다 (if not exists).
 
@@ -30,6 +30,12 @@ create table if not exists public.applications (
   -- 이메일은 진단서를 보낼 유일한 경로이고, 전화번호는 발송이 실패했을 때 닿을 수단이다.
   contact           text not null,
   email             text not null,
+
+  -- 관리자 업무 기록. 고객 진단서의 메모와 별개이며 공개하지 않는다.
+  review_status     text not null default 'received'
+                    check (review_status in ('received','reviewing','waiting','completed')),
+  internal_note     text check (char_length(internal_note) <= 5000),
+  review_updated_at timestamptz,
 
   created_at        timestamptz not null default now(),
   -- 발송 후 6개월 보관 뒤 파기. 화면 동의 문구에 약속한 값이다.

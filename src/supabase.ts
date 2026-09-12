@@ -16,6 +16,18 @@ export function supabaseConfigured(): boolean {
   return conn() !== null
 }
 
+/** Server-only transaction entry point; photo rows and their application succeed together. */
+export async function sbRpc<T>(name: string, args: Record<string, unknown>): Promise<T> {
+  const c = conn()
+  if (!c) throw new Error('SUPABASE_NOT_CONFIGURED')
+  const res = await fetch(c.base + '/rest/v1/rpc/' + name, {
+    method: 'POST', headers: { apikey: c.key, Authorization: 'Bearer ' + c.key, 'Content-Type': 'application/json' },
+    body: JSON.stringify(args), cache: 'no-store', signal: AbortSignal.timeout(20_000),
+  })
+  if (!res.ok) throw await failure('rpc', res)
+  return await res.json() as T
+}
+
 /**
  * 오류를 만든다. 응답 본문은 담지 않는다.
  *

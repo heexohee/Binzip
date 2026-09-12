@@ -1,29 +1,25 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { InstantFlowProvider } from './instant-flow'
 
 export const metadata: Metadata = {
-  title: '빈집이력서',
+  title: '빈집진단서',
+  icons: { icon: { url: '/brand/binzip-house-logo-b-3d-v2.png', type: 'image/png' } },
   description:
-    '포항에 비어 있는 집, 주소만 넣으시면 지금 어떤 방법으로 쓸 수 있는지 한 장으로 알려드립니다.',
+    '포항의 시골 빈집을 팔지, 철거할지, 보유할지 고민된다면. 집의 기록, 매도·철거 비용 비교, 공적 지원과 다음 할 일을 한곳에 정리해 드립니다.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
       <head>
-        {/* 디자인가이드 §3 — 두 계열만 쓴다. 추후 next/font 셀프호스팅으로 교체 */}
+        {/* Family name matches --font-sans; system fonts remain the offline fallback. */}
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap"
-        />
       </head>
-      <body>{children}</body>
+      <body><InstantFlowProvider>{children}</InstantFlowProvider></body>
     </html>
   )
 }

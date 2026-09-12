@@ -1,0 +1,19 @@
+.form { display: flex; flex-direction: column; gap: var(--space-6); max-width: 520px; }
+.input { composes: input from "./ui.module.css"; }
+.chip { composes: choice from "./ui.module.css"; }
+.legend { font-size: var(--type-body); font-weight: 600; color: var(--text-primary); }
+.legend small { font-size: var(--type-help); color: var(--text-secondary); font-weight: 400; }
+.help { font-size: var(--type-help); line-height: 1.7; color: var(--text-secondary); }
+.error { font-size: var(--type-help); font-weight: 600; color: var(--status-error-text); }
+.status { border-left: 3px solid var(--brand-primary); border-radius: var(--radius-compact); background: var(--surface); padding: var(--space-3) var(--space-4); font-size: var(--type-help); }
+.uncertain { composes: status; border-left-color: var(--status-unknown-border); background: var(--status-unknown-surface); }
+.known { composes: known from "./ui.module.css"; align-self: start; }
+.unknown { composes: unknown from "./ui.module.css"; align-self: start; }
+.search { composes: primary from "./ui.module.css"; min-height: 54px; width: 54px; flex-shrink: 0; padding: var(--space-3); }
+.submit { composes: primary from "./ui.module.css"; width: 100%; }
+.success { border: 1px solid var(--border-subtle); border-radius: var(--radius-card); background: var(--surface); padding: var(--card-padding); }
+.success h2 { font-size: var(--type-card); }
+.success p { margin-top: var(--space-3); }
+.consent { display: flex; align-items: flex-start; gap: var(--space-3); font-size: var(--type-help); color: var(--text-secondary); line-height: 1.75; }
+.consent input { margin-top: var(--space-1); width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--brand-primary); }
+.privacyLink { display: inline-flex; align-items: center; min-height: 44px; margin-left: var(--space-8); color: var(--brand-primary); font-size: var(--type-help); text-decoration: underline; text-underline-offset: 3px; }

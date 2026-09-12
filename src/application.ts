@@ -1,4 +1,5 @@
-import { sbInsert } from './supabase'
+import { sbInsert, sbRpc } from './supabase'
+import type { PreparedPhoto } from './photos'
 
 /** 진단 신청 레코드. 개인정보는 주소와 연락처 둘뿐이다 — 이름·주민번호는 받지 않는다. */
 export type Application = {
@@ -52,7 +53,16 @@ export type ApplyState = {
  */
 export async function saveApplication(
   app: Application,
+  photos: PreparedPhoto[] = [],
 ): Promise<{ stored: string[]; applicationId: string | null }> {
+  if (photos.length) {
+    // An email-only fallback would silently lose the photos. Require atomic DB storage.
+    const id = await sbRpc<string>('create_application_with_photos', { payload: toRow(app), photos })
+    if (!id) throw new Error('PHOTO_SAVE_FAILED')
+    try { await notifyByEmail(app) }
+    catch { console.error('[application] 사진 신청 저장 완료, 알림 실패') }
+    return { stored: ['supabase'], applicationId: id }
+  }
   const stored: string[] = []
   const failures: string[] = []
   let applicationId: string | null = null
@@ -123,7 +133,7 @@ async function notifyByEmail(app: Application): Promise<string | null> {
     body: JSON.stringify({
       from,
       to: [to],
-      subject: '[빈집이력서] 진단 신청 — ' + app.address,
+      subject: '[빈집진단서] 진단 신청 — ' + app.address,
       text: lines.join('\n'),
     }),
     cache: 'no-store',

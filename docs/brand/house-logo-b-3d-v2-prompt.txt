@@ -1,0 +1,10 @@
+Created with the built-in image_gen tool, 2026-09-12.
+Selected variant: B, right-side perspective of the miniature house held by 집토끼.
+Source: output/brand/house-3d-concepts/B-right-angle-draft.png
+Final asset: public/brand/binzip-house-logo-b-3d-v2.png
+
+The final asset uses an opaque cream background, not transparency. A transparency attempt retained the checkerboard; that attempt is not used. This final pass replaces the checkerboard with cream. Existing 3D design is preserved as closely as the edit model allows; not a pixel-identical extraction.
+
+Final prompt:
+Edit this exact 3D house logo: REPLACE THE BACKGROUND with a completely uniform solid opaque pale cream color #FFFEFA. There must be NO checkerboard squares, NO grid, NO pattern, NO cloth, NO border and NO ground shadow anywhere. This request is for a SOLID COLOR BACKGROUND, not transparency. Keep the single B-design house unchanged: slight view from the right with the right wall visible, sage-green roof and front door, cream walls and chimney, four brown windowpanes on the front left, cream doorknob. Preserve its proportions, camera angle, soft 3D rendering and shading. Center the house on a square canvas with a small clean even margin on all sides. No text or labels. One house only. The flat pale-cream background must blend with a #FFFEFA website header.
+

@@ -1,0 +1,23 @@
+.main { padding: 30px 36px 38px; }
+.intro {color: var(--text-secondary);  line-height: 1.85; margin-top: 15px; font-size: var(--type-body); }
+.notice { font-size: var(--type-help); color: var(--text-secondary); background: var(--surface-soft); border-radius: var(--radius-control); padding: 16px; margin-top: 22px; line-height: 1.85; }
+.nav { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 22px; }
+.nav a { display: inline-flex; align-items: center; min-height: 44px; background: var(--surface-soft); border-radius: 999px; padding: 8px 13px; font-size: var(--type-help); color: var(--brand-primary); }
+.group { scroll-margin-top: 24px; margin-top: 36px; border-top: 1px solid var(--border-subtle); padding-top: 30px; }
+.group h2 { font-size: var(--type-section); }
+.groupIntro {margin: 8px 0 18px; color: var(--text-secondary); font-size: var(--type-body); }
+.cards { display: grid; gap: 14px; }
+.card { scroll-margin-top: 24px; padding: var(--card-padding); border: 1px solid var(--border-subtle); border-radius: var(--radius-card); background: var(--surface-raised); }
+.card .provider { color: var(--text-secondary); font-size: var(--type-help); margin: 0 0 8px; }
+.card h3 {font-weight: 700; word-break: keep-all; font-size: var(--type-card); }
+.card p {line-height: 1.85; color: var(--text-secondary); margin-top: 8px; font-size: var(--type-body); }
+.card details { font-size: var(--type-help); margin-top: 9px; }
+.card summary { cursor: pointer; min-height: 44px; padding: 10px 0; color: var(--brand-primary); }
+.card details p { font-size: var(--type-help); background: var(--surface-soft); margin: 0 0 12px; padding: 12px; border-radius: var(--radius-compact); }
+.card .external { display: flex; align-items: center; justify-content: space-between; gap: 15px; min-height: 44px; font-size: var(--type-help); font-weight: 650; color: var(--brand-primary); border-top: 1px solid var(--border-subtle); padding-top: 10px; }
+.supportLink { display: flex; align-items: center; gap: 10px; margin-top: 16px; min-height: 44px; color: var(--brand-primary); font-size: var(--type-help); }
+.checked { font-size: var(--type-help); line-height: 1.9; color: var(--text-secondary); margin: 26px 0; }
+.bottom { padding: 24px; background: var(--surface-soft); border-radius: var(--radius-control); }
+.bottom h2 { font-size: var(--type-section); }
+.bottom p { color: var(--text-secondary); font-size: var(--type-help); margin: 12px 0 20px; }
+@media (max-width: 620px) { .main { padding: 22px 20px 28px; } .card { padding: var(--card-padding); } .group h2 { font-size: var(--type-section); } }

@@ -15,6 +15,12 @@ export type ApplicationRow = {
   email: string
   created_at: string
   expires_at: string
+  /** Absent on records predating the optional photo migration. */
+  photo_count?: number
+  /** Optional until the admin workflow migration is applied. Never included in customer reports. */
+  review_status?: 'received' | 'reviewing' | 'waiting' | 'completed'
+  internal_note?: string | null
+  review_updated_at?: string | null
 }
 
 export type Finding = {

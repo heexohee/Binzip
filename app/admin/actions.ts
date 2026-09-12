@@ -6,6 +6,25 @@ import { createDraftReport, VERDICT } from '../../src/report'
 import { evaluate, type Context, type Finding } from '../../src/rules/engine'
 import { combine } from '../../src/verdict'
 import type { ApplicationRow } from './types'
+import { requireAdmin } from '../../src/admin-auth'
+import { UUID_PATTERN } from '../../src/photo-limits'
+import { supabaseConfigured } from '../../src/supabase'
+
+async function requireApplication(applicationId: string) {
+  await requireAdmin()
+  if (!supabaseConfigured() || !UUID_PATTERN.test(applicationId)) throw new Error('ADMIN_APPLICATION_UNAVAILABLE')
+  const apps = await sbSelect<ApplicationRow>('applications?select=*&id=eq.' + applicationId + '&expires_at=gt.' + encodeURIComponent(new Date().toISOString()) + '&limit=1')
+  if (!apps[0]) throw new Error('ADMIN_APPLICATION_UNAVAILABLE')
+  return apps[0]
+}
+
+async function requireReport(reportId: string, applicationId: string) {
+  await requireApplication(applicationId)
+  if (!UUID_PATTERN.test(reportId)) throw new Error('ADMIN_REPORT_UNAVAILABLE')
+  const reports = await sbSelect<{ id: string; status: string }>('reports?select=id,status&id=eq.' + reportId + '&application_id=eq.' + applicationId + '&limit=1')
+  if (!reports[0]) throw new Error('ADMIN_REPORT_UNAVAILABLE')
+  return reports[0]
+}
 
 /** reports 에서 재판정에 필요한 것만 읽는다 */
 type ReviewRow = {
@@ -29,6 +48,8 @@ type ReviewRow = {
  * 영원히 '조건부 — 현장 확인이 남았습니다'로 나간다.
  */
 export async function approveReport(reportId: string, applicationId: string) {
+  const checked = await requireReport(reportId, applicationId)
+  if (checked.status !== 'draft') throw new Error('ADMIN_DRAFT_REQUIRED')
   const patch: Record<string, unknown> = {
     status: 'issued',
     issued_at: new Date().toISOString(),
@@ -40,7 +61,7 @@ export async function approveReport(reportId: string, applicationId: string) {
   const rep = rows[0]
   const facts = rep?.axes?.facts
 
-  // facts 가 없으면 판정 실패(status: failed) 건이거나 대상 외다. 그대로 내보낸다.
+  // 실패한 초안은 위에서 거부했다. 대상 외 등 facts가 없는 초안은 기존 내용을 유지한다.
   if (facts) {
     // 내용과 확인일이 함께 있을 때만 확인된 것으로 본다 —
     // 출처를 쓸 수 없으면 진단서에 실선을 그릴 수 없다.
@@ -83,13 +104,17 @@ function registryFinding(): Finding {
 
 /** 승인 되돌리기 — 잘못 눌렀을 때 초안으로 되돌린다 */
 export async function revertReport(reportId: string, applicationId: string) {
+  await requireReport(reportId, applicationId)
   await sbUpdate('reports', 'id=eq.' + reportId, { status: 'draft', issued_at: null })
   revalidatePath('/admin')
   revalidatePath('/admin/' + applicationId)
 }
 
 export async function saveNote(reportId: string, applicationId: string, formData: FormData) {
+  const checked = await requireReport(reportId, applicationId)
+  if (checked.status === 'issued') throw new Error('ADMIN_UNPUBLISH_BEFORE_EDIT')
   const note = String(formData.get('note') ?? '').trim()
+  if (note.length > 5000) throw new Error('ADMIN_NOTE_TOO_LONG')
   await sbUpdate('reports', 'id=eq.' + reportId, { note: note || null })
   revalidatePath('/admin/' + applicationId)
 }
@@ -104,8 +129,11 @@ export async function saveNote(reportId: string, applicationId: string, formData
  * 채워지면 진단서에서 점선이 실선으로 바뀌므로, 실제로 열람한 뒤에만 적어야 한다.
  */
 export async function saveRegistry(reportId: string, applicationId: string, formData: FormData) {
+  const checked = await requireReport(reportId, applicationId)
+  if (checked.status === 'issued') throw new Error('ADMIN_UNPUBLISH_BEFORE_EDIT')
   const note = String(formData.get('registryNote') ?? '').trim()
   const at = String(formData.get('registryCheckedAt') ?? '').trim()
+  if (note.length > 5000 || (at && (!/^\d{4}-\d{2}-\d{2}$/.test(at) || !Number.isFinite(Date.parse(at))))) throw new Error('ADMIN_INVALID_REGISTRY_INPUT')
   await sbUpdate('reports', 'id=eq.' + reportId, {
     registry_note: note || null,
     // 확인일 없이 내용만 적히면 출처를 쓸 수 없다. 둘은 함께 간다.
@@ -115,11 +143,7 @@ export async function saveRegistry(reportId: string, applicationId: string, form
 }
 
 export async function rerunJudgment(applicationId: string) {
-  const rows = await sbSelect<ApplicationRow>(
-    'applications?select=address,resolved_address&id=eq.' + applicationId,
-  )
-  const app = rows[0]
-  if (!app) return
+  const app = await requireApplication(applicationId)
   await createDraftReport(applicationId, app.resolved_address || app.address)
   revalidatePath('/admin/' + applicationId)
   revalidatePath('/admin')
