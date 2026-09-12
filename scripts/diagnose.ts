@@ -67,7 +67,7 @@ if (r.status === 'address_not_found') {
 
 console.log()
 line('━')
-console.log('  빈집이력서 진단서')
+console.log('  빈집진단서')
 line('━')
 console.log(`  ${r.address.jibunAddress}`)
 if (r.address.roadAddress) console.log(`  ${r.address.roadAddress}`)

@@ -1,0 +1,12 @@
+Created using the built-in image_gen tool, 2026-09-11.
+Asset: public/mascot/binzip-rabbit-v1.png
+
+Use case: stylized-concept
+Asset type: original brand mascot for a Korean vacant-house decision-support website called "빈집이".
+Primary request: Design a charming original rabbit character with a beautifully polished soft 3D appearance, suitable for the homepage and report illustrations. One single full-body mascot, not a character sheet.
+Subject: A warm ivory rabbit with a plump pear-shaped little body, oversized rounded head, two long thick rabbit ears with one ear tip gently folded, small oval dark cocoa eyes, a tiny nose and subtle friendly smile, very faint peach cheeks. Simple sage-green overalls with softly rounded seams. The rabbit holds one small cream-colored miniature house with a sage-green pitched roof against its belly in both rounded paws. Both feet visible. A calm, reassuring, quietly helpful personality, appealing to adult homeowners as well as families.
+Style: premium collectible 3D clay toy / soft matte vinyl render, smooth tactile surfaces, subtly rounded edges, physically coherent soft studio lighting, gentle ambient occlusion. Clear silhouette and readable face at small icon sizes. Slight three-quarter front view, gaze toward viewer.
+Composition: square image, single character centered, full ears and feet in frame, generous clean padding around entire silhouette, mascot occupies about 78 percent of image height.
+Palette: warm ivory, muted sage and forest green accents, tiny peach facial details; harmonize with a cream-and-sage website.
+Background: genuinely transparent alpha background, isolated cutout suitable for direct use on a website, no opaque background, no simulated checkerboard, no floor or environment.
+Constraints: original character; no text, no lettering, no logo, no watermark, no extra characters, no realistic fur, no tools or demolition equipment, no hard hat, no floating decorative elements. This is a 3D-looking rendered illustration, not a technical 3D model.

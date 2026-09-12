@@ -1,0 +1,11 @@
+Generated with the built-in image_gen tool on 2026-09-11.
+Asset: public/brand/binzip-house-logo-v1.png
+Original transparent raster retained without image edits.
+
+Use case: logo-brand.
+Asset type: original symbol-only logo for the Korean vacant-house decision-support website 빈집이력서. Companion mascot is a warm ivory 3D rabbit named 집토끼, but this logo is a HOUSE.
+Primary request: create one polished, distinctive, minimal house-shaped brand mark, suitable for a tiny website header and favicon.
+Subject: a simple friendly rural house silhouette, a strong gently rounded pitched roof, softly rounded body, a single clear arched open doorway formed with transparent negative space. A tiny warm ochre square window is optional only if it stays legible. The roof and body should form one cohesive compact emblem, warm and reassuring.
+Style: flat vector-like graphic design, crisp solid shapes, restrained professional identity, no 3D, no shading, no texture, no thin fussy linework. Forest green #285c49 main shape, optional muted sage #A9C4B3 small accent and warm ochre #d2b17d window. Natural, contemporary, modest and trustworthy.
+Composition: exactly ONE standalone logo symbol, centered on square canvas, occupies about 82% of canvas, generous uniform transparent margins. Strong legible silhouette at 32 pixels. Genuine transparent alpha background.
+Constraints: no words, no letters, no typography, no wordmark, no watermark, no brand presentation board, no mockup, no surrounding badge, no outlines around background, no floating sparkles, no existing brand imitation.

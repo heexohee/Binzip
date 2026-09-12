@@ -1,0 +1,7 @@
+Created using the built-in image_gen tool on 2026-09-12.
+Source: public/mascot/binzip-rabbit-report-3d-v3.png
+Final: public/mascot/binzip-rabbit-report-transparent-v4.png
+The output has an alpha channel and is not opaque, verified with image metadata. The original pose/expression were retained as closely as the image edit allows. No programmatic image editing was used.
+
+Prompt:
+이 토끼 캐릭터를 배경이 투명한 스티커 PNG로 만들어줘. 토끼, 돋보기, 클립보드만 남겨줘. 배경과 바닥 그림자는 완전히 제거하고 실제 알파 채널을 사용해줘. 캐릭터의 얼굴, 한쪽 눈을 찡그린 표정, 자세, 옷, 3D 재질, 크기와 구도는 그대로 유지해. 흰색이나 무늬가 있는 배경을 그리지 말고 토끼 바깥은 비워줘.

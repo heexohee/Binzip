@@ -1,0 +1,19 @@
+.brand { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; color: var(--brand-primary); font: 750 var(--type-brand)/1.5 var(--font-sans); letter-spacing: -.03em; white-space: nowrap; text-decoration: none; }
+.brand small { border-left: 1px solid var(--border-subtle); padding-left: var(--space-3); color: var(--text-secondary); font-size: var(--type-meta); font-weight: 500; }
+.button { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-3); padding: var(--space-3) var(--space-5); border: 1px solid transparent; border-radius: var(--radius-control); font: 600 var(--type-body)/1.5 var(--font-sans); text-align: center; cursor: pointer; transition: background .15s, border-color .15s; }
+.button:disabled { opacity: .65; cursor: not-allowed; }
+.primary { composes: button; min-height: 56px; color: var(--surface); background: var(--brand-primary); }
+.primary:hover:not(:disabled) { background: var(--brand-hover); }
+.secondary { composes: button; min-height: 48px; color: var(--brand-primary); background: var(--surface-raised); border-color: var(--border-control); }
+.secondary:hover:not(:disabled) { background: var(--surface-soft); }
+.compact { composes: button; min-height: 44px; padding: var(--space-2) var(--space-3); border-radius: var(--radius-compact); font-size: var(--type-help); color: var(--brand-primary); background: var(--surface); border-color: var(--border-control); }
+.compact:hover:not(:disabled) { background: var(--surface-soft); }
+.input { min-width: 0; width: 100%; min-height: 54px; padding: var(--space-3) var(--space-4); border: 1px solid var(--border-control); border-radius: var(--radius-control); color: var(--text-primary); background: var(--surface-raised); font: 400 var(--type-body)/1.5 var(--font-sans); }
+.input[aria-invalid=true] { border-color: var(--status-error-text); }
+.choice { display: flex; align-items: center; gap: var(--space-3); min-height: 48px; padding: var(--space-3); border: 1px solid var(--border-control); border-radius: var(--radius-control); color: var(--text-primary); background: var(--surface-raised); font-size: var(--type-body); cursor: pointer; }
+.choice:has(input:checked) { border-color: var(--brand-primary); background: var(--surface-soft); }
+.choice input { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--brand-primary); }
+.badge { display: inline-block; width: fit-content; padding: var(--space-1) var(--space-2); border: 1px solid transparent; border-radius: var(--radius-badge); font: 600 var(--type-meta)/1.6 var(--font-sans); }
+.unknown { composes: badge; color: var(--status-unknown-text); background: var(--status-unknown-surface); border: 1px dashed var(--status-unknown-border); }
+.known { composes: badge; color: var(--status-known-text); background: var(--status-known-surface); }
+.neutral { composes: badge; color: var(--text-secondary); background: var(--surface-soft); }

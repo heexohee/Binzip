@@ -1,51 +1,86 @@
 @import "tailwindcss";
 
-/* 디자인 가이드 v0.3 §2 — 색은 반드시 토큰으로만 참조한다 (bg-deep ○ / bg-[#0F5347] ✕) */
+/* Semantic tokens: docs/design-system.md. Legacy Tailwind names remain aliases. */
 @theme {
-  /* 주 계열 — 청록 (확인의 깊이) */
-  --color-ink:   #08302B;  /* 헤드라인, 다크 섹션 배경. 검정 대신 이것 */
-  --color-deep:  #0F5347;  /* 프라이머리 버튼, 판정 라벨 */
-  --color-mid:   #2E8B77;  /* 링크, 아이콘, 강조 */
-  --color-pale:  #CFE3DC;  /* 태그, 표 헤더, 카드 면 */
-  --color-wash:  #EDF4F1;  /* 섹션 배경 */
-
-  /* 지면 */
-  --color-paper: #FBFBF9;  /* 페이지 배경 */
-  --color-line:  #C9D4D0;  /* 실선 — 확인된 경계 */
-  --color-dash:  #9FB3AD;  /* 점선 — 미확인 경계 */
-
-  /* 본문 */
-  --color-body:  #16302C;
-  --color-muted: #5A716C;  /* 출처·확인일 */
-
-  /* 절제해서만 — 철거·불가 항목. 페이지 전체 2곳 이하 */
-  --color-earth: #8A5A2B;
-
-  --font-serif: "Noto Serif KR", ui-serif, serif;
-  --font-sans:  "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --color-ink: var(--text-primary);
+  --color-deep: var(--brand-primary);
+  --color-mid: var(--brand-primary);
+  --color-pale: var(--surface-soft);
+  --color-wash: var(--surface-soft);
+  --color-paper: var(--surface);
+  --color-line: var(--border-subtle);
+  --color-dash: var(--border-control);
+  --color-body: var(--text-primary);
+  --color-muted: var(--text-secondary);
+  --color-earth: var(--status-error-text);
+  --font-serif: var(--font-sans);
+  --font-sans: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
+:root {
+  --brand-primary: #285c49;
+  --brand-hover: #194432;
+  --text-primary: #263d34;
+  --text-secondary: #5c6d62;
+  --canvas: #eeece5;
+  --surface: #fffefa;
+  --surface-raised: #ffffff;
+  --surface-soft: #edf2e9;
+  --border-subtle: #dfe5dc;
+  --border-control: #7b8a7e;
+  --status-unknown-text: #76572d;
+  --status-unknown-surface: #f5eee0;
+  --status-unknown-border: #bba784;
+  --status-known-text: #36604b;
+  --status-known-surface: #e9f1e5;
+  --status-error-text: #a04023;
+  --focus-ring: #b7843b;
+  --type-page: 2rem;
+  --type-section: 1.5rem;
+  --type-card: 1.25rem;
+  --type-body: 1rem;
+  --type-help: .875rem;
+  --type-meta: .75rem;
+  --type-amount: 2rem;
+  --type-brand: 1.25rem;
+  --space-1: .25rem; --space-2: .5rem; --space-3: .75rem;
+  --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem;
+  --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem;
+  --section-space: var(--space-12);
+  --card-padding: var(--space-6);
+  --radius-badge: .375rem; --radius-compact: .5rem;
+  --radius-control: .75rem; --radius-card: 1rem; --radius-sheet: 1.25rem;
+  --shadow-sheet: 0 10px 50px #223b2910;
+}
+@media (max-width: 620px) {
+  :root { --type-page: 1.75rem; --type-section: 1.375rem; --type-card: 1.125rem; --type-amount: 1.875rem; --type-brand: 1.125rem; --section-space: var(--space-8); --card-padding: var(--space-5); }
+}
 html { -webkit-text-size-adjust: 100%; }
 
 body {
   background: var(--color-paper);
   color: var(--color-body);
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: var(--type-body);
   line-height: 1.75;   /* 40~70대 독자 기준으로 넉넉하게 */
   text-align: left;    /* 가운데 정렬을 쓰지 않는다 */
+  letter-spacing: -.01em;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
-
-@media (min-width: 768px) {
-  body { font-size: 17px; }
-}
-
 h1, h2, h3 {
-  font-family: var(--font-serif);
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -.03em;
 }
+h1 { font-size: var(--type-page); line-height: 1.4; }
+h2 { font-size: var(--type-section); }
+h3 { font-size: var(--type-card); }
+input, select, textarea { font-size: var(--type-body); }
+input::placeholder, textarea::placeholder { color: var(--text-secondary); opacity: 1; }
+:where(a, button, input, select, textarea, summary):focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+:where(button, input, select, textarea):disabled { cursor: not-allowed; opacity: .65; }
 
 /* §5 ② 점선 = 미확인. 페이지 전체에서 이 규칙을 지킨다 */
 .unverified {
@@ -79,6 +114,7 @@ h1, h2, h3 {
   .break-before-page { break-before: page; }
 
   @page { size: A4; margin: 14mm; }
+  :root { --type-help: 1rem; --type-meta: 1rem; }
   .doc { max-width: none; padding: 0; }
   .page { break-after: page; }
   .page:last-child { break-after: auto; }

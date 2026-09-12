@@ -1,0 +1,10 @@
+Tool: built-in image_gen (image edit).
+Reference: public/mascot/binzip-rabbit-report-cream-v1.png
+Output: public/mascot/binzip-rabbit-report-squint-v2.png
+Background: opaque cream.
+
+Edit the provided image of the original 3D rabbit mascot "빈집이". Make a focused facial-expression variant while preserving the existing character.
+
+PRIMARY CHANGE: The rabbit is intently scrutinizing the property document with its magnifying glass. Give it a lively, clearly asymmetric concentrating expression: the eye on the viewer's RIGHT is gently squinted almost closed, with a small compressed eyelid crease and subtly lifted cheek. The eye on the viewer's LEFT stays open and its pupil/gaze points downward toward the document through the magnifying glass, not toward the viewer. This must read as "let me take a closer look", not a flirty wink, sleepiness, anger or pain. Slightly draw together the inner eyebrows, lift the open-eye-side eyebrow a little, and give a tiny pursed, gently off-center curious mouth. Tilt the head a little farther toward the document and lean the face slightly closer, to make the concentration and line of sight readable. Preserve the charming cute warmth.
+
+KEEP UNCHANGED: the same warm ivory plump rabbit, proportions, peach cheeks, long upright ear on viewer left and folded ear on viewer right, sage-green short overalls, soft tactile 3D material, warm lighting, magnifying glass and property clipboard with green house icon, two paws holding their respective props, standing feet, framing and clean cream background. Keep both the squinted eye and open eye clearly visible. At most make a tiny natural prop tilt needed for the downward gaze; do not redesign the props or composition. No extra gestures, characters, text, sparkles or decorations. No transparent grid. Do not crop ears or feet. Deliver a polished matching expression variant.
