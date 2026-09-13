@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { parseAddressCandidate, type AddressCandidate } from '../src/address-candidate'
 import { useInstantFlow } from './instant-flow'
 import { SatelliteMap } from './satellite-map'
@@ -69,16 +68,13 @@ export function AddressStartForm() {
   }
 
   return <div className={styles.addressForm}>
-    <p className={styles.flowStep}>1 · 주소 확인 <span>→ 2 · 상세 정보 입력</span></p>
     <form onSubmit={event => { event.preventDefault(); void lookup() }}>
-      <label htmlFor="home-address">확인할 빈집 주소</label>
-      <div className={styles.addressInput}><Icon name="pin" /><input ref={input} id="home-address" name="address" type="text" required minLength={3} maxLength={300} autoComplete="street-address" enterKeyHint="search" placeholder="도로명주소 또는 지번주소" value={address} onChange={event => { clearLookup(); setAddress(event.target.value) }} aria-invalid={error ? true : undefined} aria-describedby={error ? 'address-error' : undefined} /></div>
+      <div className={styles.addressInput}><Icon name="pin" /><input ref={input} id="home-address" aria-label="빈집 주소" name="address" type="text" required minLength={3} maxLength={300} autoComplete="street-address" enterKeyHint="search" placeholder="도로명주소 또는 지번주소" value={address} onChange={event => { clearLookup(); setAddress(event.target.value) }} aria-invalid={error ? true : undefined} aria-describedby={error ? 'address-error' : undefined} /></div>
       <button type="submit" className={styles.primary} disabled={pending}>{pending ? '주소 확인 중…' : '내 빈집 무료로 확인하기'}<Icon name="search" /></button>
     </form>
     {pending && <p className={styles.lookupMessage} role="status">입력한 주소와 지도 위치를 찾고 있어요.</p>}
     {error && <p id="address-error" className={styles.lookupError} role="alert">{error}</p>}
     {candidate && <section ref={confirmation} tabIndex={-1} className={styles.addressConfirmation} aria-labelledby="address-confirm-title">
-      <span className={styles.statusUnknown}>{candidate.quality === 'fuzzy' ? '비슷한 주소 · 직접 확인 필요' : '조회된 주소 · 직접 확인 필요'}</span>
       <h3 id="address-confirm-title">이 집이 맞나요?</h3>
       <p className={styles.candidateAddress}>{candidate.address}</p>
       {candidate.roadAddress && candidate.roadAddress !== candidate.address && <p className={styles.candidateRoad}>{candidate.roadAddress}</p>}
@@ -87,6 +83,5 @@ export function AddressStartForm() {
       <button className={styles.primary} type="button" onClick={continueToForm}>이 집이 맞아요 · 상세 정보 입력<Arrow /></button>
       <button className={styles.changeAddress} type="button" onClick={() => { clearLookup(); input.current?.focus() }}>다른 집이에요 · 주소 수정</button>
     </section>}
-    <p className={styles.lookupPrivacy}>주소는 위치 확인에만 사용하며, 이 단계에서는 신청 기록으로 저장하지 않습니다. <Link href="/privacy">개인정보 안내</Link></p>
   </div>
 }

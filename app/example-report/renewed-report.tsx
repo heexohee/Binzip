@@ -1,3 +1,4 @@
+import { TaxPlanner } from '../tax-comparison'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Brand } from '../home-ui'
@@ -25,8 +26,9 @@ export function RenewedExampleReport() {
           <div className={reading.caseSummary}><p className={reading.caseAddress}>{EXAMPLE_CASE.address}</p><p className={reading.small}>자료 정리 · {EXAMPLE_CASE.checkedAt}</p></div>
         </section>
         <nav className={reading.contents} aria-label="진단서 목차">
-          <a href="#property"><span>01</span> 집의 정보</a><a href="#preparation"><span>02</span> 철거 준비</a><a href="#consultation"><span>03</span> 상담 맡기기</a><a href="#progress"><span>04</span> 진행 확인</a>
+          <a href="#tax-order">처분 순서·세금</a><a href="#property"><span>01</span> 집의 정보</a><a href="#preparation"><span>02</span> 철거 준비</a><a href="#consultation"><span>03</span> 상담 맡기기</a><a href="#progress"><span>04</span> 진행 확인</a>
         </nav>
+        <TaxPlanner example />
         <dl className={styles.summary} aria-label="핵심 요약"><div><dt>준비된 자료</dt><dd>등기부·건축물대장</dd></div><div><dt>철거 준비 예산</dt><dd>{formatWon(EXAMPLE_BUDGET_TOTAL * 10_000)}</dd><p>진행지원 수수료 포함</p></div><div><dt>먼저 할 일</dt><dd><a href="#preparation">담보·지원 조건 확인</a></dd></div></dl>
 
         <section id="property" className={reading.section} aria-labelledby="property-title">

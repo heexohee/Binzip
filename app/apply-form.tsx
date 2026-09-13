@@ -11,7 +11,6 @@ import styles from './apply-form.module.css'
 
 const INITIAL: ApplyState = { ok: false, errors: {}, message: null }
 
-const ACQUISITION = ['상속', '매입', '가족 소유', '기타']
 const OWNERSHIP = ['단독', '공동', '상속 정리 중', '잘 모름']
 // 순서가 곧 우선순위다. '보유 비용'을 앞에 둔 것은 이 서비스가
 // 제일 먼저 답하는 것이 '지금 얼마가 나가고 있나'이기 때문이다.
@@ -92,7 +91,7 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
   const selected = confirmedAddress && (!initialAddress || initialAddress === confirmedAddress.query || initialAddress === confirmedAddress.address) ? confirmedAddress : null
   const [photos, setPhotos] = useState<File[]>([])
   const [photoBusy, setPhotoBusy] = useState(false)
-  const [values, setValues] = useState<Record<string, string>>(() => ({ address: initialAddress || selected?.query || draft?.address || '', concern: draft ? ({ sell: '매각 가능성', demolish: '철거비·공적 지원', hold: '보유 비용', undecided: '잘 모르겠음' }[draft.decision]) : '' }))
+  const [values, setValues] = useState<Record<string, string>>(() => ({ address: initialAddress || selected?.address || draft?.address || '', concern: draft ? ({ sell: '매각 가능성', demolish: '철거비·공적 지원', hold: '보유 비용', undecided: '잘 모르겠음' }[draft.decision]) : '' }))
   const [agreed, setAgreed] = useState(false)
   const [photoAgreed, setPhotoAgreed] = useState(false)
   const setValue = (name: string, value: string) => setValues(current => ({ ...current, [name]: value }))
@@ -105,10 +104,19 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
     ? { kind: 'unsure', addr: selected.address, pnu: selected.pnu, x: selected.x, y: selected.y }
     : { kind: 'found', addr: selected.address, pnu: selected.pnu, quality: selected.quality, x: selected.x, y: selected.y }) : { kind: 'idle' })
   const [channel, setChannel] = useState('')
-  const lastQuery = useRef(selected?.query ?? '')
+  const lastQuery = useRef(selected?.address ?? '')
   const requestVersion = useRef(0)
   useEffect(() => () => { requestVersion.current++ }, [])
   const addressRef = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    if (!selected) return
+    requestVersion.current++
+    lastQuery.current = selected.address
+    setValues(current => ({ ...current, address: selected.address }))
+    const at = { addr: selected.address, pnu: selected.pnu, x: selected.x, y: selected.y }
+    setAddr(selected.quality === 'fuzzy' ? { kind: 'unsure', ...at } : { kind: 'found', quality: selected.quality, ...at })
+  }, [selected])
+
 
 
   async function checkAddress(raw: string) {
@@ -201,12 +209,6 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
           </span>
         </label>
 
-        <span className="flex flex-col gap-1 text-[14px] leading-[1.6] text-muted">
-          <span>번지까지 모르시면 아는 데까지만 적어 주세요.</span>
-          <span>나머지는 저희가 찾습니다.</span>
-          <span>돋보기를 누르거나 엔터를 치시면 위성 사진으로 확인해 드립니다.</span>
-        </span>
-
         {addr.kind === 'checking' && (
           <span className="text-[14px] leading-[1.6] text-muted">주소를 확인하고 있습니다.</span>
         )}
@@ -276,9 +278,6 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
           {state.errors.photoAgree && <span role="alert" className="block font-semibold">{state.errors.photoAgree}</span>}
         </span>
       </label>}
-
-      {/* 3. 취득 경위 — ①칸(법적) 판정의 입력이 된다 */}
-      <RadioGroup name="acquisition" label="이 집은 어떻게 갖게 되셨나요?" options={ACQUISITION} value={values.acquisition ?? ''} onChange={v => setValue('acquisition', v)} />
 
       {/* 4. 소유관계 — 단독/공동이 미등기·공동상속 판정을 가른다 */}
       <RadioGroup name="ownership" label="현재 소유관계를 알고 계신가요?" options={OWNERSHIP} value={values.ownership ?? ''} onChange={v => setValue('ownership', v)} />

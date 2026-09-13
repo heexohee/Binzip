@@ -1,3 +1,4 @@
+import { TaxPlanner } from '../tax-comparison'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { AxisBlock } from '../../src/report-view'
@@ -52,6 +53,7 @@ export function ReportOverview({ example = false, exampleNotice = '예시 데이
         <nav className={styles.nav} aria-label="진단서 목차"><a href="#money">남는 돈</a><a href="#next-actions">다음 할 일</a><a href="#demolition">철거비·지원</a><a href="#property">집 상태·근거</a></nav>
         {attention.length > 0 && <aside className={styles.attention}><strong>금액 비교와 함께 먼저 확인해 주세요</strong><ul>{attention.map((item, index) => <li key={index}>{item}</li>)}</ul><a href="#property">관련 근거 확인하기 ↓</a></aside>}
         {summary}
+        <TaxPlanner />
         <CostComparison example={example} />
         <DecisionActions attention={attention} initialDecision={initialDecision} onDecisionChange={onDecisionChange} actions={decisionActions} />
         <section id="demolition" className={styles.section} aria-labelledby="demolition-title"><p className={styles.eyebrow}>03 · 철거비와 공적 지원</p><h2 id="demolition-title">철거비는, 어디까지 포함한 금액일까요?</h2><p className={styles.intro}>사진만으로 총공사비를 정할 수는 없어요. 아래 네 가지를 같은 범위로 받아 비교해 보세요.</p><div className={styles.scopeGrid}>{COST_SCOPE.map(([title, description], index) => <div key={title}><span>{String(index + 1).padStart(2, '0')}</span><h3>{title}</h3><p>{description}</p></div>)}</div><p className={styles.note}>견적에는 포함 항목·별도 비용·부가세·현장 확인 후 변경 조건을 함께 적어 달라고 요청하세요.</p><SupportCards supports={supports} compact /></section>

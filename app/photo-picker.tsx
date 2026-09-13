@@ -67,7 +67,7 @@ export function PhotoPicker({ onChange, onBusyChange, disabled, error }: {
     <p id="photo-help" className={styles.help}>집 전체 · 지붕과 처마 · 벽 · 출입구 · 진입로가 보이면 좋아요.<br />안전한 곳에서 찍은 사진만 보내주세요.</p>
     <label className={styles.add}>
       <span aria-hidden="true">＋</span> 사진 고르기 <span>{photos.length} / {MAX_PHOTOS}</span>
-      <input type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={e => void select(e.currentTarget)} aria-label="집 사진 첨부" aria-describedby="photo-help photo-status" />
+      <input type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={e => void select(e.currentTarget)} aria-label="집 사진 첨부" aria-describedby="photo-help" />
     </label>
     {photos.length > 0 && <ul className={styles.grid}>{photos.map((p, index) => <li key={p.id}>
       {/* Object URLs are local-only previews; no remote image optimizer is involved. */}
@@ -75,8 +75,7 @@ export function PhotoPicker({ onChange, onBusyChange, disabled, error }: {
       <img src={p.url} alt={`첨부할 집 사진 ${index + 1}`} />
       <div><span>사진 {index + 1}</span><button type="button" onClick={() => { URL.revokeObjectURL(p.url); update(photos.filter(x => x.id !== p.id)) }} aria-label={`사진 ${index + 1} 삭제`}>삭제</button></div>
     </li>)}</ul>}
-    <p id="photo-status" role="status" className={styles.help}>{busy ? '사진 용량을 줄이고 있어요…' : photos.length ? `${photos.length}장 선택했어요. 신청하기를 누르면 함께 전송돼요.` : 'JPG·PNG·WebP, 최대 6장. 사진 크기는 자동으로 줄여요.'}</p>
+    <div id="photo-status" role="status">{(busy || photos.length > 0) && <p className={styles.help}>{busy ? '사진 용량을 줄이고 있어요…' : `${photos.length}장 선택했어요. 신청하기를 누르면 함께 전송돼요.`}</p>}</div>
     {(message || error) && <p role="alert" className={styles.error}>{message || error}</p>}
-    <p className={styles.help}>얼굴·차량번호·문서 내용은 가려주세요. 촬영 위치정보는 저장 전에 제거해요. 사진만으로 건물 안전성·석면·철거비를 확정하지 않아요.</p>
   </fieldset>
 }
