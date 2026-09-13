@@ -1,0 +1,9 @@
+.figure { margin: 0; display: grid; gap: var(--space-2); min-width: 0; }
+.image { position: relative; overflow: hidden; aspect-ratio: 560 / 320; border: 1px solid var(--border-subtle); border-radius: var(--radius-control); background: var(--surface-soft); }
+.image img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.hidden { visibility: hidden; }
+.message { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; gap: var(--space-2); padding: var(--space-4); text-align: center; color: var(--text-secondary); font-size: var(--type-help); }
+.retry { composes: compact from "./ui.module.css"; }
+.marker { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 24px; height: 24px; border: 3px solid var(--surface-raised); border-radius: 50%; background: var(--brand-primary); box-shadow: 0 0 0 2px var(--brand-primary); pointer-events: none; }
+.figure figcaption { color: var(--text-secondary); font-size: var(--type-help); line-height: 1.7; }
+.missing { padding: var(--space-4); border: 1px dashed var(--status-unknown-border); border-radius: var(--radius-control); background: var(--status-unknown-surface); font-size: var(--type-help); color: var(--status-unknown-text); }

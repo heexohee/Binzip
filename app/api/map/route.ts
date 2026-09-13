@@ -46,26 +46,25 @@ export async function GET(request: Request) {
   if (domain) params.set('domain', domain)
 
   try {
-    const upstream = await fetch(ENDPOINT + '?' + params.toString())
+    const upstream = await fetch(ENDPOINT + '?' + params.toString(), { signal: AbortSignal.timeout(10000) })
     const type = upstream.headers.get('content-type') ?? ''
     if (!upstream.ok || !type.startsWith('image/')) {
-      // VWorld 응답 본문에는 키가 들어 있지 않다 (키는 요청 URL 에만 있다).
-      const detail = (await upstream.text().catch(() => '')).slice(0, 200)
-      console.error('[api/map] 상단 거부', upstream.status, type, detail)
+      // Keep provider responses and request credentials out of the browser and logs.
+      console.error('[api/map] 상단 거부', upstream.status, type)
       return NextResponse.json(
-        { error: 'UPSTREAM_FAILED', status: upstream.status, detail },
+        { error: 'UPSTREAM_FAILED' },
         { status: 502 },
       )
     }
     return new NextResponse(upstream.body, {
       headers: {
         'Content-Type': type,
-        // 같은 필지의 항공영상은 바뀌지 않는다
-        'Cache-Control': 'public, max-age=86400, immutable',
+        'Cache-Control': 'private, max-age=3600',
+        'X-Content-Type-Options': 'nosniff',
       },
     })
-  } catch (e) {
-    console.error('[api/map] 항공영상 조회 실패', e)
+  } catch {
+    console.error('[api/map] 항공영상 조회 실패')
     return NextResponse.json({ error: 'UPSTREAM_FAILED' }, { status: 502 })
   }
 }

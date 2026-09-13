@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic'
  */
 export async function GET(request: Request) {
   const q = new URL(request.url).searchParams.get('q')?.trim()
-  if (!q) {
+  if (!q || q.length > 300 || /[\x00-\x1f\x7f]/.test(q)) {
     return NextResponse.json({ found: false, reason: 'EMPTY_QUERY' }, { status: 400 })
   }
 
@@ -39,9 +39,9 @@ export async function GET(request: Request) {
       provider: r.provider,
       x: coords?.x ?? null,
       y: coords?.y ?? null,
-    })
-  } catch (e) {
-    console.error('[api/address] 조회 실패', e)
+    }, { headers: { 'Cache-Control': 'private, no-store' } })
+  } catch {
+    console.error('[api/address] 조회 실패')
     return NextResponse.json({ found: false, reason: 'LOOKUP_FAILED' }, { status: 502 })
   }
 }

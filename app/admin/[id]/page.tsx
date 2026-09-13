@@ -201,7 +201,7 @@ export default async function Review({ params }: { params: Promise<{ id: string 
         <h2 className="text-[length:var(--type-card)]">검토</h2>
         <p className="mt-2 max-w-[64ch] text-[length:var(--type-body)] leading-[1.75] text-muted">
           아래 메모는 고객 진단서에 반영됩니다. 위의 내부 메모와 구분해서 작성하세요.
-          고객은 이미 1차 진단을 확인할 수 있으며, 여기서는 추가 검토 진단서의 공개 여부를 관리합니다.
+          고객이 보낸 상세 정보를 검토한 뒤 진단서의 공개 여부를 관리합니다.
         </p>
 
         {report && (

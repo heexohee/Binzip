@@ -27,9 +27,9 @@ export async function geocodeParcel(address: string): Promise<Coords | null> {
   })
   if (domain) params.set('domain', domain)
 
-  const res = await fetch(ENDPOINT + '?' + params.toString(), { cache: 'no-store' })
+  const res = await fetch(ENDPOINT + '?' + params.toString(), { cache: 'no-store', signal: AbortSignal.timeout(5000) })
   if (!res.ok) {
-    console.error('[geocode] HTTP', res.status, (await res.text()).slice(0, 200))
+    console.error('[geocode] HTTP', res.status)
     return null
   }
 
@@ -41,7 +41,6 @@ export async function geocodeParcel(address: string): Promise<Coords | null> {
     console.error(
       '[geocode] status',
       body.response?.status,
-      JSON.stringify(body.response?.error ?? body).slice(0, 200),
     )
     return null
   }
@@ -49,5 +48,5 @@ export async function geocodeParcel(address: string): Promise<Coords | null> {
   const p = body.response.result?.point
   const x = Number(p?.x)
   const y = Number(p?.y)
-  return Number.isFinite(x) && Number.isFinite(y) ? { x, y } : null
+  return Number.isFinite(x) && Number.isFinite(y) && x >= 124 && x <= 132 && y >= 33 && y <= 39 ? { x, y } : null
 }

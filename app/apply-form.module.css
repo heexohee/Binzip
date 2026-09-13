@@ -4,6 +4,11 @@
 .legend { font-size: var(--type-body); font-weight: 600; color: var(--text-primary); }
 .legend small { font-size: var(--type-help); color: var(--text-secondary); font-weight: 400; }
 .help { font-size: var(--type-help); line-height: 1.7; color: var(--text-secondary); }
+.mapDetails { border: 1px solid var(--border-subtle); border-radius: var(--radius-control); padding: var(--space-3); }
+.mapDetails summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--brand-primary); font-size: var(--type-help); font-weight: 600; }
+.mapDetails summary::after { content: '＋'; margin-left: auto; }
+.mapDetails[open] summary::after { content: '−'; }
+.mapDetails[open] summary { margin-bottom: var(--space-3); }
 .error { font-size: var(--type-help); font-weight: 600; color: var(--status-error-text); }
 .status { border-left: 3px solid var(--brand-primary); border-radius: var(--radius-compact); background: var(--surface); padding: var(--space-3) var(--space-4); font-size: var(--type-help); }
 .uncertain { composes: status; border-left-color: var(--status-unknown-border); background: var(--status-unknown-surface); }
