@@ -1,13 +1,17 @@
 'use client'
 
 import { useState } from 'react'
+import { KakaoMap } from './kakao-map'
 import styles from './satellite-map.module.css'
 
 type Props = { address: string; x: number | null; y: number | null }
 
 export function SatelliteMap(props: Props) {
   if (props.x === null || props.y === null) return <p className={styles.missing}>지도 위치를 찾지 못했어요. 주소가 맞는지 확인하면 다음 단계로 진행할 수 있어요.</p>
-  return <MapImage key={`${props.x},${props.y}`} {...props} x={props.x} y={props.y} />
+  const key = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY
+  return <div className={styles.figure}>
+    {key ? <figure className={styles.figure}><KakaoMap x={props.x} y={props.y} apiKey={key} /></figure> : <MapImage key={`${props.x},${props.y}`} {...props} x={props.x} y={props.y} />}
+  </div>
 }
 
 function MapImage({ address, x, y }: Props & { x: number; y: number }) {

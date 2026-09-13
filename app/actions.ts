@@ -37,7 +37,7 @@ export async function submitApplication(
     errors.email = '이메일 주소를 다시 확인해 주세요. 예) name@example.com'
   }
   if (!agreed) errors.agree = '동의에 체크해 주세요.'
-  for (const [name, limit] of Object.entries({ address: 300, condition: 3000, contact: 50, email: 254, acquisition: 100, ownership: 100, concern: 100, speed: 200, channel: 100 })) {
+  for (const [name, limit] of Object.entries({ address: 300, condition: 3000, taxNote: 2000, contact: 50, email: 254, acquisition: 100, ownership: 100, concern: 100, speed: 200, channel: 100 })) {
     if (text(name).length > limit) errors[name] = `입력 내용을 ${limit}자 이내로 줄여 주세요.`
   }
   if (photoEntries.length > MAX_PHOTOS) errors.photos = '사진은 최대 6장까지 첨부해 주세요.'
@@ -58,7 +58,7 @@ export async function submitApplication(
   try {
     const saved = await saveApplication({
       address,
-      condition: text('condition') || null,
+      condition: [text('condition'), text('taxNote')].filter(Boolean).join('\n\n') || null,
       acquisition: text('acquisition') || null,
       ownership: text('ownership') || null,
       concern: text('concern') || null,

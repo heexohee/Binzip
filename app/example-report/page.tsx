@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
-import { RenewedExampleReport } from './renewed-report'
+import { DecisionExampleReport } from './decision-example-report'
 
 export const revalidate = 86400
 export const metadata: Metadata = {
-  title: '우리 집 철거 준비 진단서 — 빈집진단서',
-  description: '집의 기록과 주변 거래, 철거 예산·준비사항을 살펴보고 상담과 진행 현황을 체험해 보세요.',
+  title: '집 상태부터 다음 행동까지 — 빈집진단서',
+  description: '집의 현재 상태, 보수·매도·철거 선택지, 예상 비용과 다음 행동을 한눈에 살펴보세요.',
   robots: { index: false, follow: false },
 }
 
 export default function ExampleReportPage() {
-  return <RenewedExampleReport />
+  return <DecisionExampleReport />
 }

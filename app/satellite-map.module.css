@@ -7,3 +7,8 @@
 .marker { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 24px; height: 24px; border: 3px solid var(--surface-raised); border-radius: 50%; background: var(--brand-primary); box-shadow: 0 0 0 2px var(--brand-primary); pointer-events: none; }
 .figure figcaption { color: var(--text-secondary); font-size: var(--type-help); line-height: 1.7; }
 .missing { padding: var(--space-4); border: 1px dashed var(--status-unknown-border); border-radius: var(--radius-control); background: var(--status-unknown-surface); font-size: var(--type-help); color: var(--status-unknown-text); }
+
+.canvas { width: 100%; height: 100%; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; }
+.controls a, .controls button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 16px; border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--surface); color: var(--brand-primary); font: inherit; cursor: pointer; }
+.controls button[aria-pressed="true"] { background: var(--brand-primary); color: white; }
