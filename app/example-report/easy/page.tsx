@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { RenewedExampleReport } from './renewed-report'
+import { RenewedExampleReport } from '../renewed-report'
 
 export const revalidate = 86400
 export const metadata: Metadata = {
@@ -8,6 +8,6 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
-export default function ExampleReportPage() {
+export default function EasyExampleReportPage() {
   return <RenewedExampleReport />
 }

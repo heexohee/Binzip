@@ -1,9 +1,11 @@
 'use client'
 
-import { startTransition, useActionState, useRef, useState } from 'react'
+import { startTransition, useActionState, useEffect, useRef, useState } from 'react'
 import { submitApplication } from './actions'
 import type { ApplyState } from '../src/application'
 import { PhotoPicker } from './photo-picker'
+import { SatelliteMap } from './satellite-map'
+import { parseAddressCandidate } from '../src/address-candidate'
 import { useInstantFlow } from './instant-flow'
 import styles from './apply-form.module.css'
 
@@ -41,14 +43,15 @@ type AddrStatus =
   | { kind: 'found'; addr: string; pnu: string; quality: 'exact' | 'road'; x: number | null; y: number | null }
   | { kind: 'unsure'; addr: string; pnu: string; x: number | null; y: number | null }
   | { kind: 'notfound' }
+  | { kind: 'error' }
 
 /** 라벨 + 필수/선택 표기. 기호가 아니라 말로 쓴다 */
 function Legend({ text, need }: { text: string; need?: 'must' | 'may' }) {
   return (
     <span className={styles.legend}>
       {text}{' '}
-      {need === 'must' && <small>꼭 필요합니다</small>}
-      {need === 'may' && <small>안 적으셔도 됩니다</small>}
+      {need === 'must' && <small>(필수)</small>}
+      {need === 'may' && <small>(선택)</small>}
     </span>
   )
 }
@@ -85,10 +88,11 @@ function RadioGroup({
 }
 
 export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) {
-  const { draft } = useInstantFlow()
+  const { draft, confirmedAddress, setConfirmedAddress } = useInstantFlow()
+  const selected = confirmedAddress && (!initialAddress || initialAddress === confirmedAddress.query || initialAddress === confirmedAddress.address) ? confirmedAddress : null
   const [photos, setPhotos] = useState<File[]>([])
   const [photoBusy, setPhotoBusy] = useState(false)
-  const [values, setValues] = useState<Record<string, string>>(() => ({ address: initialAddress || draft?.address || '', concern: draft ? ({ sell: '매각 가능성', demolish: '철거비·공적 지원', hold: '보유 비용', undecided: '잘 모르겠음' }[draft.decision]) : '' }))
+  const [values, setValues] = useState<Record<string, string>>(() => ({ address: initialAddress || selected?.query || draft?.address || '', concern: draft ? ({ sell: '매각 가능성', demolish: '철거비·공적 지원', hold: '보유 비용', undecided: '잘 모르겠음' }[draft.decision]) : '' }))
   const [agreed, setAgreed] = useState(false)
   const [photoAgreed, setPhotoAgreed] = useState(false)
   const setValue = (name: string, value: string) => setValues(current => ({ ...current, [name]: value }))
@@ -97,10 +101,13 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
     try { return await submitApplication(previous, data) }
     catch { return { ok: false, errors: {}, message: '접수 결과를 확인하지 못했어요. 잠시 후 다시 시도하거나 전화로 문의해 주세요.' } }
   }, INITIAL)
-  const [addr, setAddr] = useState<AddrStatus>({ kind: 'idle' })
-  const [mapState, setMapState] = useState<'loading' | 'ok' | 'error'>('loading')
+  const [addr, setAddr] = useState<AddrStatus>(() => selected ? (selected.quality === 'fuzzy'
+    ? { kind: 'unsure', addr: selected.address, pnu: selected.pnu, x: selected.x, y: selected.y }
+    : { kind: 'found', addr: selected.address, pnu: selected.pnu, quality: selected.quality, x: selected.x, y: selected.y }) : { kind: 'idle' })
   const [channel, setChannel] = useState('')
-  const lastQuery = useRef('')
+  const lastQuery = useRef(selected?.query ?? '')
+  const requestVersion = useRef(0)
+  useEffect(() => () => { requestVersion.current++ }, [])
   const addressRef = useRef<HTMLInputElement>(null)
 
 
@@ -108,36 +115,34 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
     const query = raw.trim()
     if (!query || query === lastQuery.current) return
     lastQuery.current = query
+    const version = ++requestVersion.current
     setAddr({ kind: 'checking' })
-    setMapState('loading')
     try {
-      const res = await fetch('/api/address?q=' + encodeURIComponent(query))
-      const data = await res.json()
-      if (lastQuery.current !== query) return
-      if (!data.found) return setAddr({ kind: 'notfound' })
-      const shown: string = data.jibunAddress ?? data.roadAddress ?? query
-      const at = { x: data.x ?? null, y: data.y ?? null }
-      setAddr(
-        data.matchQuality === 'fuzzy'
-          ? { kind: 'unsure', addr: shown, pnu: data.pnu, ...at }
-          : { kind: 'found', addr: shown, pnu: data.pnu, quality: data.matchQuality, ...at },
-      )
+      const res = await fetch('/api/address?q=' + encodeURIComponent(query), { cache: 'no-store', signal: AbortSignal.timeout(20000) })
+      const data: unknown = await res.json()
+      if (requestVersion.current !== version) return
+      if (!res.ok) { lastQuery.current = ''; setAddr({ kind: 'error' }); return }
+      const found = parseAddressCandidate(data, query)
+      if (!found) { lastQuery.current = ''; setAddr({ kind: 'notfound' }); return }
+      const at = { x: found.x, y: found.y, addr: found.address, pnu: found.pnu }
+      setAddr(found.quality === 'fuzzy' ? { kind: 'unsure', ...at } : { kind: 'found', quality: found.quality, ...at })
     } catch {
-      setAddr({ kind: 'notfound' })
+      if (requestVersion.current !== version) return
+      lastQuery.current = ''
+      setAddr({ kind: 'error' })
     }
   }
 
   if (state.ok) {
     return (
       <div className={styles.success}>
-        <h2>추가 확인 신청이 접수됐습니다.</h2>
+        <h2>진단 신청이 접수됐습니다.</h2>
         <p className="mt-3 text-[16px] leading-[1.75] text-muted">확인한 뒤 연락드립니다.</p>
       </div>
     )
   }
 
   const resolved = addr.kind === 'found' || addr.kind === 'unsure' ? addr : null
-  const coords = resolved && resolved.x != null && resolved.y != null ? resolved : null
   const err = (k: string) =>
     state.errors[k] ? (
       <span id={`apply-${k}-error`} role="alert" className={styles.error}>{state.errors[k]}</span>
@@ -168,6 +173,8 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
               onChange={e => {
                 setValue('address', e.currentTarget.value)
                 lastQuery.current = ''
+                requestVersion.current++
+                setConfirmedAddress(null)
                 setAddr({ kind: 'idle' })
               }}
               onBlur={(e) => void checkAddress(e.currentTarget.value)}
@@ -207,7 +214,7 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
           <div className={styles.status}>
             <span className="flex flex-col gap-1">
               <span className={styles.known}>
-                확인했습니다
+                {selected ? '앞 단계에서 확인한 주소' : '조회된 주소'}
               </span>
               <span className="mt-1 font-semibold text-body">{addr.addr}</span>
             </span>
@@ -239,33 +246,11 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
           </div>
         )}
 
-        {coords && (
-          <figure className="m-0 flex flex-col gap-2">
-            <div className="relative w-full overflow-hidden rounded-[4px] border border-line" style={{ aspectRatio: '560 / 320' }}>
-              {mapState !== 'ok' && (
-                <span className="absolute inset-0 flex items-center justify-center px-4 text-center text-[14px] leading-[1.6] text-muted">
-                  {mapState === 'error'
-                    ? '위성 사진을 불러오지 못했습니다. 주소 확인에는 지장이 없습니다.'
-                    : '위성 사진을 불러오는 중입니다.'}
-                </span>
-              )}
-              <img
-                key={coords.x + ',' + coords.y}
-                src={'/api/map?x=' + coords.x + '&y=' + coords.y + '&zoom=18'}
-                alt={coords.addr + ' 위에서 본 모습'}
-                width={560}
-                height={320}
-                onLoad={() => setMapState('ok')}
-                onError={() => setMapState('error')}
-                className={'w-full ' + (mapState === 'ok' ? 'block' : 'invisible')}
-              />
-            </div>
-            <figcaption className="flex flex-col gap-1 text-[14px] leading-[1.6] text-muted">
-              <span>위에서 내려다본 모습입니다.</span>
-              <span>다른 집이면 주소를 고쳐 주세요.</span>
-            </figcaption>
-          </figure>
-        )}
+        {addr.kind === 'error' && <p className={styles.error} role="alert">주소 조회에 연결하지 못했어요. 다시 확인하거나 아는 주소로 신청해 주세요.</p>}
+        {resolved && <details className={styles.mapDetails}>
+          <summary>위성 지도에서 위치 다시 보기</summary>
+          <SatelliteMap address={resolved.addr} x={resolved.x} y={resolved.y} />
+        </details>}
         {err('address')}
       </div>
 
@@ -413,7 +398,7 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
           disabled={pending || photoBusy}
           className={styles.submit}
         >
-          {photoBusy ? '사진을 준비하고 있어요' : pending ? '신청하고 있습니다' : '추가 확인 신청하기'}
+          {photoBusy ? '사진을 준비하고 있어요' : pending ? '신청하고 있습니다' : '진단 신청하기'}
         </button>
         {state.message && (
           <p role="alert" className={styles.error}>{state.message}</p>

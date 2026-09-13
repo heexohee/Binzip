@@ -35,5 +35,32 @@ export function HomeLink() {
 }
 
 export function HomeFooter() {
-  return <footer className={styles.footer}><Link href="/" className={styles.footerBrand}>빈집진단서</Link><p>빈집을 진단하고 다음 결정을 도와요.</p><p className={styles.disclaimer}>공적 자료와 확인 내용을 정리하는 참고 자료예요. 구조 안전, 세금·법률의 최종 판단이나 거래·공사 견적을 보증하지 않아요.</p><div className={styles.footerLinks}><Link href="/resources">빈집 지원·정보 모음</Link><Link href="/privacy">개인정보 처리방침</Link><a href="tel:01074282624">전화 문의</a><a href="mailto:rsoy2918@gmail.com">이메일 문의</a></div><p className={styles.operator}>정소희 · 경북 포항시 남구<br />010-7428-2624 · 평일 09:00–18:00</p></footer>
+  return <footer className={styles.footer}>
+    <div className={styles.footerHeader}>
+      <Link href="/" className={styles.footerBrand}>빈집진단서</Link>
+      <nav className={styles.footerLinks} aria-label="하단 서비스 메뉴">
+        <Link href="/#address-search">무료 진단 신청</Link>
+        <Link href="/example-report">진단서 예시</Link>
+        <Link href="/resources">빈집 지원·정보 모음</Link>
+        <Link href="/privacy">개인정보 처리방침</Link>
+      </nav>
+    </div>
+    <div className={styles.footerSection}>
+      <h2>운영자 정보</h2>
+      <dl className={styles.operatorDetails}>
+        <div><dt>서비스명</dt><dd>빈집진단서</dd></div>
+        <div><dt>운영자</dt><dd>정소희</dd></div>
+        <div><dt>활동 지역</dt><dd>경북 포항시 남구</dd></div>
+        <div><dt>전화 문의</dt><dd><a href="tel:01074282624">010-7428-2624</a></dd></div>
+        <div><dt>이메일 문의</dt><dd><a href="mailto:rsoy2918@gmail.com">rsoy2918@gmail.com</a></dd></div>
+        <div><dt>문의 시간</dt><dd>평일 09:00–18:00</dd></div>
+      </dl>
+    </div>
+    <div className={styles.footerSection}>
+      <h2>진단서 이용 안내</h2>
+      <p>현재 진단 신청은 무료입니다. 주소와 위치를 확인한 뒤 집 상태·소유관계와 사진을 보내주시면, 담당자가 확인 범위와 일정을 안내하고 검토한 진단서를 이메일로 보내드립니다. 사진은 선택 사항입니다.</p>
+      <p className={styles.disclaimer}>진단서는 공적 자료와 확인 내용을 정리한 참고 자료입니다. 구조 안전, 세금·법률의 최종 판단이나 거래·공사 견적을 보증하지 않습니다. 지원사업의 선정 여부와 본인 부담은 담당 기관에 확인해야 합니다.</p>
+    </div>
+    <p className={styles.copyright}>© {new Date().getFullYear()} 빈집진단서</p>
+  </footer>
 }
