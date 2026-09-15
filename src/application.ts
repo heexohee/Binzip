@@ -118,7 +118,7 @@ async function notifyByEmail(app: Application): Promise<string | null> {
     '집 상태: ' + or(app.condition),
     '취득 경위: ' + or(app.acquisition),
     '소유 관계: ' + or(app.ownership),
-    '가장 걱정되는 것: ' + or(app.concern),
+    '궁금한 내용: ' + or(app.concern),
     '희망 소요: ' + or(app.speed),
     '',
     '받을 방법: ' + or(app.channel),

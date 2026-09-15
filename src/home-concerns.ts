@@ -18,8 +18,8 @@ export const HOME_CONCERNS = [
   {
     id: 'order', label: '조치명령과 이행강제금',
     title: '정비 명령에 따른 이행강제금이 부과될 수 있어요.',
-    metric: '최대 500만 원',
-    metricCondition: '특정빈집 조치명령을 기한 내 이행하지 않을 때 · 1회 이행강제금',
+    metric: '연 최대 1,000만 원',
+    metricCondition: '특정빈집 조치명령 미이행 시 · 1회 최대 500만 원 × 연 2회 이내',
     description: '',
     laws: [
       { label: '농어촌정비법 제65조의5제1항 · 제133조', url: 'https://www.law.go.kr/LSW/lsInfoP.do?ancNo=21433&ancYd=20260310&efYd=20260911&lsiSeq=283947' },
@@ -28,7 +28,7 @@ export const HOME_CONCERNS = [
     evidenceItems: [
       ['대상', '특정빈집에 대한 조치명령을 기한 내 이행하지 않은 소유자'],
       ['금액', '1회 최대 500만 원. 조치명령 종류 등 법령 기준에 따라 달라져요.'],
-      ['반복 부과', '명령을 이행할 때까지 연 2회 이내 부과될 수 있어요.'],
+      ['반복 부과', '최초 조치명령일을 기준으로 1년에 2회 이내 반복 부과될 수 있어요. 1회 최대액으로 2회 부과되면 연 1,000만 원이에요.'],
     ],
   },
 

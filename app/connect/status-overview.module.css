@@ -1,0 +1,10 @@
+.overview { margin-bottom: 28px; }
+.property { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:20px 24px; background:var(--surface-soft); border-radius:16px; }
+.property span,.label { display:block; color:var(--text-secondary); font-size:14px; font-weight:600; }
+.property strong { display:block; font-size:22px; margin:4px 0; }
+.property p { margin:0; color:var(--text-secondary); font-size:16px; }
+.overview a { display:inline-flex; align-items:center; min-height:44px; color:var(--brand-primary); font-size:16px; font-weight:700; text-decoration:none; }
+.current { margin:18px 0 16px; padding:28px 28px 24px; border-radius:20px; background:var(--brand-primary); color:#fff; }
+.current>span { display:block; font-size:14px; font-weight:700; opacity:.78; }.current h2 { margin:8px 0; font-size:30px; line-height:1.3; letter-spacing:-.04em; }.current p { margin:0; font-size:17px; line-height:1.6; color:rgba(255,255,255,.85); }.current a { margin-top:14px; color:#fff; }
+.updated { text-align:right; color:var(--text-secondary); font-size:13px; margin:12px 0 0; }
+@media(max-width:800px) { .current{padding:24px 20px}.current h2{font-size:26px} }@media(max-width:500px) { .property{align-items:flex-start;flex-direction:column;padding:18px}.current p{font-size:16px} }

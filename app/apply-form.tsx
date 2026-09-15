@@ -92,6 +92,7 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
   const [photos, setPhotos] = useState<File[]>([])
   const [photoBusy, setPhotoBusy] = useState(false)
   const [values, setValues] = useState<Record<string, string>>(() => ({ address: initialAddress || selected?.address || draft?.address || '', concern: draft ? ({ sell: '매각 가능성', demolish: '철거비·공적 지원', hold: '보유 비용', undecided: '잘 모르겠음' }[draft.decision]) : '' }))
+  const [concerns, setConcerns] = useState<string[]>(() => values.concern ? [values.concern] : [])
   const [agreed, setAgreed] = useState(false)
   const [photoAgreed, setPhotoAgreed] = useState(false)
   const setValue = (name: string, value: string) => setValues(current => ({ ...current, [name]: value }))
@@ -282,8 +283,36 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
       {/* 4. 소유관계 — 단독/공동이 미등기·공동상속 판정을 가른다 */}
       <RadioGroup name="ownership" label="현재 소유관계를 알고 계신가요?" options={OWNERSHIP} value={values.ownership ?? ''} onChange={v => setValue('ownership', v)} />
 
-      {/* 5. 걱정거리 — 진단서에서 어느 경로를 맨 위에 놓을지 정한다 */}
-      <RadioGroup name="concern" label="가장 걱정되는 것은 무엇인가요?" options={CONCERN} value={values.concern ?? ''} onChange={v => setValue('concern', v)} />
+      <fieldset className="m-0 flex flex-col gap-3 border-0 p-0">
+        <legend className="mb-1 p-0">
+          <Legend text="어떤 내용이 궁금하신가요?" need="may" />
+        </legend>
+        <p id="concern-help" className={styles.help}>여러 개 선택할 수 있어요.</p>
+        <div className={GRID}>
+          {CONCERN.map(option => (
+            <label key={option} className={CHIP}>
+              <input
+                type="checkbox"
+                name="concern"
+                value={option}
+                checked={concerns.includes(option)}
+                aria-describedby="concern-help"
+                onChange={event => {
+                  const checked = event.currentTarget.checked
+                  setConcerns(current => !checked
+                    ? current.filter(value => value !== option)
+                    : option === '잘 모르겠음'
+                      ? [option]
+                      : [...current.filter(value => value !== '잘 모르겠음'), option])
+                }}
+                className="h-5 w-5 flex-none accent-deep"
+              />
+              {option}
+            </label>
+          ))}
+        </div>
+        {err('concern')}
+      </fieldset>
 
       {/* 6. 받을 방법 — 필수. 연락처 칸의 형식을 바꾼다 */}
       <fieldset className="m-0 flex flex-col gap-3 border-0 p-0">
@@ -397,15 +426,11 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
           disabled={pending || photoBusy}
           className={styles.submit}
         >
-          {photoBusy ? '사진을 준비하고 있어요' : pending ? '신청하고 있습니다' : '진단 신청하기'}
+          {photoBusy ? '사진을 준비하고 있어요' : pending ? '신청하고 있습니다' : values.speed === SPEED[1] ? '현장 방문 상담 신청하기' : '무료 진단 신청하기'}
         </button>
         {state.message && (
           <p role="alert" className={styles.error}>{state.message}</p>
         )}
-        <span className="flex flex-col gap-1 text-[14px] leading-[1.6] text-muted">
-          <span>확인이 끝나면 알려드린 방법으로 보내드립니다.</span>
-          <span>비용은 없습니다.</span>
-        </span>
       </div>
     </form>
   )

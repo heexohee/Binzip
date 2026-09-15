@@ -1,0 +1,48 @@
+.form { width: 100%; margin: 0 auto; color: var(--text-primary); }
+.steps { display: flex; list-style: none; padding: 0; margin: 0 0 24px; gap: 16px; }
+.steps li { flex: 1; display: flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: var(--type-help); padding-bottom: 16px; border-bottom: 3px solid var(--border-subtle); }
+.steps li[aria-current], .steps li[data-complete=true] { color: var(--brand-primary); border-color: var(--brand-primary); font-weight: 700; }
+.steps li span { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--surface-raised); flex-shrink: 0; }
+.steps li[aria-current] span { background: var(--brand-primary); color: white; }
+.card { display: flex; flex-direction: column; gap: 28px; border: 1px solid var(--border-subtle); background: var(--surface-raised); border-radius: var(--radius-card); padding: 32px; }
+.heading h2 { font-size: var(--type-card); line-height: 1.4; margin: 8px 0; letter-spacing: -.03em; }
+.heading h2:focus { outline: none; }
+.heading p { margin: 0; color: var(--text-secondary); font-size: var(--type-help); line-height: 1.6; }
+.heading p:first-child { font-weight: 650; color: var(--brand-primary); }
+.question { display: block; padding: 0; margin: 0; min-width: 0; border: 0; font-size: var(--type-body); font-weight: 600; }
+.question legend { margin-bottom: 12px; padding: 0; }
+.optional { color: var(--text-secondary); font-size: var(--type-meta); font-weight: 400; }
+.input { composes: input from '../ui.module.css'; display: block; margin-top: 12px; }
+.options, .goalGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.option { composes: choice from '../ui.module.css'; min-height: 56px; font-weight: 400; }
+.goal { composes: choice from '../ui.module.css'; padding: 20px; align-items: flex-start; }
+.goal input { margin-top: 5px; }
+.goal strong { display: block; font-size: var(--type-body); }
+.goal small { display: block; font-weight: 400; font-size: var(--type-help); color: var(--text-secondary); margin-top: 6px; line-height: 1.6; }
+.upload { composes: choice from '../ui.module.css'; position: relative; justify-content: center; border-style: dashed; min-height: 72px; overflow: hidden; }
+.upload span { font-size: var(--type-meta); color: var(--text-secondary); }
+.upload input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.upload:focus-within { outline: 2px solid var(--brand-primary); outline-offset: 3px; }
+.photos { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; list-style: none; padding: 0; margin: 12px 0 0; }
+.photos img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; }
+.photos button { min-height: 44px; width: 100%; color: var(--brand-primary); cursor: pointer; }
+.nextHint { margin: 0; font-size: var(--type-help); color: var(--text-secondary); line-height: 1.7; }
+.navigation { display: flex; gap: 12px; padding-top: 8px; }
+.primary { composes: primary from '../ui.module.css'; flex: 1; justify-content: space-between; }
+.secondary { composes: secondary from '../ui.module.css'; }
+.edit { align-self: flex-start; min-height: 44px; color: var(--brand-primary); font-size: var(--type-help); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+.error { color: var(--status-error-text); margin: 0; font-size: var(--type-help); }
+.summary { margin: 0; }
+.summary > div { display: grid; grid-template-columns: 140px minmax(0,1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--type-help); }
+.summary dt { color: var(--text-secondary); }
+.summary dd { margin: 0; overflow-wrap: anywhere; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@media(max-width: 600px) {
+  .card { padding: 20px 16px; gap: 24px; }
+  .steps { gap: 8px; }
+  .steps li { flex-direction: column; gap: 7px; font-size: 12px; text-align: center; white-space: nowrap; }
+  .steps li span { width: 24px; height: 24px; }
+  .options, .goalGrid { grid-template-columns: 1fr; }
+  .goal { padding: 16px; }
+  .summary > div { grid-template-columns: 100px minmax(0,1fr); gap: 12px; }
+}

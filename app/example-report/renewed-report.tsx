@@ -18,7 +18,6 @@ export function RenewedExampleReport() {
     <div className={reading.sheet}>
       <header className={reading.header}><Brand /><Link className={reading.homeLink} href="/"><span aria-hidden="true">←</span> 홈으로</Link></header>
       <main className={reading.main}>
-        <p className={reading.exampleNotice} data-example-notice><strong>서비스 미리보기</strong> {EXAMPLE_CASE.notice}</p>
         <section className={`${reading.hero} ${styles.hero}`} aria-labelledby="report-title">
           <div><p className={reading.eyebrow}>빈집진단서 · 철거 준비 안내</p><h1 id="report-title" tabIndex={-1}>우리 집 철거 준비,<br />차근차근 함께해요.</h1></div>
           <Image className={reading.rabbit} src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={132} height={168} sizes="(max-width: 620px) 76px, 132px" priority />
