@@ -17,6 +17,7 @@ export async function submitApplication(
   const contact = text('contact')
   const channel = text('channel')
   const email = text('email')
+  const concern = [...new Set(formData.getAll('concern').map(value => String(value).trim()).filter(Boolean))].join(', ')
   const agreed = formData.get('agree') != null
   const photoEntries = formData.getAll('photos')
 
@@ -38,7 +39,7 @@ export async function submitApplication(
   }
   if (!agreed) errors.agree = '동의에 체크해 주세요.'
   for (const [name, limit] of Object.entries({ address: 300, condition: 3000, taxNote: 2000, contact: 50, email: 254, acquisition: 100, ownership: 100, concern: 100, speed: 200, channel: 100 })) {
-    if (text(name).length > limit) errors[name] = `입력 내용을 ${limit}자 이내로 줄여 주세요.`
+    if ((name === 'concern' ? concern : text(name)).length > limit) errors[name] = `입력 내용을 ${limit}자 이내로 줄여 주세요.`
   }
   if (photoEntries.length > MAX_PHOTOS) errors.photos = '사진은 최대 6장까지 첨부해 주세요.'
   if (photoEntries.length && formData.get('photoAgree') == null) errors.photoAgree = '사진 이용에 동의하거나 첨부 사진을 삭제해 주세요.'
@@ -61,7 +62,7 @@ export async function submitApplication(
       condition: [text('condition'), text('taxNote')].filter(Boolean).join('\n\n') || null,
       acquisition: text('acquisition') || null,
       ownership: text('ownership') || null,
-      concern: text('concern') || null,
+      concern: concern || null,
       speed: text('speed') || null,
       channel: channel || null,
       contact,

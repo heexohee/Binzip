@@ -29,6 +29,23 @@
 .feeBasis summary { min-height:44px; cursor:pointer; text-decoration:underline; text-underline-offset:4px; }
 .feeBasis a { color:var(--brand-primary); display:inline-block; margin-block:12px; }
 .note { font-size:16px; color:var(--text-secondary); margin-top:20px!important; }
+.support { margin-top:28px; padding-top:24px; border-top:1px solid var(--border-subtle); }
+.support h4 { margin:0 0 12px; font-size:24px; line-height:1.5; word-break:keep-all; }
+.support .amount { margin-bottom:0; }
+.repairCosts { margin:20px 0!important; }
+.repairCosts > div { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px 20px; padding:16px 0; border-bottom:1px solid var(--border-subtle); }
+.repairCosts dt { flex:1 1 240px; }
+.repairCosts dt span { display:block; font-size:18px; color:var(--text-secondary); }
+.repairCosts dd { font-weight:700; color:var(--brand-primary); white-space:nowrap; }
+.marketTableWrap { overflow-x:auto; margin:16px 0; }
+.marketTable { width:100%; min-width:540px; border-collapse:collapse; font-size:17px; }
+.marketTable caption { text-align:left; padding-bottom:12px; color:var(--text-secondary); }
+.marketTable :is(th,td) { padding:14px 10px; text-align:right; border-bottom:1px solid var(--border-subtle); white-space:nowrap; }
+.marketTable th:first-child { text-align:left; padding-left:0; }
+.marketTable th span { display:block; font-size:15px; font-weight:400; color:var(--text-secondary); }
+.marketTable td:last-child { font-weight:700; color:var(--brand-primary); }
+.evidenceLink { display:inline-block; color:var(--brand-primary); margin-top:16px; text-underline-offset:4px; }
+.marketTableWrap:focus-visible,.evidenceLink:focus-visible { outline:3px solid var(--brand-primary); outline-offset:3px; }
 .steps { list-style:none; padding:0; margin:0; }
 .steps > li { display:grid; grid-template-columns:36px minmax(0,1fr); gap:16px; padding:24px 0; border-bottom:1px solid var(--border-subtle); }
 .steps > li:first-child { padding-top:0; }.steps > li:last-child { border-bottom:0; }
@@ -36,7 +53,11 @@
 .steps h3 { font-size:24px; line-height:1.5; margin-bottom:12px; }
 .steps p { color:var(--text-secondary); }
 .contacts dt { font-weight:600; }.contacts dd { color:var(--text-secondary); }
-.home { display:inline-flex; align-items:center; min-height:44px; margin-top:20px; color:var(--brand-primary); font-size:18px; text-underline-offset:4px; }
-.home:focus-visible { outline:3px solid var(--brand-primary); outline-offset:4px; }
+.actions { display:grid; justify-items:start; gap:10px; margin-top:24px; }
+.consult { display:inline-flex; align-items:center; justify-content:center; min-height:52px; padding:0 22px; border-radius:12px; background:var(--brand-primary); color:#fff; font-size:18px; font-weight:750; text-decoration:none; }
+.home { display:inline-flex; align-items:center; min-height:36px; color:var(--brand-primary); font-size:16px; text-underline-offset:4px; }
+.consult:focus-visible,.home:focus-visible { outline:3px solid var(--brand-primary); outline-offset:4px; }
 @media(max-width:640px) { .report { font-size:19px; }.section { padding:32px 20px; }.heading { gap:12px; }.heading :is(h1,h2) { font-size:26px; }.heading > span { font-size:24px; }.verdict,.costs article { padding:22px; }.verdict strong { font-size:25px; }.amount { font-size:36px; }.steps h3 { font-size:22px; }.steps > li { grid-template-columns:30px minmax(0,1fr); gap:12px; }.steps > li > span { width:30px; height:30px; line-height:30px; } }
-@media print { .report { max-width:none; }.section { padding:24px 0; }.costs article,.steps li { break-inside:avoid; }.home { display:none; } }
+@media print { .report { max-width:none; }.section { padding:24px 0; }.costs article,.steps li { break-inside:avoid; }.actions { display:none; } }
+
+@media print { .consultation { display:none; } }

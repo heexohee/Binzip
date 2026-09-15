@@ -1,0 +1,19 @@
+.request { margin-top:28px; font-size:18px; line-height:1.7; }
+.request .card { border:1px solid var(--border-subtle); border-radius:20px; padding:28px; }
+.request .card h3 { font-size:24px; margin:0 0 20px; }
+.form { display:grid; gap:20px; }
+.switch { display:flex; gap:6px; padding:6px; border-radius:14px; background:var(--surface-soft); }
+.serviceSwitch button { flex:1; min-width:0; min-height:52px; padding:12px; border:0; border-radius:10px; font:inherit; color:var(--text-primary); background:transparent; cursor:pointer; }
+.serviceSwitch button[aria-pressed=true] { background:var(--brand-primary); color:white; }
+.partner { border-bottom:1px solid var(--border-subtle); padding-bottom:20px; overflow-wrap:anywhere; }
+.partner span { display:block; font-size:15px; color:var(--text-secondary); }
+.partner strong { display:block; margin:4px 0; font-size:22px; }
+.partner p { color:var(--text-secondary); }
+.form textarea { display:block; width:100%; min-height:130px; margin-top:8px; padding:14px; border:1px solid var(--border-control); border-radius:12px; background:var(--surface-raised); color:var(--text-primary); font:inherit; resize:vertical; }
+.check { display:flex; align-items:flex-start; gap:12px; }
+.check input { flex-shrink:0; width:22px; height:22px; margin:5px 0 0; accent-color:var(--brand-primary); }
+.primary { min-height:54px; width:100%; padding:12px 18px; border:0; border-radius:12px; background:var(--brand-primary); color:white; font:inherit; font-weight:700; cursor:pointer; }
+.primary:disabled { opacity:.45; cursor:not-allowed; }
+.note { font-size:16px; color:var(--text-secondary); text-align:center; }
+.request :is(a,button,input,textarea):focus-visible { outline:3px solid var(--focus-ring); outline-offset:3px; }
+@media(max-width:640px) { .request .card { padding:20px 16px; }.request .card h3 { font-size:22px; } }

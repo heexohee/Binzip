@@ -26,7 +26,7 @@ export default function Home() {
           <section id="address-search" className={styles.addressSection} aria-labelledby="address-title">
             <nav className={styles.folderNav} aria-label="빈집진단서 이용하기">
               <a href="#address-search" aria-current="page"><Icon name="house" />내 빈집 확인</a>
-              <Link href="/example-report"><Icon name="document" />진단서 예시</Link>
+              <Link href="/example-report"><Icon name="document" />진단서 보기</Link>
             </nav>
             <h2 id="address-title">시골 빈집, 혹시 그냥 두고 계시나요?</h2>
             <p className={styles.intakeDescription}>당장은 지출이 적어 보여도, 갈수록 비용 부담이 커질 수 있어요.<br />무료 진단을 받아보세요.</p>
@@ -64,7 +64,7 @@ export default function Home() {
               <ol className={styles.reportContentsList}>
                 <li>
                   <span className={styles.concernNumber} aria-hidden="true">01</span>
-                  <div><h3>빈집, 지금 어떤 상태인가요?</h3><p>사진이나 현장 답사를 통해 빈집의 현재 상태를 진단해드려요.</p></div>
+                  <div><h3>빈집, 지금 어떤 상태인가요?</h3><p>건축물대장·토지이용계획 등 서류와 공공자료를 함께 살펴, 집과 땅의 기본 정보와 확인할 사항을 정리해 드려요.</p><p>멀리 계신 분들을 위해 저희가 직접 현장 방문으로 상태를 진단해드릴 수 있어요.</p><p>현장 방문은 지역과 확인 범위에 따라 비용이 발생할 수 있으며, 방문 전 안내해 드려요.</p></div>
                 </li>
                 <li>
                   <span className={styles.concernNumber} aria-hidden="true">02</span>
@@ -84,7 +84,7 @@ export default function Home() {
                   <span className={styles.concernNumber} aria-hidden="true">03</span>
                   <div>
                     <h3>매도도 철거도, 검증받은 업체를 연결해드려요.</h3>
-                    <p>진단 결과와 집 정보를 정리해 공인중개사나 철거업체에 전달 및 연결해드려요.</p>
+                    <p>원하시면 진단 결과와 집 정보를 바탕으로 공인중개사나 철거업체에 연결해드릴 수 있어요.</p>
                     <div className={styles.partnerFlow}>
                       <strong className={styles.partnerFlowStart}>진단 결과에 따른 의사결정</strong>
                       <div className={styles.partnerFlowOptions}>
@@ -95,10 +95,9 @@ export default function Home() {
                   </div>
                 </li>
               </ol>
-              <Link href="/example-report" className={styles.reportExampleLink}>진단서 예시 보기</Link>
+              <Link href="/example-report" className={styles.reportExampleLink}>진단서 보기</Link>
             </div>
             <a href="#address-search" className={styles.primary}>내 빈집 무료로 확인하기<Arrow /></a>
-            <Link href="/resources" className={styles.exampleShortcut}>빈집 지원·정보 모음<Arrow /></Link>
           </section>
         </main>
         <HomeFooter />

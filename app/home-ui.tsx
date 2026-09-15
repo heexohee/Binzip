@@ -40,7 +40,7 @@ export function HomeFooter() {
       <Link href="/" className={styles.footerBrand}>빈집진단서</Link>
       <nav className={styles.footerLinks} aria-label="하단 서비스 메뉴">
         <Link href="/#address-search">무료 진단 신청</Link>
-        <Link href="/example-report">진단서 예시</Link>
+        <Link href="/example-report">진단서 보기</Link>
         <Link href="/resources">빈집 지원·정보 모음</Link>
         <Link href="/privacy">개인정보 처리방침</Link>
       </nav>
