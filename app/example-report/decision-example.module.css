@@ -60,8 +60,8 @@
 .optionResult { display:flex; justify-content:space-between; gap:16px; align-items:baseline; margin-top:16px; }
 .optionResult span { font-size:17px; font-weight:700; }
 .optionResult strong { color:var(--brand-primary); font-size:28px; line-height:1.3; text-align:right; }
-.optionBasis { margin-top:18px; padding-top:16px; border-top:1px solid var(--border-subtle); font-size:16px; color:var(--text-secondary); }
-.optionBasis > span { display:block; color:var(--text-primary); font-weight:700; margin-bottom:6px; }
+.optionBasis { margin-top:16px; font-size:16px; color:var(--text-secondary); }
+.optionBasis summary { min-height:44px; display:flex; align-items:center; cursor:pointer; color:var(--text-primary); font-weight:700; text-decoration:underline; text-underline-offset:4px; }
 .optionBasis p { margin-top:10px!important; }
 .optionBasis .repairCosts { margin:8px 0 0!important; }
 .recommendation { padding:28px; border-radius:20px; background:var(--brand-primary); color:#fff; }

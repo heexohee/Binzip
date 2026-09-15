@@ -39,7 +39,7 @@ export function DecisionExampleReport() {
             <div><dt>나가는 돈</dt><dd><span>중개보수 상한</span><strong>−{saleCommission}만 원</strong></dd></div>
           </dl>
           <div className={styles.optionResult}><span>세금 전 예상 회수금</span><strong>{(referenceDeal.priceManwon - saleCommission).toLocaleString()}만 원</strong></div>
-          <div className={styles.optionBasis}><span>계산 근거</span><p>대보리 유사 연면적 {referenceDeal.floorArea}㎡ 주택의 {referenceDeal.date} 거래 {referenceDeal.priceManwon.toLocaleString()}만 원을 기준으로 했어요. 중개보수는 0.5% 상한을 적용했으며, 세금·정리비·기타 거래비용은 별도 확인이 필요해요.</p></div>
+          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>대보리 유사 연면적 {referenceDeal.floorArea}㎡ 주택의 {referenceDeal.date} 거래 {referenceDeal.priceManwon.toLocaleString()}만 원을 기준으로 했어요. 중개보수는 0.5% 상한을 적용했으며, 세금·정리비·기타 거래비용은 별도 확인이 필요해요.</p></details>
         </article>
 
         <article className={styles.choiceCard}>
@@ -49,7 +49,7 @@ export function DecisionExampleReport() {
             <div><dt>나가는 돈</dt><dd><span>지붕·실내·외벽 수리</span><strong>−{repairTotal.toLocaleString()}만 원</strong></dd></div>
           </dl>
           <div className={styles.optionResult}><span>예상 선투입 비용</span><strong>−{repairTotal.toLocaleString()}만 원</strong></div>
-          <div className={styles.optionBasis}><span>계산 근거</span><dl className={styles.repairCosts}>{repairItems.map(item => <div key={item.area}><dt><strong>{item.area}</strong><span>{item.work}</span></dt><dd>{item.amount.toLocaleString()}만 원</dd></div>)}</dl><p>수리 후 매각가 또는 사용 수익은 활용 계획과 현장 견적이 정해진 뒤 따로 계산해요.</p></div>
+          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><dl className={styles.repairCosts}>{repairItems.map(item => <div key={item.area}><dt><strong>{item.area}</strong><span>{item.work}</span></dt><dd>{item.amount.toLocaleString()}만 원</dd></div>)}</dl><p>수리 후 매각가 또는 사용 수익은 활용 계획과 현장 견적이 정해진 뒤 따로 계산해요.</p></details>
         </article>
 
         <article className={styles.choiceCard}>
@@ -59,7 +59,7 @@ export function DecisionExampleReport() {
             <div><dt>나가는 돈</dt><dd><span>철거·폐기물·부지 정리</span><strong>−{demolitionCost.toLocaleString()}만 원</strong></dd></div>
           </dl>
           <div className={styles.optionResult}><span>지원 반영 순철거비</span><strong>−{(demolitionCost - demolitionSupport).toLocaleString()}만 원</strong></div>
-          <div className={styles.optionBasis}><span>계산 근거</span><p>철거와 폐기물·부지 정리비 {demolitionCost.toLocaleString()}만 원에서 포항시 철거 지원금 {demolitionSupport.toLocaleString()}만 원을 뺐어요. 지원 여부·금액·착수 조건과 철거 후 토지 활용 가치는 상담에서 다시 확인해요.</p></div>
+          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>철거와 폐기물·부지 정리비 {demolitionCost.toLocaleString()}만 원에서 포항시 철거 지원금 {demolitionSupport.toLocaleString()}만 원을 뺐어요. 지원 여부·금액·착수 조건과 철거 후 토지 활용 가치는 상담에서 다시 확인해요.</p></details>
         </article>
 
         <article className={styles.choiceCard}>
@@ -69,7 +69,7 @@ export function DecisionExampleReport() {
             <div><dt>나가는 돈</dt><dd><span>3년 보유·방치 비용</span><strong>−{holdCost.toLocaleString()}만 원</strong></dd></div>
           </dl>
           <div className={styles.optionResult}><span>3년 예상 순비용</span><strong>−{holdCost.toLocaleString()}만 원</strong></div>
-          <div className={styles.optionBasis}><span>계산 근거</span><p>세금·기본 점검·잡초와 배수 관리, 방치로 인한 정리 비용을 합쳐 월 평균 10만 원, 3년 기준으로 계산했어요. 실제 비용은 관리 빈도와 현장 상태에 따라 달라져요.</p></div>
+          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>세금·기본 점검·잡초와 배수 관리, 방치로 인한 정리 비용을 합쳐 월 평균 10만 원, 3년 기준으로 계산했어요. 실제 비용은 관리 빈도와 현장 상태에 따라 달라져요.</p></details>
         </article>
       </div>
     </section>
