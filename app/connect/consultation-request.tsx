@@ -26,7 +26,7 @@ export default function ConsultationRequest() {
         <label htmlFor="initial-message">문의 내용(선택)<textarea id="initial-message" maxLength={2000} value={message} onChange={e => setMessage(e.target.value)} placeholder="방문 일정, 견적 항목 등 궁금한 내용을 남겨 주세요."/></label>
         <label className={s.check}><input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)}/><span>{provider}에게 집 정보·진단 내용과 문의 내용을 공유하는 데 동의합니다.</span></label>
         <button className={s.primary} disabled={!consent || busy}>{busy ? '요청 저장 중…' : '상담 요청하기'}</button>
-        <p className={s.note}>최종 계약 여부는 고객이 직접 결정해요.</p>
+        <p className={s.note}>상담 요청은 무료예요. 최종 계약 이전까지는 비용이 발생하지 않아요. 최종 계약 여부는 고객이 직접 결정해요.</p>
         {error && <p role="alert">{error}</p>}
       </form>
     </div>
