@@ -2,6 +2,7 @@ import Link from 'next/link'
 import styles from './decision-example.module.css'
 import ConsultationRequest from '../connect/consultation-request'
 import { POHANG_MARKET_EVIDENCE as market } from '@/src/pohang-market-evidence'
+import { EXAMPLE_CASE } from '@/src/example-report-data'
 
 const repairItems = [
   { area: '지붕', work: '파손 기와 교체 · 연결 부위 방수', amount: 500 },
@@ -14,6 +15,11 @@ const saleCommission = 40
 const demolitionCost = 2000
 const demolitionSupport = 700
 const holdCost = 360
+const landArea = EXAMPLE_CASE.land.area
+const estimatedLandUnitPrice = 21.5
+const estimatedLandValue = Math.round((landArea * estimatedLandUnitPrice) / 100) * 100
+const demolitionNetCost = demolitionCost - demolitionSupport
+const demolitionLandNetValue = estimatedLandValue - demolitionNetCost
 
 export function DecisionExampleReport() {
   return <main className={styles.report} data-report>
@@ -39,7 +45,7 @@ export function DecisionExampleReport() {
             <div><dt>나가는 돈</dt><dd><span>중개보수 상한</span><strong>−{saleCommission}만 원</strong></dd></div>
           </dl>
           <div className={styles.optionResult}><span>세금 전 예상 회수금</span><strong>{(referenceDeal.priceManwon - saleCommission).toLocaleString()}만 원</strong></div>
-          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>대보리 유사 연면적 {referenceDeal.floorArea}㎡ 주택의 {referenceDeal.date} 거래 {referenceDeal.priceManwon.toLocaleString()}만 원을 기준으로 했어요. 중개보수는 0.5% 상한을 적용했으며, 세금·정리비·기타 거래비용은 별도 확인이 필요해요.</p></details>
+          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>대보리 유사 연면적 {referenceDeal.floorArea}㎡ 주택의 {referenceDeal.date} 거래 {referenceDeal.priceManwon.toLocaleString()}만 원을 기준으로 했어요. 이 거래가는 건물과 토지를 합친 값이에요. 중개보수는 0.5% 상한을 적용했으며, 세금·정리비·기타 거래비용은 별도 확인이 필요해요.</p></details>
         </article>
 
         <article className={styles.choiceCard}>
@@ -58,8 +64,8 @@ export function DecisionExampleReport() {
             <div><dt>들어오는 돈</dt><dd><span>포항시 철거 지원금</span><strong>+{demolitionSupport.toLocaleString()}만 원</strong></dd></div>
             <div><dt>나가는 돈</dt><dd><span>철거·폐기물·부지 정리</span><strong>−{demolitionCost.toLocaleString()}만 원</strong></dd></div>
           </dl>
-          <div className={styles.optionResult}><span>지원 반영 순철거비</span><strong>−{(demolitionCost - demolitionSupport).toLocaleString()}만 원</strong></div>
-          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>철거와 폐기물·부지 정리비 {demolitionCost.toLocaleString()}만 원에서 포항시 철거 지원금 {demolitionSupport.toLocaleString()}만 원을 뺐어요. 지원 여부·금액·착수 조건과 철거 후 토지 활용 가치는 상담에서 다시 확인해요.</p></details>
+          <div className={styles.optionResult}><span>철거 후 예상 토지 순가치</span><strong>{demolitionLandNetValue.toLocaleString()}만 원</strong></div>
+          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>철거와 폐기물·부지 정리비 {demolitionCost.toLocaleString()}만 원에서 포항시 철거 지원금 {demolitionSupport.toLocaleString()}만 원을 빼면 순철거비는 {demolitionNetCost.toLocaleString()}만 원이에요.</p><p>남는 대지 {landArea}㎡에 기준 단가 {estimatedLandUnitPrice.toLocaleString()}만 원/㎡를 적용해 예상 토지가치 {estimatedLandValue.toLocaleString()}만 원을 계산했고, 순철거비를 빼면 {demolitionLandNetValue.toLocaleString()}만 원이에요. 실제 토지 가치는 지목·도로·규제·형상과 인근 거래를 확인해 다시 산정해요.</p></details>
         </article>
 
         <article className={styles.choiceCard}>
@@ -69,7 +75,7 @@ export function DecisionExampleReport() {
             <div><dt>나가는 돈</dt><dd><span>3년 보유·방치 비용</span><strong>−{holdCost.toLocaleString()}만 원</strong></dd></div>
           </dl>
           <div className={styles.optionResult}><span>3년 예상 순비용</span><strong>−{holdCost.toLocaleString()}만 원</strong></div>
-          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>세금·기본 점검·잡초와 배수 관리, 방치로 인한 정리 비용을 합쳐 월 평균 10만 원, 3년 기준으로 계산했어요. 실제 비용은 관리 빈도와 현장 상태에 따라 달라져요.</p></details>
+          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>세금·기본 점검·잡초와 배수 관리, 방치로 인한 정리 비용을 합쳐 월 평균 10만 원, 3년 기준으로 계산했어요. 토지의 기준 가치는 {estimatedLandValue.toLocaleString()}만 원으로 보되, 건물 상태가 더 나빠지면 매도 가능성과 정리 비용은 달라질 수 있어요.</p></details>
         </article>
       </div>
     </section>
@@ -79,8 +85,8 @@ export function DecisionExampleReport() {
       <div className={styles.recommendation}>
         <span>제안</span>
         <strong>매도 가능성을 먼저 확인한 뒤 결정하세요.</strong>
-        <p>유사 규모 거래를 기준으로 한 세금 전 예상 회수금은 {(referenceDeal.priceManwon - saleCommission).toLocaleString()}만 원이에요. 수리에는 {repairTotal.toLocaleString()}만 원, 철거에는 지원 반영 후 {(demolitionCost - demolitionSupport).toLocaleString()}만 원이 먼저 필요해요.</p>
-        <p>매도 상담에서 가격·기간·성사 가능성이 낮다고 확인되면, 철거 지원을 반영한 토지 보유안을 다음 선택지로 비교하세요. 결정을 미루면 3년 예상 보유·방치 비용 {holdCost.toLocaleString()}만 원이 계속 쌓여요.</p>
+        <p>유사 규모 거래를 기준으로 한 세금 전 예상 회수금은 {(referenceDeal.priceManwon - saleCommission).toLocaleString()}만 원이에요. 수리에는 {repairTotal.toLocaleString()}만 원, 철거에는 지원 반영 후 {demolitionNetCost.toLocaleString()}만 원이 먼저 필요해요.</p>
+        <p>매도 상담에서 가격·기간·성사 가능성이 낮다고 확인되면, 철거 뒤 남는 예상 토지가치 {estimatedLandValue.toLocaleString()}만 원과 순철거비를 반영한 토지 순가치 {demolitionLandNetValue.toLocaleString()}만 원을 다음 선택지로 비교하세요. 결정을 미루면 3년 예상 보유·방치 비용 {holdCost.toLocaleString()}만 원이 계속 쌓여요.</p>
         <a href="#consultation">금액 기준으로 지역 전문가에게 상담 요청하기 ↓</a>
       </div>
     </section>
