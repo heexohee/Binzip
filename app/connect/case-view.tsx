@@ -69,7 +69,7 @@ export default function CaseView({ id, role }: { id:string;role:Role }) {
         <section id="case-conversation" className={s.chat} aria-label="담당자와 상담">
           <header className={s.chatHead}>
             {expert&&<span className={s.avatar} aria-hidden="true">집</span>}
-            <div><h2>우리 집 {row.kind} 상담방</h2></div>
+            <div><h2>상담방</h2></div>
           </header>
           <div className={s.propertyBar}><span>호미곶 시골집 · 주택 66㎡</span><Link href="/example-report">진단서 보기 ↗</Link></div>
           {expert&&row.stage===1&&<div className={s.tools}><button aria-expanded={panel==='visit'} onClick={()=>setPanel(panel==='visit'?null:'visit')}>방문 일정 제안</button><button aria-expanded={panel==='quote'} onClick={()=>setPanel(panel==='quote'?null:'quote')}>견적·제안 보내기</button></div>}
