@@ -61,7 +61,7 @@ export default function CaseView({ id, role }: { id:string;role:Role }) {
   return <main className={s.page}><ConnectionHeader expert={expert}/>
     <div className={s.body}>
     {!ready?<p role="status">상담을 불러오고 있어요.</p>:loadError?<p role="alert">{loadError}</p>:!row?<section className={s.card}><h1>상담 기록을 찾을 수 없어요.</h1><Link href={expert?'/experts':'/example-report#consultation'}>돌아가기</Link></section>:<>
-      <div className={s.title}><div><p>고객과 담당자가 함께 보는 공간</p><h1>진행 현황</h1></div>{expert&&<span className={s.tag}>담당자 화면</span>}</div>
+      <div className={s.title}><div><h1>진행 현황</h1></div>{expert&&<span className={s.tag}>담당자 화면</span>}</div>
       <StatusOverview row={row} role={role}/>
       <div className={s.layout + (!expert ? ' ' + s.customerLayout : '')}>
         <section id="case-conversation" className={s.chat} aria-label="담당자와 상담">
@@ -82,7 +82,6 @@ export default function CaseView({ id, role }: { id:string;role:Role }) {
             {expert&&row.stage===4&&panel==='finish'&&<form className={s.form} onSubmit={async e=>{e.preventDefault();if(await act({type:'finish',text:finish}))setPanel(null)}}><label>완료 내용과 남은 확인사항<textarea required maxLength={2000} value={finish} onChange={e=>setFinish(e.target.value)}/></label><button className={s.primary} disabled={busy||!finish.trim()}>고객에게 완료 확인 요청</button></form>}
             {row.stage>=5&&<section className={s.visit}><h3>담당자가 남긴 완료 내용</h3><p className={s.prewrap}>{row.entries.findLast(entry=>entry.role==='expert'&&entry.text.startsWith('완료 확인 요청: '))?.text.slice('완료 확인 요청: '.length)}</p>{row.stage===5&&!expert&&<button className={s.primary} disabled={busy} onClick={()=>act({type:'complete'})}>결과 확인 · 완료하기</button>}</section>}
           </div>
-          <div className={s.conversationLabel}><h3>함께 나누는 대화</h3></div>
           <div className={s.feed} ref={feed} onScroll={()=>{const node=feed.current;if(node){nearBottom.current=node.scrollHeight-node.scrollTop-node.clientHeight<80;if(nearBottom.current)setUnread(false)}}} role="region" tabIndex={0} aria-label="상담 대화 스크롤 영역">
             {firstVisible>0&&<button className={s.earlier} onClick={showEarlier}>이전 대화 {firstVisible}개 보기 ↑</button>}
             <div role="log" aria-label="상담 기록" aria-live="polite" aria-relevant="additions">
