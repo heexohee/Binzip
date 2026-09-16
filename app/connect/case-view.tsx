@@ -59,6 +59,7 @@ export default function CaseView({ id, role }: { id:string;role:Role }) {
     finally{busyRef.current=false;setBusy(false)}
   }
   return <main className={s.page}><ConnectionHeader expert={expert}/>
+    <div className={s.body}>
     {!ready?<p role="status">상담을 불러오고 있어요.</p>:loadError?<p role="alert">{loadError}</p>:!row?<section className={s.card}><h1>상담 기록을 찾을 수 없어요.</h1><Link href={expert?'/experts':'/example-report#consultation'}>돌아가기</Link></section>:<>
       <div className={s.title}><div><p>고객과 담당자가 함께 보는 공간</p><h1>진행 현황</h1></div><span className={s.tag}>{expert?'담당자 화면':'고객 화면'}</span></div>
       <div className={s.layout + (!expert ? ' ' + s.customerLayout : '')}>
@@ -113,5 +114,6 @@ export default function CaseView({ id, role }: { id:string;role:Role }) {
         </aside>}
       </div>
     </>}
+    </div>
   </main>
 }

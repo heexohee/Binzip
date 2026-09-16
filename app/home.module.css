@@ -2,8 +2,8 @@
   --home-bg: var(--canvas); --home-paper: var(--surface); --home-text: var(--text-primary);
   --home-muted: var(--text-secondary); --home-green: var(--brand-primary); --home-line: var(--border-subtle);
   --home-sage: var(--surface-soft); --home-warm: var(--status-unknown-surface);
-  min-height: 100vh; background: var(--home-bg); color: var(--home-text);
-  padding: 16px 20px 48px; font-family: var(--font-sans); font-size: var(--type-body);
+  min-height: 100vh; background: var(--home-paper); color: var(--home-text);
+  padding: 0; font-family: var(--font-sans); font-size: var(--type-body);
   line-height: 1.75; letter-spacing: -.01em;
 }
 .site *, .site *::before, .site *::after { box-sizing: border-box; }
@@ -14,7 +14,7 @@
 .site a { text-decoration: none; }
 .site a, .site button, .site input, .site summary { -webkit-tap-highlight-color: transparent; }
 .site :is(a, button, input, summary):focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
-.sheet { max-width: 704px; margin: 0 auto; background: var(--home-paper); border: 1px solid var(--border-subtle); border-radius: var(--radius-sheet); overflow: clip; box-shadow: var(--shadow-sheet); }
+.sheet { max-width: var(--page-max-width); margin: 0 auto; background: var(--home-paper); overflow: clip; }
 .header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 36px; }
 
 .brandMark { display: block; width: 40px; height: 40px; flex-shrink: 0; object-fit: contain; }
@@ -169,7 +169,7 @@
 .subpageIntro h1 { font-size: var(--type-page); }
 .subpageIntro > p:last-child { color: var(--home-muted); margin-top: 13px; font-size: var(--type-help); }
 .application { padding: var(--space-8) var(--space-10); background: var(--surface-soft); border-block: 1px solid var(--border-subtle); }
-.application form { max-width: none; }
+.application form { max-width: var(--form-max-width); margin-inline: 0; }
 .sampleBody { padding: 0 42px 38px; }
 .sampleNotice { padding: 15px 18px; border-left: 3px solid var(--status-unknown-border); background: var(--home-warm); color: var(--status-unknown-text); font-size: var(--type-help); line-height: 1.8; }
 .sampleSection { padding: 30px 0 4px; }
@@ -353,3 +353,12 @@
 .brandMark, .heroLogo {
   clip-path: polygon(8.5% 47%, 9.5% 44.5%, 35.5% 18.5%, 38.5% 16.7%, 43% 15.3%, 48% 14.8%, 52% 15.1%, 56% 16.5%, 60% 19.5%, 60.1% 16.4%, 60.6% 14.8%, 61.8% 13.8%, 64% 13.2%, 68% 12.9%, 72% 13%, 74% 13.5%, 75.5% 14.7%, 76% 16.5%, 76% 30.4%, 90.7% 43.6%, 92% 45.4%, 92.4% 47.2%, 92.2% 49.2%, 91.5% 51%, 90% 52%, 85% 53%, 85% 77%, 84.4% 79.5%, 83% 81%, 70% 86.2%, 67.5% 86.7%, 22% 84.1%, 20.4% 83.1%, 19.2% 81.5%, 18.7% 78%, 18.7% 54.7%, 16% 55.1%, 13% 55%, 10.5% 54%, 8.8% 52.5%, 8.3% 50%);
 }
+
+/* Shared page edges; keep the inputs narrower than the page frame. */
+.header, .subpageIntro, .application, .brandHero, .addressSection, .empathySection, .serviceSection, .curiositySection, .concernsSection, .preparationSection, .reportContentsSection, .sampleBody { padding-inline: var(--page-gutter); }
+.site .brandHero h1 { font-size: var(--type-page); }
+.brandHero { align-items: center; min-height: 0; padding-block: 32px; }
+.brandRabbit { height: 260px; }
+.brandTagline { margin-top: 12px; color: var(--text-secondary); font-size: var(--type-body); word-break: keep-all; }
+@media (max-width: 540px) { .brandHero { padding-block: 24px; }.brandRabbit { height: 184px; } }
+.addressSection > .addressForm { max-width: var(--form-max-width); }
