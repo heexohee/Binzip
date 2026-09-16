@@ -18,8 +18,8 @@ export default function Home() {
         <main>
           <section className={styles.brandHero} aria-labelledby="brand-title">
             <div>
+              <Image src="/brand/binzip-house-logo-b-3d-v2.png" alt="" width={72} height={72} className={styles.heroLogo} />
               <h1 id="brand-title">빈집진단서</h1>
-              <p className={styles.brandTagline}>우리 집의 다음 선택을 함께해요.</p>
             </div>
             <Image src="/mascot/binzip-rabbit-v1.png" alt="작은 집을 안고 있는 집토끼" width={256} height={256} sizes="(max-width: 360px) 120px, (max-width: 540px) 150px, 280px" className={styles.brandRabbit} priority />
           </section>
