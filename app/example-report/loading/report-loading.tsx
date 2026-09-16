@@ -1,7 +1,6 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { HomeHeader, Icon } from '../../home-ui'
@@ -56,8 +55,6 @@ export function ReportLoading() {
           </li>)}
         </ol>
       </section>
-      <p className={styles.notice}>예시 데이터를 활용한 시연이에요.<br />준비가 끝나면 진단서로 자동 이동해요.</p>
-      <Link href="/example-report" replace className={styles.skip}>기다리지 않고 진단서 보기 <span aria-hidden="true">→</span></Link>
     </main>
   </div>
 }
