@@ -81,7 +81,7 @@ export default function CaseView({ id, role }: { id:string;role:Role }) {
             {expert&&row.stage===4&&panel==='finish'&&<form className={s.form} onSubmit={async e=>{e.preventDefault();if(await act({type:'finish',text:finish}))setPanel(null)}}><label>완료 내용과 남은 확인사항<textarea required maxLength={2000} value={finish} onChange={e=>setFinish(e.target.value)}/></label><button className={s.primary} disabled={busy||!finish.trim()}>고객에게 완료 확인 요청</button></form>}
             {row.stage>=5&&<section className={s.visit}><h3>담당자가 남긴 완료 내용</h3><p className={s.prewrap}>{row.entries.findLast(entry=>entry.role==='expert'&&entry.text.startsWith('완료 확인 요청: '))?.text.slice('완료 확인 요청: '.length)}</p>{row.stage===5&&!expert&&<button className={s.primary} disabled={busy} onClick={()=>act({type:'complete'})}>결과 확인 · 완료하기</button>}</section>}
           </div>
-          <div className={s.conversationLabel}><h3>함께 나누는 대화</h3><span>일정과 진행 변경도 여기에 남아요</span></div>
+          <div className={s.conversationLabel}><h3>함께 나누는 대화</h3></div>
           <div className={s.feed} ref={feed} onScroll={()=>{const node=feed.current;if(node){nearBottom.current=node.scrollHeight-node.scrollTop-node.clientHeight<80;if(nearBottom.current)setUnread(false)}}} role="region" tabIndex={0} aria-label="상담 대화 스크롤 영역">
             {firstVisible>0&&<button className={s.earlier} onClick={showEarlier}>이전 대화 {firstVisible}개 보기 ↑</button>}
             <div role="log" aria-label="상담 기록" aria-live="polite" aria-relevant="additions">
