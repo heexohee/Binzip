@@ -32,8 +32,7 @@ export default function StatusOverview({ row, role }: { row: Consultation; role:
     <div className={s.current}><span>현재 단계</span><h3>{status.title}</h3><p>{status.description}</p></div>
     <div className={s.turn}>
       <Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={52} height={64} sizes="52px"/>
-      <div><strong>{turn}</strong><p>{waiting&&role==='customer'?'지금은 기다리셔도 괜찮아요. 궁금한 점은 아래에 남겨 주세요.':status.action}</p></div>
+      <div className={s.turnMessage}><strong>{turn}</strong><p>{waiting&&role==='customer'?'지금은 기다리셔도 괜찮아요. 궁금한 점은 아래에 남겨 주세요.':status.action}</p></div>
     </div>
-    <p className={s.updated}>최근 변경 <time dateTime={row.updatedAt}>{new Date(row.updatedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></p>
   </section>
 }
