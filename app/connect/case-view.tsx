@@ -104,8 +104,8 @@ export default function CaseView({ id, role }: { id:string;role:Role }) {
           {unread&&<button className={s.newMessages} onClick={scrollLatest}>새 내용 보기 ↓</button>}
           {error&&<p className={s.error} role="alert">{error}</p>}
           {row.stage<6 ? <form className={s.composer} onSubmit={async e=>{e.preventDefault();if(await act({type:'message',text:message})){setMessage('');scrollLatest()}}}>
-            <label htmlFor="case-message">{expert?'고객에게 답변하기':'담당자에게 메시지 보내기'}</label>
-            <div><textarea id="case-message" rows={2} maxLength={2000} disabled={expert&&row.stage===0} value={message} onChange={e=>setMessage(e.target.value)} placeholder={expert&&row.stage===0?'상담 수락 후 답변할 수 있어요.':'궁금한 점이나 전달할 내용을 남겨 주세요.'}/><button disabled={busy||!message.trim()||(expert&&row.stage===0)} type="submit">보내기</button></div>
+            {expert&&<label htmlFor="case-message">고객에게 답변하기</label>}
+            <div><textarea id="case-message" aria-label={expert?undefined:'담당자에게 궁금한 점이나 전달할 내용을 남겨주세요.'} rows={2} maxLength={2000} disabled={expert&&row.stage===0} value={message} onChange={e=>setMessage(e.target.value)} placeholder={!expert?'담당자에게 궁금한 점이나 전달할 내용을 남겨주세요.':row.stage===0?'상담 수락 후 답변할 수 있어요.':'궁금한 점이나 전달할 내용을 남겨 주세요.'}/><button disabled={busy||!message.trim()||(expert&&row.stage===0)} type="submit">보내기</button></div>
           </form> : <p className={s.closed}>상담이 완료됐어요. 함께 나눈 기록은 계속 볼 수 있어요.</p>}
 
         </section>
