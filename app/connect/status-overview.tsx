@@ -2,12 +2,12 @@ import Image from 'next/image'
 import { formatVisit, type Consultation, type Role } from '@/src/consultations'
 import s from './status-overview.module.css'
 
-type StatusCopy = { title: string; description?: string; action: string }
+type StatusCopy = { title: string; description?: string; action?: string }
 
 function statusFor(row: Consultation, role: Role): StatusCopy {
   const visit = row.visit
   const work = row.kind === '철거' ? '철거' : '매도'
-  if (row.stage === 0) return { title: '상담 요청이 접수됐어요', action: role === 'expert' ? '요청 내용을 확인하고 상담을 시작해 주세요.' : '상담이 시작되기 전에도 아래에 질문을 남길 수 있어요.' }
+  if (row.stage === 0) return { title: '상담 요청이 접수됐어요', action: role === 'expert' ? '요청 내용을 확인하고 상담을 시작해 주세요.' : undefined }
   if (row.stage === 1 && visit?.status === 'proposed') return { title: '방문 일정 조율 중이에요', description: role === 'customer' ? '담당자가 제안한 날짜 중 가능한 시간을 선택해 주세요.' : '고객이 가능한 방문 시간을 고르고 있어요.', action: role === 'customer' ? '방문 날짜 선택하기' : '고객의 날짜 선택을 기다리고 있어요.' }
   if (row.stage === 1 && visit?.status === 'selected') return { title: '방문 일정 확정 중이에요', description: role === 'expert' ? '고객이 선택한 날짜를 확인해 주세요.' : '선택한 날짜를 담당자가 확인하고 있어요.', action: role === 'expert' ? '방문 일정 확정하기' : '담당자 확정을 기다리고 있어요.' }
   if (row.stage === 1 && visit?.status === 'confirmed') return { title: '현장 방문 준비 중이에요', description: `${formatVisit(visit.selected!)}에 현장 확인이 예정되어 있어요.`, action: role === 'expert' ? '방문 전 확인사항을 남겨 주세요.' : '방문 전 궁금한 내용을 남겨 주세요.' }
@@ -26,10 +26,12 @@ export default function StatusOverview({ row, role }: { row: Consultation; role:
   const labels = ['상담', row.kind === '철거' ? '견적' : '매도 제안', '계약', row.kind === '철거' ? '작업·완료' : '거래·완료']
   return <section className={s.overview} aria-label="공유 진행 현황">
     <ol className={s.steps} aria-label="전체 진행 단계">{labels.map((label,i)=><li key={label} aria-current={row.stage!==6&&i===group?'step':undefined} data-done={row.stage===6||i<group}><span className={s.track} aria-hidden="true"/><span>{label}{row.stage===6||i<group?<span className={s.check} aria-label="완료"> ✓</span>:null}</span></li>)}</ol>
+    <div className={status.action ? undefined : s.compact}>
     <div className={s.current}><span>현재 단계</span><h3>{status.title}</h3>{status.description && <p>{status.description}</p>}</div>
     <div className={s.turn}>
-      <div className={s.turnMessage}><p>{status.action}</p></div>
+      {status.action && <div className={s.turnMessage}><p>{status.action}</p></div>}
       <Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={52} height={64} sizes="52px"/>
+    </div>
     </div>
   </section>
 }
