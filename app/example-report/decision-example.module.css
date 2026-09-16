@@ -114,7 +114,14 @@
 
 .repairCondition { margin-top:28px; padding-top:24px; border-top:1px solid var(--border-subtle); scroll-margin-top:20px; }
 .repairCondition h4 { margin:0 0 16px; font-size:24px; line-height:1.5; word-break:keep-all; }
-.repairCondition .verdict { padding:0; }
-.repairCondition .verdict strong { font-size:22px; }
-.repairCondition .findings dt { font-size:20px; }
-.repairCondition .findings dd { font-size:18px; }
+
+.repairFindings > div { position:relative; padding:20px 0; border-bottom:1px solid var(--border-subtle); }
+.repairFindings > div:first-child { padding-top:0; }
+.repairFindings > div:last-child { padding-bottom:0; border-bottom:0; }
+.repairFindings dt { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding-right:130px; font-size:20px; font-weight:700; margin-bottom:10px; }
+.repairFindings dt span { font-size:16px; font-weight:500; padding:2px 10px; color:#71592f; background:#f4eee1; border-radius:6px; }
+.repairFindings dd { font-size:18px; color:var(--text-secondary); }
+.repairAmount { position:absolute; top:20px; right:0; color:var(--brand-primary); font-size:22px; white-space:nowrap; }
+.repairFindings > div:first-child .repairAmount { top:0; }
+.repairWork { margin-top:8px!important; color:var(--text-primary); }
+@media(max-width:420px) { .repairFindings dt { padding-right:0; }.repairAmount { position:static; display:block; margin-bottom:10px; } }
