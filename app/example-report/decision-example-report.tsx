@@ -68,11 +68,13 @@ export function DecisionExampleReport() {
         <article className={styles.choiceCard}>
           <div className={styles.cardHead}><b className={styles.choiceIndex}>03</b><h3>철거 후 토지 보유</h3><span>건물을 정리할 때</span></div>
           <dl className={styles.moneyFlow}>
-            <div><dt>들어오는 돈</dt><dd><span>지자체 지원 반영 가정 · 예시</span><strong>+{demolitionSupport.toLocaleString()}만 원</strong></dd></div>
+            <div><dt>지원 예상금</dt><dd><span>지자체 철거 지원</span><strong>{demolitionSupport.toLocaleString()}만 원</strong></dd></div>
             <div><dt>나가는 돈</dt><dd><span>철거·폐기물·부지 정리</span><strong>−{demolitionCost.toLocaleString()}만 원</strong></dd></div>
           </dl>
           <div className={styles.optionResult}><span>지원 반영 가정 시 토지 순가치</span><strong>{demolitionLandNetValue.toLocaleString()}만 원</strong></div>
-          <section className={styles.support} aria-labelledby="demolition-support-title">
+          <details className={styles.supportToggle}>
+            <summary>지자체 지원 조건·신청 안내</summary>
+            <section className={styles.support} aria-labelledby="demolition-support-title">
             <h4 id="demolition-support-title">철거 전, 지자체 지원부터 확인하세요</h4>
             <p>지원 대상에 선정되면 철거에 드는 본인 부담이 줄어들 수 있어요.</p>
             <dl className={styles.supportCosts}>
@@ -86,7 +88,8 @@ export function DecisionExampleReport() {
               <p className={styles.supportNote}>빈집 인정 여부 · 소유자와 공유자 동의 · 철거 후 부지 사용 조건도 확인이 필요해요. 현재 접수·예산 상태는 미확인이에요.</p>
               <a className={styles.evidenceLink} href={demolitionProgram.source.url} target="_blank" rel="noopener noreferrer">포항시 지원 공고 확인 ↗</a>
             </div>
-          </section>
+            </section>
+          </details>
           <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>철거와 폐기물·부지 정리비 {demolitionCost.toLocaleString()}만 원에서 지원 {demolitionSupport.toLocaleString()}만 원을 반영한다고 가정하면 순철거비는 {demolitionNetCost.toLocaleString()}만 원이에요.</p><p>남는 대지 {landArea}㎡에 기준 단가 {estimatedLandUnitPrice.toLocaleString()}만 원/㎡를 적용해 예상 토지가치 {estimatedLandValue.toLocaleString()}만 원을 계산했고, 순철거비를 빼면 {demolitionLandNetValue.toLocaleString()}만 원이에요. 실제 토지 가치는 지목·도로·규제·형상과 인근 거래를 확인해 다시 산정해요.</p></details>
         </article>
 
