@@ -27,7 +27,7 @@ export function DecisionExampleReport() {
   return <main className={styles.report} data-report>
     <HomeHeader><span className={styles.reportBadge}>예시 진단서</span></HomeHeader>
     <section className={styles.rabbitHero} aria-labelledby="report-title">
-      <div className={styles.heroCopy}><p className={styles.eyebrow}>집토끼와 함께, 다음 결정</p><h1 id="report-title">우리 집의 다음 선택,<br />함께 살펴볼까요?</h1><p className={styles.bubble}>집 상태부터 비용, 다음 행동까지<br />하나씩 안내해 드릴게요.</p></div>
+      <div className={styles.heroCopy}><h1 id="report-title">우리 집의 다음 선택,<br />함께 살펴볼까요?</h1><p className={styles.bubble}>집 상태부터 비용, 다음 행동까지<br />하나씩 안내해 드릴게요.</p></div>
       <Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="서류와 돋보기를 들고 살펴보는 집토끼" width={260} height={260} sizes="(max-width: 640px) 150px, 240px" className={styles.heroRabbit} priority />
     </section>
     <section id="condition" className={styles.section} aria-labelledby="condition-title">
