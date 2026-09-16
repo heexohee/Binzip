@@ -61,11 +61,11 @@ export default function CaseView({ id, role }: { id:string;role:Role }) {
   return <main className={s.page}><ConnectionHeader expert={expert}/>
     <div className={s.body}>
     {!ready?<p role="status">상담을 불러오고 있어요.</p>:loadError?<p role="alert">{loadError}</p>:!row?<section className={s.card}><h1>상담 기록을 찾을 수 없어요.</h1><Link href={expert?'/experts':'/example-report#consultation'}>돌아가기</Link></section>:<>
-      <div className={s.title}><div><p>고객과 담당자가 함께 보는 공간</p><h1>진행 현황</h1></div><span className={s.tag}>{expert?'담당자 화면':'고객 화면'}</span></div>
+      <div className={s.title}><div><p>고객과 담당자가 함께 보는 공간</p><h1>진행 현황</h1></div>{expert&&<span className={s.tag}>담당자 화면</span>}</div>
       <div className={s.layout + (!expert ? ' ' + s.customerLayout : '')}>
         <section id="case-conversation" className={s.chat} aria-label="담당자와 상담">
           <header className={s.chatHead}>
-            <span className={s.avatar} aria-hidden="true">집</span>
+            {expert&&<span className={s.avatar} aria-hidden="true">집</span>}
             <div><h2>우리 집 {row.kind} 상담방</h2><p className={s.participants}><span>고객님</span><span aria-hidden="true">↔</span><span>{row.provider}</span></p></div>
           </header>
           <div className={s.propertyBar}><span>호미곶 시골집 · 주택 66㎡</span><Link href="/example-report">진단서 보기 ↗</Link></div>
