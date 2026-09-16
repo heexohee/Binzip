@@ -28,8 +28,8 @@ export default function StatusOverview({ row, role }: { row: Consultation; role:
     <ol className={s.steps} aria-label="전체 진행 단계">{labels.map((label,i)=><li key={label} aria-current={row.stage!==6&&i===group?'step':undefined} data-done={row.stage===6||i<group}><span className={s.track} aria-hidden="true"/><span>{label}{row.stage===6||i<group?<span className={s.check} aria-label="완료"> ✓</span>:null}</span></li>)}</ol>
     <div className={s.current}><span>현재 단계</span><h3>{status.title}</h3>{status.description && <p>{status.description}</p>}</div>
     <div className={s.turn}>
-      <Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={52} height={64} sizes="52px"/>
       <div className={s.turnMessage}><p>{status.action}</p></div>
+      <Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={52} height={64} sizes="52px"/>
     </div>
   </section>
 }
