@@ -99,8 +99,7 @@ export function DecisionExampleReport() {
     </section>
 
     <section id="consultation" className={styles.section + ' ' + styles.consultation} aria-labelledby="consultation-title">
-      <div className={styles.heading}><span>04</span><h2 id="consultation-title">내 빈집의 다음 단계,<br/>전문가와 함께해요.</h2></div>
-      <p className={styles.lead}>진단서와 계산 결과를 바탕으로 매도 또는 철거 상담을 요청할 수 있어요.</p>
+      <div className={styles.heading}><span>04</span><h2 id="consultation-title">전문가 상담 요청</h2></div>
       <ConsultationRequest/>
       <div className={styles.actions}><Link className={styles.home} href="/">← 홈으로</Link></div>
     </section>
