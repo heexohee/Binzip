@@ -30,7 +30,7 @@ export default function StatusOverview({ row, role }: { row: Consultation; role:
     <div className={s.current}><span>현재 단계</span><h3>{status.title}</h3>{status.description && <p>{status.description}</p>}</div>
     <div className={s.turn}>
       {status.action && <div className={s.turnMessage}><p>{status.action}</p></div>}
-      <Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={52} height={64} sizes="52px"/>
+      <Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={80} height={100} sizes="80px"/>
     </div>
     </div>
   </section>
