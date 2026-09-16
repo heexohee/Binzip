@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useInstantFlow } from '../instant-flow'
 import styles from './intake-preview.module.css'
 import { intakeScreens, toggleGoal, type IntakeGoal } from '../../src/intake-flow'
@@ -18,13 +19,15 @@ const TITLES: Record<string, string> = {
 }
 
 export function IntakePreview({ initialAddress = '' }: { initialAddress?: string }) {
+  const router = useRouter()
   const { draft, confirmedAddress } = useInstantFlow()
   const [answers, setAnswers] = useState<Record<string, string>>({ address: initialAddress || confirmedAddress?.address || draft?.address || '' })
   const [goals, setGoals] = useState<IntakeGoal[]>([])
   const [damage, setDamage] = useState<string[]>([])
   const [screen, setScreen] = useState('house')
   const [review, setReview] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const submittingRef = useRef(false)
   const [error, setError] = useState('')
   const [photos, setPhotos] = useState<{ name: string; url: string }[]>([])
   const photoRef = useRef(photos)
@@ -32,13 +35,16 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
   const didNavigate = useRef(false)
   const screens = intakeScreens(goals)
   const index = screens.indexOf(screen)
-  const phase = submitted ? 4 : review ? 3 : screen === 'house' ? 0 : screen === 'contact' ? 2 : 1
+  const phase = review ? 3 : screen === 'house' ? 0 : screen === 'contact' ? 2 : 1
   const set = (key: string, value: string) => setAnswers(current => ({ ...current, [key]: value }))
   useEffect(() => { photoRef.current = photos }, [photos])
   useEffect(() => () => photoRef.current.forEach(photo => URL.revokeObjectURL(photo.url)), [])
   useEffect(() => {
     if (didNavigate.current) heading.current?.focus()
-  }, [screen, review, submitted])
+  }, [screen, review])
+  useEffect(() => {
+    if (review) router.prefetch('/example-report/loading')
+  }, [review, router])
   function move(next: string | undefined) {
     if (!next) return
     didNavigate.current = true; setError(''); setScreen(next)
@@ -75,8 +81,12 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
 
   return <form className={styles.form} onSubmit={event => {
     event.preventDefault()
-    if (submitted) return
-    if (review) { didNavigate.current = true; setSubmitted(true) }
+    if (submittingRef.current) return
+    if (review) {
+      submittingRef.current = true
+      setSubmitting(true)
+      router.push('/example-report/loading')
+    }
     else next()
   }}>
     <ol className={styles.steps} aria-label="진단 신청 단계">
@@ -84,17 +94,19 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
     </ol>
     <div className={styles.card}>
       <header className={styles.heading}>
-        <p>{submitted ? '작성 완료' : review ? '4단계 · 확인·제출' : `${phase + 1}단계${phase === 1 ? ` · ${index} / ${screens.length - 2}` : ''}`}</p>
-        <h2 ref={heading} tabIndex={-1}>{submitted ? '신청서 작성이 완료됐어요' : review ? '제출 전에 내용을 확인해 주세요' : TITLES[screen]}</h2>
+        <p>{review ? '4단계 · 확인·제출' : `${phase + 1}단계${phase === 1 ? ` · ${index} / ${screens.length - 2}` : ''}`}</p>
+        <h2 ref={heading} tabIndex={-1}>{review ? '제출 전에 내용을 확인해 주세요' : TITLES[screen]}</h2>
         {!review && <p>{screen === 'goals' ? '여러 개 골라도 괜찮아요.' : screen === 'contact' ? '휴대폰 번호는 필수, 이메일은 선택이에요.' : '아는 만큼 답해 주세요. 모르는 부분은 확인이 필요한 항목으로 남겨요.'}</p>}
       </header>
 
-      {submitted ? <a className={styles.secondary} href="/">홈으로</a> : review ? <>
+      {review ? <>
         <dl className={styles.summary}>{rows.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}<div><dt>첨부 사진</dt><dd>{photos.length}장</dd></div></dl>
-        <button className={styles.edit} type="button" onClick={() => { setReview(false); move('house') }}>입력 내용 수정하기</button>
+        <button className={styles.edit} type="button" disabled={submitting} onClick={() => { setReview(false); move('house') }}>입력 내용 수정하기</button>
+        <p className={styles.nextHint}>제출 후 집토끼가 선택별 비용을 비교하는 예시 진단서를 보여드려요. 입력한 내용은 실제 신청으로 접수되지 않아요.</p>
+        {submitting && <p role="status">집토끼를 불러오고 있어요.</p>}
         <div className={styles.navigation}>
-          <button className={styles.secondary} type="button" onClick={() => { setReview(false); move('contact') }}>이전</button>
-          <button className={styles.primary} type="submit">제출하기<span aria-hidden="true"> →</span></button>
+          <button className={styles.secondary} type="button" disabled={submitting} onClick={() => { setReview(false); move('contact') }}>이전</button>
+          <button className={styles.primary} type="submit" disabled={submitting}>{submitting ? '진단서 준비 중…' : '제출하기'}<span aria-hidden="true"> →</span></button>
         </div>
       </> : <>
       {screen === 'house' && <>
