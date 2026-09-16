@@ -69,6 +69,13 @@ for (const kind of ['철거', '매도'] as const) {
   assert.equal(row.stage,0)
   assert.deepEqual(row.entries.at(-1),{role:'expert',event:false,automated:true,text:consultationGreeting,at})
   assert.equal(conversationEntries(row).filter(entry=>entry.automated).length,1)
+  const previous = {...row,entries:row.entries.map(entry=>entry.automated ? {...entry,text:'안녕하세요. 확인 후 메세지 드리겠습니다!'} : entry)}
+  const original = JSON.stringify(previous)
+  assert.equal(conversationEntries(previous).at(-1)?.text,consultationGreeting)
+  assert.equal(conversationEntries(previous).filter(entry=>entry.automated).length,1)
+  assert.equal(JSON.stringify(previous),original)
+  const humanReply = {...previous,entries:previous.entries.map(entry=>({...entry,automated:false}))}
+  assert.equal(conversationEntries(humanReply).at(-1)?.text,'안녕하세요. 확인 후 메세지 드리겠습니다!')
   const legacy = {...row,entries:row.entries.filter(entry=>!entry.automated)}
   const saved = JSON.stringify(legacy)
   const displayed = conversationEntries(legacy)
