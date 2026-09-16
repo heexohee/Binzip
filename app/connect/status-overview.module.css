@@ -10,6 +10,6 @@
 .current p { margin:0; color:var(--text-secondary); font-size:15px; line-height:1.6; overflow-wrap:anywhere; }
 .turn { display:flex; align-items:center; gap:12px; margin-top:18px; }
 .turn img { width:52px; height:64px; object-fit:contain; flex-shrink:0; }
-.turnMessage { flex:1; min-width:0; background:var(--surface-soft); border-radius:14px; padding:12px 16px; }
+.turnMessage { flex:1; min-width:0; }
 .turn p { margin:0; font-size:15px; line-height:1.6; color:var(--text-secondary); word-break:keep-all; }
-@media(max-width:500px) { .overview{padding:18px 16px 12px}.steps{gap:6px;margin-bottom:18px}.steps li{font-size:13px}.current h3{font-size:22px}.turn{gap:10px}.turnMessage{padding:12px} }
+@media(max-width:500px) { .overview{padding:18px 16px 12px}.steps{gap:6px;margin-bottom:18px}.steps li{font-size:13px}.current h3{font-size:22px}.turn{gap:10px} }
