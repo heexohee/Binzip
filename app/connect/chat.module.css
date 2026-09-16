@@ -6,7 +6,6 @@
 .actionArea{padding:20px;border-bottom:1px solid var(--border-subtle)}
 .actionArea:empty{display:none}
 
-.participants { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .propertyBar { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 24px; background:var(--surface-raised); font-size:14px; color:var(--text-secondary); }
 .propertyBar a { color:var(--brand-primary); font-weight:700; display:inline-flex; align-items:center; min-height:44px; white-space:nowrap; text-decoration:none; }
 .earlier { display:block; margin:0 auto 20px; min-height:44px; border:1px solid var(--border-subtle); background:var(--surface); border-radius:12px; color:var(--brand-primary); padding:8px 16px; font:inherit; font-size:14px; cursor:pointer; }
@@ -18,3 +17,19 @@
 
 .body { padding: 32px var(--page-gutter) 60px; }
 @media(max-width:640px) { .body { padding-block:24px 40px; } }
+
+.messageRow { display:flex; align-items:flex-start; gap:10px; margin-bottom:22px; }
+.messageRow[data-own=true] { justify-content:flex-end; }
+.profile,.customerProfile { width:48px; height:48px; flex-shrink:0; border-radius:18px; background:var(--surface-soft); }
+.profile { object-fit:contain; padding:3px; }
+.customerProfile { display:grid; place-items:center; color:var(--brand-primary); font-weight:700; }
+.messageBody { min-width:0; max-width:calc(100% - 58px); }
+.messageRow[data-own=true] .messageBody { max-width:85%; }
+.messageBody > .sender { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:7px; }
+.autoReply { font-size:11px; font-weight:400; color:var(--text-secondary); }
+.messageRow .message { max-width:100%; margin:0; padding:12px 16px; border-radius:3px 16px 16px 16px; }
+.messageRow .message[data-own=true] { border-radius:16px 3px 16px 16px; }
+.messageRow .message p { margin:0; }
+.messageBody > time { display:block; margin-top:5px; color:var(--text-secondary); font-size:11px; }
+.messageRow[data-own=true] time { text-align:right; }
+@media(max-width:500px) { .messageRow { gap:8px; }.profile,.customerProfile { width:42px; height:42px; border-radius:15px; }.messageBody { max-width:calc(100% - 50px); } }

@@ -1,7 +1,8 @@
 'use client'
 import Link from 'next/link'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { stages, type Action, type Role, type Consultation } from '@/src/consultations'
+import Image from 'next/image'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { conversationEntries, stages, type Action, type Role, type Consultation } from '@/src/consultations'
 import { actOnConsultation, useConsultations } from './consultation-store'
 import { ConnectionHeader } from './shared'
 import { VisitCard, VisitProposal } from './visit-planner'
@@ -17,6 +18,7 @@ export default function CaseView({ id, role }: { id:string;role:Role }) {
   const {rows,ready,error:loadError}=useConsultations()
   const row=rows.find(item=>item.id===id)
   const expert=role==='expert'
+  const entries=useMemo(()=>row?conversationEntries(row):[],[row])
   const [message,setMessage]=useState('')
   const [panel,setPanel]=useState<'visit'|'quote'|'finish'|null>(null)
   const [amount,setAmount]=useState('')
@@ -29,15 +31,15 @@ export default function CaseView({ id, role }: { id:string;role:Role }) {
   const nearBottom=useRef(true)
   const [unread,setUnread]=useState(false)
   const [visibleStart,setVisibleStart]=useState<number|null>(null)
-  const firstVisible=visibleStart??Math.max(0,(row?.entries.length??0)-6)
+  const firstVisible=visibleStart??Math.max(0,entries.length-6)
   const loadedId=useRef<string|null>(null)
   useLayoutEffect(()=>{
     if(row&&loadedId.current!==row.id){
       loadedId.current=row.id
-      setVisibleStart(Math.max(0,row.entries.length-6))
+      setVisibleStart(Math.max(0,entries.length-6))
       nearBottom.current=true
     }
-  },[row])
+  },[row,entries.length])
   const earlierScroll=useRef<{height:number;top:number}|null>(null)
   useLayoutEffect(()=>{
     const node=feed.current, previous=earlierScroll.current
@@ -49,7 +51,7 @@ export default function CaseView({ id, role }: { id:string;role:Role }) {
     setVisibleStart(Math.max(0,firstVisible-10))
   }
   function scrollLatest() { const node=feed.current;if(node)node.scrollTop=node.scrollHeight;nearBottom.current=true;setUnread(false) }
-  useEffect(()=>{if(nearBottom.current)scrollLatest();else setUnread(true)},[row?.entries.length])
+  useEffect(()=>{if(nearBottom.current)scrollLatest();else setUnread(true)},[entries.length])
   useEffect(()=>{scrollLatest()},[panel])
   async function act(action:Action) {
     if(busyRef.current)return false
@@ -67,7 +69,7 @@ export default function CaseView({ id, role }: { id:string;role:Role }) {
         <section id="case-conversation" className={s.chat} aria-label="담당자와 상담">
           <header className={s.chatHead}>
             {expert&&<span className={s.avatar} aria-hidden="true">집</span>}
-            <div><h2>우리 집 {row.kind} 상담방</h2><p className={s.participants}><span>고객님</span><span aria-hidden="true">↔</span><span>{row.provider}</span></p></div>
+            <div><h2>우리 집 {row.kind} 상담방</h2></div>
           </header>
           <div className={s.propertyBar}><span>호미곶 시골집 · 주택 66㎡</span><Link href="/example-report">진단서 보기 ↗</Link></div>
           {expert&&row.stage===1&&<div className={s.tools}><button aria-expanded={panel==='visit'} onClick={()=>setPanel(panel==='visit'?null:'visit')}>방문 일정 제안</button><button aria-expanded={panel==='quote'} onClick={()=>setPanel(panel==='quote'?null:'quote')}>견적·제안 보내기</button></div>}
@@ -85,17 +87,23 @@ export default function CaseView({ id, role }: { id:string;role:Role }) {
           <div className={s.feed} ref={feed} onScroll={()=>{const node=feed.current;if(node){nearBottom.current=node.scrollHeight-node.scrollTop-node.clientHeight<80;if(nearBottom.current)setUnread(false)}}} role="region" tabIndex={0} aria-label="상담 대화 스크롤 영역">
             {firstVisible>0&&<button className={s.earlier} onClick={showEarlier}>이전 대화 {firstVisible}개 보기 ↑</button>}
             <div role="log" aria-label="상담 기록" aria-live="polite" aria-relevant="additions">
-              {row.entries.slice(firstVisible).map((savedEntry,i)=>{
-                // Show the initial request in older records as the customer's message too.
-                const oldRequest=firstVisible+i===0 && (savedEntry.text===`${row.kind} 상담을 요청했어요.` || savedEntry.text===`${row.kind} 상담 요청이 접수됐어요. 담당자가 확인하면 이 상담방에서 답변을 드려요.`)
-                const entry=oldRequest?{...savedEntry,role:'customer' as const,event:false,text:`${row.kind} 상담 요청을 보냈어요.`}:savedEntry
+              {entries.slice(firstVisible).map((entry,i)=>{
                 const isEvent=automatic(entry)
                 const quoteEvent=isEvent&&entry.text==='견적·제안을 전달했어요.'&&row.quote
-                return <article key={firstVisible+i} className={isEvent?s.event:s.message} data-own={entry.role===role}>
-                  <div className={s.sender}>{isEvent?'진행 기록':entry.role==='customer'?'고객님'+(!expert?' · 나':''):row.provider+' · 담당자'+(expert?' · 나':'')}</div>
-                  <p>{entry.text}</p>
+                const own=entry.role===role
+                const time=<time dateTime={entry.at}>{new Date(entry.at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}</time>
+                if(isEvent) return <article key={firstVisible+i} className={s.event}>
+                  <div className={s.sender}>진행 기록</div><p>{entry.text}</p>
                   {quoteEvent&&<div className={s.quoteRecord}><strong>{row.kind==='철거'?'철거 견적':'매도 희망가격'} · {quoteEvent.amount.toLocaleString()}만 원</strong>{row.stage!==2&&<p>{quoteEvent.scope}</p>}</div>}
-                  <time dateTime={entry.at}>{new Date(entry.at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}</time>
+                  {time}
+                </article>
+                return <article key={firstVisible+i} className={s.messageRow} data-own={own} aria-label={entry.role==='customer'?'고객님 메시지':row.provider+' 메시지'}>
+                  {!own&&(entry.role==='expert'?<Image className={s.profile} src="/mascot/binzip-rabbit-report-transparent-v4.png" alt={row.provider+' 프로필'} width={48} height={48} sizes="48px"/>:<span className={s.customerProfile} aria-hidden="true">고</span>)}
+                  <div className={s.messageBody}>
+                    {(!own||entry.automated)&&<div className={s.sender}>{!own&&(entry.role==='customer'?'고객님':row.provider)}{entry.automated&&<span className={s.autoReply}>자동 안내</span>}</div>}
+                    <div className={s.message} data-own={own}><p>{entry.text}</p></div>
+                    {time}
+                  </div>
                 </article>
               })}
             </div>

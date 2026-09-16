@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import {createConsultation,updateConsultation} from '../src/consultations'
+import {createConsultation,updateConsultation,conversationEntries,consultationGreeting} from '../src/consultations'
 const at = '2026-09-15T00:00:00.000Z'
 for (const kind of ['철거','매도'] as const) {
   let row = createConsultation(kind,kind,'  방문 일정을 알고 싶어요.  ',at)
@@ -24,14 +24,14 @@ for (const kind of ['철거','매도'] as const) {
   assert.equal(row.quote?.amount,1800)
   assert.throws(()=>updateConsultation(row,'expert',{type:'message',text:'추가'},at))
 }
-assert.equal(createConsultation('empty','철거','',at).entries.length,1)
+assert.equal(createConsultation('empty','철거','',at).entries.length,2)
 console.log('Consultation transitions: passed for demolition and sale')
 
 
 let scheduled = createConsultation('visit','철거','',at)
 assert.equal(scheduled.entries[0]?.role,'customer')
 scheduled = updateConsultation(scheduled,'customer',{type:'message',text:'방문이 필요해요.'},at)
-assert.equal(scheduled.entries[1]?.event,false)
+assert.equal(scheduled.entries.at(-1)?.event,false)
 assert.throws(()=>updateConsultation(scheduled,'expert',{type:'message',text:'안녕하세요'},at))
 assert.throws(()=>updateConsultation(scheduled,'customer',{type:'contact',method:'phone',phone:'123',availability:'오전'},at))
 scheduled = updateConsultation(scheduled,'customer',{type:'contact',method:'phone',phone:'010-0000-0000',availability:'평일 10~12시'},at)
@@ -63,3 +63,22 @@ scheduled = updateConsultation(scheduled,'expert',{...proposal,proposalId:'p2'},
 assert.throws(()=>updateConsultation(scheduled,'customer',select,at))
 assert.throws(()=>updateConsultation(scheduled,'customer',{...select,proposalId:'p2'},'2026-09-20T00:00:00.000Z'))
 console.log('Chat, contact preferences and visit scheduling: passed')
+
+for (const kind of ['철거', '매도'] as const) {
+  const row = createConsultation('greeting',kind,'문의 내용',at)
+  assert.equal(row.stage,0)
+  assert.deepEqual(row.entries.at(-1),{role:'expert',event:false,automated:true,text:consultationGreeting,at})
+  assert.equal(conversationEntries(row).filter(entry=>entry.automated).length,1)
+  const legacy = {...row,entries:row.entries.filter(entry=>!entry.automated)}
+  const saved = JSON.stringify(legacy)
+  const displayed = conversationEntries(legacy)
+  assert.equal(displayed.at(-1)?.text,consultationGreeting)
+  assert.equal(JSON.stringify(legacy),saved)
+  assert.deepEqual(conversationEntries({...legacy,entries:displayed}),displayed)
+  for (const text of [`${kind} 상담을 요청했어요.`,`${kind} 상담 요청이 접수됐어요. 담당자가 확인하면 이 상담방에서 답변을 드려요.`]) {
+    const old = {...legacy,entries:[{role:'system' as const,text,at}]}
+    assert.equal(conversationEntries(old)[0]?.role,'customer')
+    assert.equal(conversationEntries(old)[1]?.text,consultationGreeting)
+  }
+}
+console.log('Automatic greeting and legacy display compatibility: passed')
