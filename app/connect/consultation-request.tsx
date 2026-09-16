@@ -1,9 +1,9 @@
 'use client'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { useState } from 'react'
 import { providerFor, type Kind } from '@/src/consultations'
 import { requestConsultation } from './consultation-store'
-import { RabbitGuide } from './rabbit-guide'
 import s from './consultation-request.module.css'
 export default function ConsultationRequest() {
   const router = useRouter()
@@ -14,8 +14,10 @@ export default function ConsultationRequest() {
   const [busy, setBusy] = useState(false)
   const provider = providerFor(kind)
   return <div className={s.request}>
-    <div className={s.card}>
-      <RabbitGuide title="어떤 일을 도와드릴까요?" description="원하는 상담을 고르면, 다음 단계를 함께 준비해요." />
+      <div className={s.guide}>
+        <Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={64} height={80} sizes="64px" />
+        <div><strong>상담 요청은 무료예요.</strong><p>최종 계약 이전까지는 비용이 발생하지 않아요.</p></div>
+      </div>
       <form className={s.form} aria-label="전문가 상담 요청" onSubmit={event => {
         event.preventDefault()
         if (!consent || busy) return
@@ -23,14 +25,12 @@ export default function ConsultationRequest() {
         try { router.push('/status/' + requestConsultation(kind, message)) }
         catch { setError('요청을 저장하지 못했어요. 브라우저의 저장소 설정을 확인하고 다시 시도해 주세요.'); setBusy(false) }
       }}>
-        <div className={s.switch + ' ' + s.serviceSwitch} aria-label="상담 업무">{(['철거', '매도'] as const).map(k => <button type="button" key={k} aria-pressed={kind === k} onClick={() => { setKind(k); setConsent(false) }}>{k === '철거' ? '철거 견적' : '매도 상담'}</button>)}</div>
-        <div className={s.partner} aria-live="polite"><span>상담을 요청할 전문가</span><strong>{provider}</strong><p>포항시 남구 · {kind === '철거' ? '주택 철거·정리 상담' : '단독주택 매도 상담'}</p></div>
-        <label htmlFor="initial-message">문의 내용(선택)<textarea id="initial-message" maxLength={2000} value={message} onChange={e => setMessage(e.target.value)} placeholder="방문 일정, 견적 항목 등 궁금한 내용을 남겨 주세요."/></label>
-        <label className={s.check}><input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)}/><span>{provider}에게 집 정보·진단 내용과 문의 내용을 공유하는 데 동의합니다.</span></label>
-        <button className={s.primary} disabled={!consent || busy}>{busy ? '요청 저장 중…' : '상담 요청하기'}</button>
-        <p className={s.note}>상담 요청은 무료예요. 최종 계약 이전까지는 비용이 발생하지 않아요. 최종 계약 여부는 고객이 직접 결정해요.</p>
+        <fieldset className={s.services}><legend>어떤 상담이 필요하세요?</legend><div className={s.switch + ' ' + s.serviceSwitch}>{(['철거', '매도'] as const).map(k => <button type="button" key={k} aria-pressed={kind === k} onClick={() => { setKind(k); setConsent(false) }}>{k === '철거' ? '철거 견적' : '매도 상담'}</button>)}</div></fieldset>
+        <div className={s.partner} aria-live="polite"><span>연결 전문가 · 포항시 남구</span><strong>{provider}</strong></div>
+        <label htmlFor="initial-message">문의 내용 <span className={s.optional}>(선택)</span><textarea id="initial-message" rows={2} maxLength={2000} value={message} onChange={e => setMessage(e.target.value)} placeholder="궁금한 점이 있으면 남겨주세요."/></label>
+        <label className={s.check}><input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)}/><span>{provider}에게 집 정보·진단·문의 내용을 공유하는 데 동의해요.</span></label>
+        <button className={s.primary} disabled={!consent || busy}>{busy ? '요청 저장 중…' : '무료 상담 요청하기'}</button>
         {error && <p role="alert">{error}</p>}
       </form>
-    </div>
   </div>
 }
