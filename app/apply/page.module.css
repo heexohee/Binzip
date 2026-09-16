@@ -1,0 +1,41 @@
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 168px;
+  grid-template-areas: "title rabbit" "note rabbit";
+  align-items: center;
+  gap: 16px 20px;
+}
+
+.hero h1 {
+  grid-area: title;
+  word-break: keep-all;
+}
+
+.note {
+  grid-area: note;
+  color: var(--text-secondary);
+  font-size: var(--type-help);
+  line-height: 1.8;
+  word-break: keep-all;
+  margin: 0;
+}
+
+.rabbit {
+  grid-area: rabbit;
+  width: 168px;
+  height: 202px;
+  object-fit: contain;
+}
+
+@media (max-width: 600px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) 104px;
+    grid-template-areas: "title title" "note rabbit";
+    gap: 12px;
+  }
+
+  .rabbit {
+    width: 104px;
+    height: 126px;
+  }
+}
