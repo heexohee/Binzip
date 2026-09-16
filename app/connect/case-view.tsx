@@ -86,7 +86,10 @@ export default function CaseView({ id, role }: { id:string;role:Role }) {
           <div className={s.feed} ref={feed} onScroll={()=>{const node=feed.current;if(node){nearBottom.current=node.scrollHeight-node.scrollTop-node.clientHeight<80;if(nearBottom.current)setUnread(false)}}} role="region" tabIndex={0} aria-label="상담 대화 스크롤 영역">
             {firstVisible>0&&<button className={s.earlier} onClick={showEarlier}>이전 대화 {firstVisible}개 보기 ↑</button>}
             <div role="log" aria-label="상담 기록" aria-live="polite" aria-relevant="additions">
-              {row.entries.slice(firstVisible).map((entry,i)=>{
+              {row.entries.slice(firstVisible).map((savedEntry,i)=>{
+                // Show the initial request in older records as the customer's message too.
+                const oldRequest=firstVisible+i===0 && (savedEntry.text===`${row.kind} 상담을 요청했어요.` || savedEntry.text===`${row.kind} 상담 요청이 접수됐어요. 담당자가 확인하면 이 상담방에서 답변을 드려요.`)
+                const entry=oldRequest?{...savedEntry,role:'customer' as const,event:false,text:`${row.kind} 상담 요청을 보냈어요.`}:savedEntry
                 const isEvent=automatic(entry)
                 const quoteEvent=isEvent&&entry.text==='견적·제안을 전달했어요.'&&row.quote
                 return <article key={firstVisible+i} className={isEvent?s.event:s.message} data-own={entry.role===role}>
