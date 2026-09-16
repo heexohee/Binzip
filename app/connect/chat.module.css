@@ -17,9 +17,7 @@
 .event .sender { font-size:12px; }
 .quoteRecord { color:var(--brand-primary); margin:8px 0; }
 .quoteRecord p { color:var(--text-secondary); }
-.customerLayout { max-width:var(--conversation-max-width); margin-inline:0; }
 @media(max-width:500px) { .propertyBar { padding:6px 16px; flex-wrap:wrap; gap:0 12px; }.conversationLabel { padding:16px 16px 0; flex-wrap:wrap; }.actionArea { padding:16px; }.composer textarea { font-size:16px; } }
 
 .body { padding: 32px var(--page-gutter) 60px; }
-.body:has(.customerLayout) > .title { max-width:var(--conversation-max-width); }
 @media(max-width:640px) { .body { padding-block:24px 40px; } }

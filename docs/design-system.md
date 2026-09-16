@@ -21,7 +21,7 @@
 | 페이지 최대 너비 | `--page-max-width`: 1040px |
 | 좌우 여백 | `--page-gutter`: 48px, 640px 이하 20px |
 | 주소 입력·신청서 최대 너비 | `--form-max-width`: 720px, 왼쪽 정렬 |
-| 고객 상담방 최대 너비 | `--conversation-max-width`: 860px, 제목과 왼쪽 정렬 |
+| 고객 상담방 너비 | 본문 전체 너비 사용, 제목·상단 메뉴와 좌우 정렬 |
 | 헤더 | `HomeHeader` / `page-frame.module.css`: 동일한 브랜드·여백·액션 영역 |
 | 배경 | 고객 페이지는 `--surface`, 내용 강조는 `--surface-soft` |
 | 푸터 | 페이지와 동일한 최대 너비·좌우 여백 |
