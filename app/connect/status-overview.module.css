@@ -9,7 +9,10 @@
 .current h3 { font-size:25px; line-height:1.4; letter-spacing:-.04em; margin:4px 0 6px; word-break:keep-all; }
 .current p { margin:0; color:var(--text-secondary); font-size:15px; line-height:1.6; overflow-wrap:anywhere; }
 .turn { display:flex; align-items:center; gap:12px; margin-top:18px; }
-.turn img { width:52px; height:64px; object-fit:contain; flex-shrink:0; }
+.turn img { width:52px; height:64px; object-fit:contain; flex-shrink:0; margin-left:auto; }
 .turnMessage { flex:1; min-width:0; }
+.compact { display:flex; align-items:center; gap:16px; }
+.compact .current { flex:1; min-width:0; }
+.compact .turn { margin-top:0; flex-shrink:0; }
 .turn p { margin:0; font-size:15px; line-height:1.6; color:var(--text-secondary); word-break:keep-all; }
 @media(max-width:500px) { .overview{padding:18px 16px 12px}.steps{gap:6px;margin-bottom:18px}.steps li{font-size:13px}.current h3{font-size:22px}.turn{gap:10px} }
