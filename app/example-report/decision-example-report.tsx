@@ -5,6 +5,7 @@ import styles from './decision-example.module.css'
 import ConsultationRequest from '../connect/consultation-request'
 import { POHANG_MARKET_EVIDENCE as market } from '@/src/pohang-market-evidence'
 import { EXAMPLE_CASE } from '@/src/example-report-data'
+import { buildSupports } from '@/src/supports'
 
 const repairItems = [
   { area: '지붕', work: '파손 기와 교체 · 연결 부위 방수', amount: 500 },
@@ -24,6 +25,8 @@ const demolitionNetCost = demolitionCost - demolitionSupport
 const demolitionLandNetValue = estimatedLandValue - demolitionNetCost
 
 export function DecisionExampleReport() {
+  const demolitionProgram = buildSupports({ address: '포항시 남구 호미곶면 대보리' }).find(program => program.id === 'pohang-demolition-2026')
+  if (!demolitionProgram) throw new Error('Example report requires the Pohang demolition support reference')
   return <main className={styles.report} data-report>
     <HomeHeader><span className={styles.reportBadge}>예시 진단서</span></HomeHeader>
     <section className={styles.rabbitHero} aria-labelledby="report-title">
@@ -68,11 +71,26 @@ export function DecisionExampleReport() {
         <article className={styles.choiceCard}>
           <div className={styles.cardHead}><b className={styles.choiceIndex}>03</b><h3>철거 후 토지 보유</h3><span>건물을 정리할 때</span></div>
           <dl className={styles.moneyFlow}>
-            <div><dt>들어오는 돈</dt><dd><span>포항시 철거 지원금</span><strong>+{demolitionSupport.toLocaleString()}만 원</strong></dd></div>
+            <div><dt>들어오는 돈</dt><dd><span>지자체 지원 반영 가정 · 예시</span><strong>+{demolitionSupport.toLocaleString()}만 원</strong></dd></div>
             <div><dt>나가는 돈</dt><dd><span>철거·폐기물·부지 정리</span><strong>−{demolitionCost.toLocaleString()}만 원</strong></dd></div>
           </dl>
-          <div className={styles.optionResult}><span>철거 후 예상 토지 순가치</span><strong>{demolitionLandNetValue.toLocaleString()}만 원</strong></div>
-          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>철거와 폐기물·부지 정리비 {demolitionCost.toLocaleString()}만 원에서 포항시 철거 지원금 {demolitionSupport.toLocaleString()}만 원을 빼면 순철거비는 {demolitionNetCost.toLocaleString()}만 원이에요.</p><p>남는 대지 {landArea}㎡에 기준 단가 {estimatedLandUnitPrice.toLocaleString()}만 원/㎡를 적용해 예상 토지가치 {estimatedLandValue.toLocaleString()}만 원을 계산했고, 순철거비를 빼면 {demolitionLandNetValue.toLocaleString()}만 원이에요. 실제 토지 가치는 지목·도로·규제·형상과 인근 거래를 확인해 다시 산정해요.</p></details>
+          <div className={styles.optionResult}><span>지원 반영 가정 시 토지 순가치</span><strong>{demolitionLandNetValue.toLocaleString()}만 원</strong></div>
+          <section className={styles.support} aria-labelledby="demolition-support-title">
+            <h4 id="demolition-support-title">철거 전, 지자체 지원부터 확인하세요</h4>
+            <p>지원 대상에 선정되면 철거에 드는 본인 부담이 줄어들 수 있어요.</p>
+            <dl className={styles.supportCosts}>
+              <div><dt>지원 미반영 비용 · 예시</dt><dd>{demolitionCost.toLocaleString()}만 원</dd></div>
+              <div><dt>{demolitionSupport.toLocaleString()}만 원 지원 반영 가정</dt><dd>{demolitionNetCost.toLocaleString()}만 원</dd></div>
+            </dl>
+            <p className={styles.supportNote}>{demolitionSupport.toLocaleString()}만 원은 계산 예시이며, 포항시의 확정 지원액이 아니에요. 실제 지원 방식·선정 여부·금액에 따라 본인 부담이 달라져요.</p>
+            <div className={styles.supportNext}>
+              <strong>{demolitionProgram.title}</strong>
+              <p>공사 계약 전에 소재지 행정복지센터에 신청 가능 여부와 잔여 예산, 지원 범위·본인 부담을 먼저 문의하세요.</p>
+              <p className={styles.supportNote}>빈집 인정 여부 · 소유자와 공유자 동의 · 철거 후 부지 사용 조건도 확인이 필요해요. 현재 접수·예산 상태는 미확인이에요.</p>
+              <a className={styles.evidenceLink} href={demolitionProgram.source.url} target="_blank" rel="noopener noreferrer">포항시 지원 공고 확인 ↗</a>
+            </div>
+          </section>
+          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>철거와 폐기물·부지 정리비 {demolitionCost.toLocaleString()}만 원에서 지원 {demolitionSupport.toLocaleString()}만 원을 반영한다고 가정하면 순철거비는 {demolitionNetCost.toLocaleString()}만 원이에요.</p><p>남는 대지 {landArea}㎡에 기준 단가 {estimatedLandUnitPrice.toLocaleString()}만 원/㎡를 적용해 예상 토지가치 {estimatedLandValue.toLocaleString()}만 원을 계산했고, 순철거비를 빼면 {demolitionLandNetValue.toLocaleString()}만 원이에요. 실제 토지 가치는 지목·도로·규제·형상과 인근 거래를 확인해 다시 산정해요.</p></details>
         </article>
 
         <article className={styles.choiceCard}>
@@ -92,8 +110,8 @@ export function DecisionExampleReport() {
       <div className={styles.recommendation}>
         <div className={styles.rabbitAdvice}><Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={56} height={56} sizes="56px" /><span>집토끼의 제안</span></div>
         <strong>매도 가능성을 먼저 확인한 뒤 결정하세요.</strong>
-        <p>유사 규모 거래를 기준으로 한 세금 전 예상 회수금은 {(referenceDeal.priceManwon - saleCommission).toLocaleString()}만 원이에요. 수리에는 {repairTotal.toLocaleString()}만 원, 철거에는 지원 반영 후 {demolitionNetCost.toLocaleString()}만 원이 먼저 필요해요.</p>
-        <p>매도 상담에서 가격·기간·성사 가능성이 낮다고 확인되면, 철거 뒤 남는 예상 토지가치 {estimatedLandValue.toLocaleString()}만 원과 순철거비를 반영한 토지 순가치 {demolitionLandNetValue.toLocaleString()}만 원을 다음 선택지로 비교하세요. 결정을 미루면 3년 예상 보유·방치 비용 {holdCost.toLocaleString()}만 원이 계속 쌓여요.</p>
+        <p>유사 규모 거래를 기준으로 한 세금 전 예상 회수금은 {(referenceDeal.priceManwon - saleCommission).toLocaleString()}만 원이에요. 수리에는 {repairTotal.toLocaleString()}만 원, 철거에는 지원 미반영 시 {demolitionCost.toLocaleString()}만 원, 지원 {demolitionSupport.toLocaleString()}만 원을 반영한다고 가정하면 {demolitionNetCost.toLocaleString()}만 원이 필요해요.</p>
+        <p>매도 상담에서 가격·기간·성사 가능성이 낮다고 확인되면, 철거 뒤 남는 예상 토지가치 {estimatedLandValue.toLocaleString()}만 원과 지원 반영 가정의 순철거비를 뺀 토지 순가치 {demolitionLandNetValue.toLocaleString()}만 원을 다음 선택지로 비교하세요. 결정을 미루면 3년 예상 보유·방치 비용 {holdCost.toLocaleString()}만 원이 계속 쌓여요.</p>
         <a href="#consultation">금액 기준으로 지역 전문가에게 상담 요청하기 ↓</a>
       </div>
     </section>

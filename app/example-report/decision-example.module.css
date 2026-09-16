@@ -103,3 +103,11 @@
   .heroRabbit { position: absolute; width: 150px; height: 150px; right: 4px; bottom: 15px; }
 }
 @media print { .rabbitHero { padding: 20px 0; }.heroRabbit { width: 150px; height: 150px; } }
+
+.supportCosts { margin:16px 0!important; }
+.supportCosts > div { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px 16px; padding:10px 0; border-bottom:1px solid var(--border-subtle); }
+.supportCosts dt { font-size:17px; }
+.supportCosts dd { font-weight:750; color:var(--brand-primary); white-space:nowrap; }
+.supportNote { font-size:16px; color:var(--text-secondary); margin-top:12px!important; }
+.supportNext { margin-top:20px; }
+.supportNext > strong { display:block; font-size:18px; margin-bottom:8px; }
