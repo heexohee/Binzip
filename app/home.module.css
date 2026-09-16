@@ -356,9 +356,4 @@
 
 /* Shared page edges; keep the inputs narrower than the page frame. */
 .header, .subpageIntro, .application, .brandHero, .addressSection, .empathySection, .serviceSection, .curiositySection, .concernsSection, .preparationSection, .reportContentsSection, .sampleBody { padding-inline: var(--page-gutter); }
-.site .brandHero h1 { font-size: var(--type-page); }
-.brandHero { align-items: center; min-height: 0; padding-block: 32px; }
-.brandRabbit { height: 260px; }
-.brandTagline { margin-top: 12px; color: var(--text-secondary); font-size: var(--type-body); word-break: keep-all; }
-@media (max-width: 540px) { .brandHero { padding-block: 24px; }.brandRabbit { height: 184px; } }
 .addressSection > .addressForm { max-width: var(--form-max-width); }
