@@ -62,7 +62,7 @@ export function RenewedExampleReport() {
         <ExampleJourney />
         <div className={reading.tools}><ReportTools /><Link className={reading.actionLink} href="/#address-search">내 빈집 주소로 시작하기 <span aria-hidden="true">→</span></Link></div>
       </main>
-      <footer className={reading.footer}><strong>빈집진단서</strong><p>빈집의 기록부터 철거 준비와 마무리까지, 함께 살펴요.</p><Link href="/">홈으로</Link><Link href="/resources">빈집 지원·정보 모음</Link><Link href="/privacy">개인정보 처리방침</Link></footer>
+
     </div>
   </div>
 }

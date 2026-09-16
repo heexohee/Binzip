@@ -69,7 +69,7 @@ export function ReportOverview({ example = false, exampleNotice = '예시 데이
         <aside className={styles.helpCard}><div><h2>틀린 정보나 빠진 내용이 있나요?</h2><p>주소와 수정할 항목을 알려주시면 다시 확인할게요.</p></div><a href="tel:01074282624">문의하기 ↗</a></aside>
         {example && <Link href="/#address-search" className={styles.cta}>내 빈집 주소로 시작하기 <span aria-hidden="true">→</span></Link>}
       </main>
-      <footer className={styles.footer}><p><strong>빈집진단서</strong> · {documentLabel}</p><p>이 진단서는 확인한 자료와 입력값을 정리한 의사결정 참고 자료예요. 매도·철거의 가능 여부, 실제 거래가격과 공사비는 개별 확인이 필요해요.</p><Link href="/resources">빈집 지원·정보 모음</Link><Link href="/privacy">개인정보 처리방침</Link><a href="tel:01074282624">010-7428-2624</a></footer>
+      <aside className={styles.footer} aria-label="진단서 이용 안내"><p><strong>빈집진단서</strong> · {documentLabel}</p><p>이 진단서는 확인한 자료와 입력값을 정리한 의사결정 참고 자료예요. 매도·철거의 가능 여부, 실제 거래가격과 공사비는 개별 확인이 필요해요.</p></aside>
     </div>
   </div>
 }

@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import Image from 'next/image'
+import { Brand } from '../home-ui'
 import styles from './decision-example.module.css'
 import ConsultationRequest from '../connect/consultation-request'
 import { POHANG_MARKET_EVIDENCE as market } from '@/src/pohang-market-evidence'
@@ -23,8 +25,13 @@ const demolitionLandNetValue = estimatedLandValue - demolitionNetCost
 
 export function DecisionExampleReport() {
   return <main className={styles.report} data-report>
+    <header className={styles.reportHeader}><Brand /><span>예시 진단서</span></header>
+    <section className={styles.rabbitHero} aria-labelledby="report-title">
+      <div className={styles.heroCopy}><p className={styles.eyebrow}>집토끼와 함께, 다음 결정</p><h1 id="report-title">우리 집의 다음 선택,<br />함께 살펴볼까요?</h1><p className={styles.bubble}>집 상태부터 비용, 다음 행동까지<br />하나씩 안내해 드릴게요.</p></div>
+      <Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="서류와 돋보기를 들고 살펴보는 집토끼" width={260} height={260} sizes="(max-width: 640px) 150px, 240px" className={styles.heroRabbit} priority />
+    </section>
     <section id="condition" className={styles.section} aria-labelledby="condition-title">
-      <div className={styles.heading}><span>01</span><h1 id="condition-title">지금 집은 어떤 상태인가요?</h1></div>
+      <div className={styles.heading}><span>01</span><h2 id="condition-title">지금 집은 어떤 상태인가요?</h2></div>
       <p className={styles.case}>포항시 남구 호미곶면 대보리 · 주택 66㎡</p>
       <div className={styles.verdict}><span>진단 결과</span><strong>지붕 수리와 실내 정비가 필요해요.</strong><p>지붕 일부가 파손돼 빗물이 들어오고 있어요.<br />지붕을 먼저 고친 뒤, 실내 천장과 벽을 정비하세요.</p></div>
       <dl className={styles.findings}>
@@ -83,7 +90,7 @@ export function DecisionExampleReport() {
     <section id="recommendation" className={styles.section} aria-labelledby="recommendation-title">
       <div className={styles.heading}><span>03</span><h2 id="recommendation-title">그래서, 무엇부터 할까요?</h2></div>
       <div className={styles.recommendation}>
-        <span>제안</span>
+        <div className={styles.rabbitAdvice}><Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={56} height={56} sizes="56px" /><span>집토끼의 제안</span></div>
         <strong>매도 가능성을 먼저 확인한 뒤 결정하세요.</strong>
         <p>유사 규모 거래를 기준으로 한 세금 전 예상 회수금은 {(referenceDeal.priceManwon - saleCommission).toLocaleString()}만 원이에요. 수리에는 {repairTotal.toLocaleString()}만 원, 철거에는 지원 반영 후 {demolitionNetCost.toLocaleString()}만 원이 먼저 필요해요.</p>
         <p>매도 상담에서 가격·기간·성사 가능성이 낮다고 확인되면, 철거 뒤 남는 예상 토지가치 {estimatedLandValue.toLocaleString()}만 원과 순철거비를 반영한 토지 순가치 {demolitionLandNetValue.toLocaleString()}만 원을 다음 선택지로 비교하세요. 결정을 미루면 3년 예상 보유·방치 비용 {holdCost.toLocaleString()}만 원이 계속 쌓여요.</p>

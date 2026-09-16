@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { HomeFooter, HomeHeader, HomeLink, Arrow } from '../home-ui'
+import { HomeHeader, HomeLink, Arrow } from '../home-ui'
 import { OFFICIAL_RESOURCES, RESOURCE_CHECKED_AT, RESOURCE_GROUPS } from '../../src/official-resources'
 import home from '../home.module.css'
 import styles from './resources.module.css'
@@ -20,5 +20,5 @@ export default function ResourcesPage() {
     </article>)}</div>{group.id === 'pohang' && <Link className={styles.supportLink} href="/example-report#support-title">지원 조건이 보고서에 어떻게 나오는지 보기<Arrow /></Link>}</section>)}
     <p className={styles.checked}>사이트와 안내 내용 확인: {RESOURCE_CHECKED_AT}<br />실시간 공고 수집 결과는 아니에요. 신청·계약 전에는 공식 페이지의 최신 공고를 확인해 주세요.</p>
     <aside className={styles.bottom}><h2>내 집에서는 무엇부터 확인할까요?</h2><p>주소와 알고 있는 내용을 남기면, 집의 기록과 다음 할 일을 정리해요.</p><Link href="/#address-search" className={home.primary}>내 빈집 진단 시작하기<Arrow /></Link></aside>
-  </main><HomeFooter /></div></div>
+  </main></div></div>
 }

@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { providerFor, type Kind } from '@/src/consultations'
 import { requestConsultation } from './consultation-store'
+import { RabbitGuide } from './rabbit-guide'
 import s from './consultation-request.module.css'
 export default function ConsultationRequest() {
   const router = useRouter()
@@ -13,8 +14,9 @@ export default function ConsultationRequest() {
   const [busy, setBusy] = useState(false)
   const provider = providerFor(kind)
   return <div className={s.request}>
-    <div className={s.card}><h3>어떤 일을 도와드릴까요?</h3>
-      <form className={s.form} onSubmit={event => {
+    <div className={s.card}>
+      <RabbitGuide title="어떤 일을 도와드릴까요?" description="원하는 상담을 고르면, 다음 단계를 함께 준비해요." />
+      <form className={s.form} aria-label="전문가 상담 요청" onSubmit={event => {
         event.preventDefault()
         if (!consent || busy) return
         setBusy(true)

@@ -124,3 +124,7 @@ input::placeholder, textarea::placeholder { color: var(--text-secondary); opacit
      기본값이면 브라우저가 배경을 빼버려 구분이 사라진다. */
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* Keep the shared footer after page content, including short and error pages. */
+body { display: flex; flex-direction: column; min-height: 100svh; }
+.site-content { flex: 1 0 auto; min-width: 0; }

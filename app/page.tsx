@@ -1,7 +1,7 @@
 import { TaxTeaser } from './tax-comparison'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Arrow, HomeFooter, Icon } from './home-ui'
+import { Arrow, Icon } from './home-ui'
 import styles from './home.module.css'
 import { AddressStartForm } from './address-start-form'
 import { ConcernCarousel } from './concern-carousel'
@@ -26,7 +26,7 @@ export default function Home() {
           <section id="address-search" className={styles.addressSection} aria-labelledby="address-title">
             <nav className={styles.folderNav} aria-label="빈집진단서 이용하기">
               <a href="#address-search" aria-current="page"><Icon name="house" />내 빈집 확인</a>
-              <Link href="/example-report"><Icon name="document" />진단서 보기</Link>
+              <Link href="/example-report/loading"><Icon name="document" />진단서 보기</Link>
             </nav>
             <h2 id="address-title">시골 빈집, 혹시 그냥 두고 계시나요?</h2>
             <p className={styles.intakeDescription}>당장은 지출이 적어 보여도, 갈수록 비용 부담이 커질 수 있어요.<br />무료 진단을 받아보세요.</p>
@@ -95,12 +95,12 @@ export default function Home() {
                   </div>
                 </li>
               </ol>
-              <Link href="/example-report" className={styles.reportExampleLink}>진단서 보기</Link>
+              <Link href="/example-report/loading" className={styles.reportExampleLink}>진단서 보기</Link>
             </div>
             <a href="#address-search" className={styles.primary}>내 빈집 무료로 확인하기<Arrow /></a>
           </section>
         </main>
-        <HomeFooter />
+
       </div>
     </div>
   )
