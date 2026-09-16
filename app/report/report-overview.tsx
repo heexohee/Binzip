@@ -49,7 +49,7 @@ export function ReportOverview({ example = false, exampleNotice = '예시 데이
         {example && <p className={styles.exampleBanner} data-example-notice><strong>서비스 미리보기</strong> {exampleNotice}</p>}
         <HomeLink />
         {introNotice}
-        <section className={styles.hero} aria-labelledby="report-title"><div><p className={styles.eyebrow}>집토끼와 함께, 다음 결정</p><h1 id="report-title" tabIndex={-1}>우리 집 정리,<br />돈과 순서부터 알아봐요.</h1><p className={styles.address}>{address}</p><p className={styles.meta}>{dateLabel} · {documentLabel}</p></div><Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={144} height={144} sizes="(max-width: 620px) 126px, 238px" className={styles.rabbit} priority /></section>
+        <section className={styles.hero} aria-labelledby="report-title"><div><h1 id="report-title" tabIndex={-1}>우리 집 정리,<br />돈과 순서부터 알아봐요.</h1><p className={styles.address}>{address}</p><p className={styles.meta}>{dateLabel} · {documentLabel}</p></div><Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={144} height={144} sizes="(max-width: 620px) 126px, 238px" className={styles.rabbit} priority /></section>
         <nav className={styles.nav} aria-label="진단서 목차"><a href="#money">남는 돈</a><a href="#next-actions">다음 할 일</a><a href="#demolition">철거비·지원</a><a href="#property">집 상태·근거</a></nav>
         {attention.length > 0 && <aside className={styles.attention}><strong>금액 비교와 함께 먼저 확인해 주세요</strong><ul>{attention.map((item, index) => <li key={index}>{item}</li>)}</ul><a href="#property">관련 근거 확인하기 ↓</a></aside>}
         {summary}
