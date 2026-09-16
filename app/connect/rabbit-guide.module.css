@@ -1,0 +1,13 @@
+.guide { display: flex; align-items: center; gap: 20px; padding: 16px 20px; margin-bottom: 24px; background: #f2f6ec; border-radius: 20px; }
+.rabbit { width: 96px; height: 112px; object-fit: contain; flex-shrink: 0; }
+.bubble { position: relative; min-width: 0; background: #fff; border-radius: 16px; padding: 16px 20px; }
+.bubble::before { content: ''; position: absolute; left: -7px; top: 28px; width: 14px; height: 14px; background: #fff; transform: rotate(45deg); }
+.bubble strong { position: relative; display: block; color: var(--brand-primary); font-size: 21px; line-height: 1.5; letter-spacing: -.025em; word-break: keep-all; }
+.bubble p { margin: 6px 0 0!important; color: var(--text-secondary); font-size: 15px; line-height: 1.65; word-break: keep-all; }
+@media (max-width: 640px) {
+  .guide { gap: 10px; padding: 12px 10px; border-radius: 16px; }
+  .rabbit { width: 72px; height: 88px; }
+  .bubble { padding: 12px; }
+  .bubble strong { font-size: 18px; }
+  .bubble p { font-size: 14px; }
+}

@@ -7,7 +7,7 @@ import { DECISIONS, DECISION_ACTIONS, type Decision } from '../../src/decision-a
 import { guidanceOnly, instantOverview, parseInstantInput, type InstantInput, type InstantResult } from '../../src/instant-report'
 import { lookupInstantReport } from './actions'
 import { useInstantFlow } from '../instant-flow'
-import { HomeFooter, HomeHeader, HomeLink } from '../home-ui'
+import { HomeHeader, HomeLink } from '../home-ui'
 import { ReportOverview } from '../report/report-overview'
 import home from '../home.module.css'
 import styles from './instant.module.css'
@@ -91,5 +91,5 @@ export function InstantDiagnosis() {
     {pending && <div className={styles.progress} role="status" aria-live="polite"><strong>{result?.kind === 'confirm' ? '건물·토지 기록을 확인하고 있어요.' : '입력한 주소를 확인하고 있어요.'}</strong><p>자료가 조회되는 대로 결과를 보여드려요. 잠시만 기다려 주세요.</p></div>}
     {!pending && result?.kind === 'confirm' && <div ref={heading}><section className={styles.confirm} aria-labelledby="confirm-title"><p className={styles.kicker}>{result.similar ? '비슷한 주소를 찾았어요 · 반드시 확인해 주세요' : '조회된 주소를 확인해 주세요'}</p><h2 id="confirm-title" tabIndex={-1}>이 집이 맞나요?</h2><p className={styles.confirmAddress}>{result.address}</p>{result.roadAddress && <p>{result.roadAddress}</p>}<p>맞으면 이 주소의 공적 자료를 조회해요. 다른 집이면 위 주소를 고쳐 주세요.</p><button className={home.primary} type="button" onClick={() => void lookup({ ...current, confirmedPnu: result.pnu })}>이 주소로 1차 진단서 보기 →</button></section></div>}
     {!pending && result && result.kind !== 'confirm' && <div className={styles.problem} role="alert"><strong>{result.message}</strong>{canGuide && <button type="button" onClick={() => { const valid = parseInstantInput(current); if (valid) setResult({ kind: 'report', report: guidanceOnly(valid) }) }}>공적 기록 없이 확인 순서 먼저 보기 →</button>}</div>}
-  </main><HomeFooter /></div></div>
+  </main></div></div>
 }

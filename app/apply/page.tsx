@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { IntakePreview } from './intake-preview'
-import { HomeFooter, HomeHeader, HomeLink } from '../home-ui'
+import { HomeHeader, HomeLink } from '../home-ui'
 import styles from '../home.module.css'
 
 export const maxDuration = 60
@@ -21,7 +21,7 @@ export default async function ApplyPage({ searchParams }: { searchParams: Promis
         </div>
         <div className={styles.application}><IntakePreview initialAddress={address} /></div>
       </main>
-      <HomeFooter />
+
     </div></div>
   )
 }

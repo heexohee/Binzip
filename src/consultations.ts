@@ -1,7 +1,7 @@
 export type Role = 'customer' | 'expert'
 export type Kind = '철거' | '매도'
 export const stages = ['상담 요청', '상담 진행', '견적·제안', '계약 협의', '진행 중', '완료 확인', '완료'] as const
-export const providerFor = (kind: Kind) => kind === '철거' ? '포항 다부서철거 대행' : '포항 중개 파트너 B'
+export const providerFor = (kind: Kind) => kind === '철거' ? '포항 다부서철거 대행' : '다파라 공인중개사'
 export type Consultation = {
   version: 1; id: string; kind: Kind; provider: string; stage: number
   createdAt: string; updatedAt: string

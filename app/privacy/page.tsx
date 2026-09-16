@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { RETENTION_MONTHS } from '../../src/application'
-import { HomeHeader, HomeLink, HomeFooter } from '../home-ui'
+import { HomeHeader, HomeLink } from '../home-ui'
 import home from '../home.module.css'
 import styles from './privacy.module.css'
 
@@ -148,7 +148,7 @@ export default function PrivacyPage() {
         <P>첨부 사진 자체는 공개 진단서에 게시하지 않습니다. 인증된 관리자 화면에서만 열람할 수 있습니다.</P>
       </Section>
 
-      <footer className="mt-10 border-t border-mid pt-5">
+      <div className="mt-10 border-t border-mid pt-5">
         <p className="text-[13px] leading-[1.7] text-muted">
           1차 조회와 추가 확인 절차를 포함한 개정일: 2026년 9월 12일. 내용이 바뀌면 이 페이지에 먼저 알려드립니다.
         </p>
@@ -157,8 +157,8 @@ export default function PrivacyPage() {
             빈집진단서로 돌아가기
           </a>
         </p>
-      </footer>
-    </main><HomeFooter /></div></div>
+      </div>
+    </main></div></div>
   )
 }
 

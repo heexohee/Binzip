@@ -1,7 +1,10 @@
 import Link from 'next/link'
+import Image from 'next/image'
+import { Brand } from '../home-ui'
 import styles from './decision-example.module.css'
 import ConsultationRequest from '../connect/consultation-request'
 import { POHANG_MARKET_EVIDENCE as market } from '@/src/pohang-market-evidence'
+import { EXAMPLE_CASE } from '@/src/example-report-data'
 
 const repairItems = [
   { area: '지붕', work: '파손 기와 교체 · 연결 부위 방수', amount: 500 },
@@ -10,11 +13,25 @@ const repairItems = [
 ]
 const repairTotal = repairItems.reduce((total, item) => total + item.amount, 0)
 const referenceDeal = market.deals.reduce((closest, deal) => Math.abs(deal.floorArea - 66) < Math.abs(closest.floorArea - 66) ? deal : closest)
+const saleCommission = 40
+const demolitionCost = 2000
+const demolitionSupport = 700
+const holdCost = 360
+const landArea = EXAMPLE_CASE.land.area
+const estimatedLandUnitPrice = 21.5
+const estimatedLandValue = Math.round((landArea * estimatedLandUnitPrice) / 100) * 100
+const demolitionNetCost = demolitionCost - demolitionSupport
+const demolitionLandNetValue = estimatedLandValue - demolitionNetCost
 
 export function DecisionExampleReport() {
   return <main className={styles.report} data-report>
+    <header className={styles.reportHeader}><Brand /><span>예시 진단서</span></header>
+    <section className={styles.rabbitHero} aria-labelledby="report-title">
+      <div className={styles.heroCopy}><p className={styles.eyebrow}>집토끼와 함께, 다음 결정</p><h1 id="report-title">우리 집의 다음 선택,<br />함께 살펴볼까요?</h1><p className={styles.bubble}>집 상태부터 비용, 다음 행동까지<br />하나씩 안내해 드릴게요.</p></div>
+      <Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="서류와 돋보기를 들고 살펴보는 집토끼" width={260} height={260} sizes="(max-width: 640px) 150px, 240px" className={styles.heroRabbit} priority />
+    </section>
     <section id="condition" className={styles.section} aria-labelledby="condition-title">
-      <div className={styles.heading}><span>01</span><h1 id="condition-title">지금 집은 어떤 상태인가요?</h1></div>
+      <div className={styles.heading}><span>01</span><h2 id="condition-title">지금 집은 어떤 상태인가요?</h2></div>
       <p className={styles.case}>포항시 남구 호미곶면 대보리 · 주택 66㎡</p>
       <div className={styles.verdict}><span>진단 결과</span><strong>지붕 수리와 실내 정비가 필요해요.</strong><p>지붕 일부가 파손돼 빗물이 들어오고 있어요.<br />지붕을 먼저 고친 뒤, 실내 천장과 벽을 정비하세요.</p></div>
       <dl className={styles.findings}>
@@ -23,68 +40,67 @@ export function DecisionExampleReport() {
         <div><dt>외벽 <span>부분 보수</span></dt><dd>표면 마감에 균열이 있어요. 손상된 마감 부위를 보수하세요.</dd></div>
       </dl>
     </section>
+
     <section id="choices" className={styles.section} aria-labelledby="choices-title">
-      <div className={styles.heading}><span>02</span><h2 id="choices-title">고칠까요, 팔까요, 철거할까요?</h2></div>
-      <p className={styles.lead}>다시 살 계획이라면 수리를, 사용 계획이 없다면 매도를 먼저 알아보세요.</p>
-      <div className={styles.costs}>
-        <article>
-          <div className={styles.cardHead}><h3>철거</h3><span>집을 없애고 정리할 때</span></div>
-          <p>예상 철거·정리비</p><strong className={styles.amount}>2,000만 원</strong><p>건물 철거와 폐기물 처리를 포함한 금액이에요.</p>
-          <section className={styles.support} aria-labelledby="demolition-support-title">
-            <h4 id="demolition-support-title">포항시 철거 지원을 받는다면?</h4>
-            <p>지원금 700만 원을 받는 경우, 예상 본인 부담은 1,300만 원으로 줄어들어요.</p>
-            <dl className={styles.fees}>
-              <div><dt>예상 철거·정리비</dt><dd>2,000만 원</dd></div>
-              <div><dt>포항시 철거 지원금 적용</dt><dd>−700만 원</dd></div>
-            </dl>
-            <p>지원 적용 후 예상 본인 부담</p><strong className={styles.amount}>1,300만 원</strong>
-            <p className={styles.note}>계산 기준: 포항시 철거 지원금 700만 원을 받는 경우를 가정했어요. 실제 사업 운영 여부·지원 금액·선정 조건은 해당 연도 공고 확인이 필요해요.</p>
-            <details className={styles.feeBasis}><summary>신청 전 확인할 내용</summary><p>포항시 해당 연도 공고에서 대상 주택, 신청 기간, 필요한 서류와 철거 착수 시점을 확인하세요. 지원금 지급 방식과 지원 범위 밖의 비용도 확인한 뒤 최종 본인 부담액을 정하세요.</p></details>
-          </section>
+      <div className={styles.heading}><span>02</span><h2 id="choices-title">어떤 선택이 가장 나을까요?</h2></div>
+      <p className={styles.lead}>각 선택지를 같은 기준으로 비교했어요. 들어오는 돈에서 나가는 돈을 빼면, 지금 선택의 예상 결과를 볼 수 있어요.</p>
+      <div className={styles.choiceGrid}>
+        <article className={styles.choiceCard}>
+          <div className={styles.cardHead}><b className={styles.choiceIndex}>01</b><h3>매매</h3><span>현재 상태로 팔 때</span></div>
+          <dl className={styles.moneyFlow}>
+            <div><dt>들어오는 돈</dt><dd><span>유사 규모 거래 참고값</span><strong>+{referenceDeal.priceManwon.toLocaleString()}만 원</strong></dd></div>
+            <div><dt>나가는 돈</dt><dd><span>중개보수 상한</span><strong>−{saleCommission}만 원</strong></dd></div>
+          </dl>
+          <div className={styles.optionResult}><span>세금 전 예상 회수금</span><strong>{(referenceDeal.priceManwon - saleCommission).toLocaleString()}만 원</strong></div>
+          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>대보리 유사 연면적 {referenceDeal.floorArea}㎡ 주택의 {referenceDeal.date} 거래 {referenceDeal.priceManwon.toLocaleString()}만 원을 기준으로 했어요. 이 거래가는 건물과 토지를 합친 값이에요. 중개보수는 0.5% 상한을 적용했으며, 세금·정리비·기타 거래비용은 별도 확인이 필요해요.</p></details>
         </article>
-        <article>
-          <div className={styles.cardHead}><h3>수리</h3><span>다시 살거나 사용할 때</span></div>
-          <p>상태 진단에 따른 예상 총 수리비</p><strong className={styles.amount}>{repairTotal.toLocaleString()}만 원</strong>
-          <p>위 상태 진단에서 확인한 지붕·실내·외벽의 보수 항목을 합산했어요.</p>
-          <dl className={styles.repairCosts}>{repairItems.map(item => <div key={item.area}><dt><strong>{item.area}</strong><span>{item.work}</span></dt><dd>{item.amount.toLocaleString()}만 원</dd></div>)}</dl>
-          <p>지붕 누수를 먼저 막고, 실내를 충분히 말린 뒤 마감재를 교체하세요. 외벽은 손상 부위를 부분 보수해요.</p>
-          <p className={styles.note}>항목별 금액은 비용 비교를 위해 설정한 계산 기준이며, 현장 견적 전 추정금액이에요. 실제 보수 면적·자재·추가 손상과 부가세 포함 여부를 확인해 최종 견적을 받아보세요.</p>
+
+        <article className={styles.choiceCard}>
+          <div className={styles.cardHead}><b className={styles.choiceIndex}>02</b><h3>수리 후 활용</h3><span>다시 살거나 사용할 때</span></div>
+          <dl className={styles.moneyFlow}>
+            <div><dt>들어오는 돈</dt><dd><span>즉시 현금 유입</span><strong>0원</strong></dd></div>
+            <div><dt>나가는 돈</dt><dd><span>지붕·실내·외벽 수리</span><strong>−{repairTotal.toLocaleString()}만 원</strong></dd></div>
+          </dl>
+          <div className={styles.optionResult}><span>예상 선투입 비용</span><strong>−{repairTotal.toLocaleString()}만 원</strong></div>
+          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><dl className={styles.repairCosts}>{repairItems.map(item => <div key={item.area}><dt><strong>{item.area}</strong><span>{item.work}</span></dt><dd>{item.amount.toLocaleString()}만 원</dd></div>)}</dl><p>수리 후 매각가 또는 사용 수익은 활용 계획과 현장 견적이 정해진 뒤 따로 계산해요.</p></details>
         </article>
-        <article>
-          <div className={styles.cardHead}><h3>매매</h3><span>현재 상태로 팔 때</span></div>
-          <p>같은 대보리 · 연면적 {referenceDeal.floorArea}㎡ 주택의 거래가격</p>
-          <strong className={styles.amount}>{referenceDeal.priceManwon.toLocaleString()}만 원</strong>
-          <p>{referenceDeal.date} 계약 · 대지 {referenceDeal.landArea}㎡ · {referenceDeal.type}</p>
-          <p className={styles.note}>내 집 66㎡와 연면적이 가장 가까운 확인 거래예요. 내 집의 예상가는 대지·도로·수리 상태를 비교한 뒤 정해요.</p>
-          <details className={styles.feeBasis}>
-            <summary>비교 거래·출처 보기</summary>
-            <p>2025~2026년 대보리 단독주택 중 연면적 60~85㎡ · 조회 시 해제 표시 없는 거래 {market.deals.length}건에서 골랐어요.</p>
-            <div className={styles.marketTableWrap} role="region" aria-label="대보리 단독주택 신고 거래 비교" tabIndex={0}>
-              <table className={styles.marketTable}>
-                <caption>{market.region} · 모두 직거래</caption>
-                <thead><tr><th scope="col">계약일·위치</th><th scope="col">연면적</th><th scope="col">대지면적</th><th scope="col">신고금액</th></tr></thead>
-                <tbody>{market.deals.map(deal => <tr key={deal.date}><th scope="row">{deal.date}<span>{deal.road} · {deal.jibun}</span></th><td>{deal.floorArea}㎡</td><td>{deal.landArea}㎡</td><td>{deal.priceManwon.toLocaleString()}만 원</td></tr>)}</tbody>
-              </table>
-            </div>
-            <p>대지면적과 건물 상태·거래 조건이 달라 가격 차이가 있어요. 공개 지번이 일부 가려져 정확한 거리와 개별 필지는 확인하지 않았어요.</p>
-            <a className={styles.evidenceLink} href={market.sourceUrl} target="_blank" rel="noopener noreferrer">국토교통부 단독·다가구 실거래 원문 ↗</a>
-            <p className={styles.note}>조회: 경상북도 → 포항시 남구 → 호미곶면 → 대보리 · 매매 · 2025/2026년<br/>자료 확인 {market.checkedAt}</p>
-          </details>
-          <details className={styles.feeBasis}><summary>중개보수·거래비용 보기</summary><p>중개보수는 거래가격을 정한 뒤 계산해요. 경북 주택 매매 5천만 원 미만은 0.6%·한도 25만 원, 5천만 원 이상 2억 원 미만은 0.5%·한도 80만 원 이내에서 협의해요. 부가세와 세금·기타 거래비용은 별도로 확인하세요.</p><a href={market.commissionUrl} target="_blank" rel="noopener noreferrer">경상북도 공식 중개보수 안내 ↗</a></details>
+
+        <article className={styles.choiceCard}>
+          <div className={styles.cardHead}><b className={styles.choiceIndex}>03</b><h3>철거 후 토지 보유</h3><span>건물을 정리할 때</span></div>
+          <dl className={styles.moneyFlow}>
+            <div><dt>들어오는 돈</dt><dd><span>포항시 철거 지원금</span><strong>+{demolitionSupport.toLocaleString()}만 원</strong></dd></div>
+            <div><dt>나가는 돈</dt><dd><span>철거·폐기물·부지 정리</span><strong>−{demolitionCost.toLocaleString()}만 원</strong></dd></div>
+          </dl>
+          <div className={styles.optionResult}><span>철거 후 예상 토지 순가치</span><strong>{demolitionLandNetValue.toLocaleString()}만 원</strong></div>
+          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>철거와 폐기물·부지 정리비 {demolitionCost.toLocaleString()}만 원에서 포항시 철거 지원금 {demolitionSupport.toLocaleString()}만 원을 빼면 순철거비는 {demolitionNetCost.toLocaleString()}만 원이에요.</p><p>남는 대지 {landArea}㎡에 기준 단가 {estimatedLandUnitPrice.toLocaleString()}만 원/㎡를 적용해 예상 토지가치 {estimatedLandValue.toLocaleString()}만 원을 계산했고, 순철거비를 빼면 {demolitionLandNetValue.toLocaleString()}만 원이에요. 실제 토지 가치는 지목·도로·규제·형상과 인근 거래를 확인해 다시 산정해요.</p></details>
+        </article>
+
+        <article className={styles.choiceCard}>
+          <div className={styles.cardHead}><b className={styles.choiceIndex}>04</b><h3>보유</h3><span>결정을 미룰 때</span></div>
+          <dl className={styles.moneyFlow}>
+            <div><dt>들어오는 돈</dt><dd><span>즉시 현금 유입</span><strong>0원</strong></dd></div>
+            <div><dt>나가는 돈</dt><dd><span>3년 보유·방치 비용</span><strong>−{holdCost.toLocaleString()}만 원</strong></dd></div>
+          </dl>
+          <div className={styles.optionResult}><span>3년 예상 순비용</span><strong>−{holdCost.toLocaleString()}만 원</strong></div>
+          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><p>세금·기본 점검·잡초와 배수 관리, 방치로 인한 정리 비용을 합쳐 월 평균 10만 원, 3년 기준으로 계산했어요. 토지의 기준 가치는 {estimatedLandValue.toLocaleString()}만 원으로 보되, 건물 상태가 더 나빠지면 매도 가능성과 정리 비용은 달라질 수 있어요.</p></details>
         </article>
       </div>
     </section>
-    <section id="next" className={styles.section} aria-labelledby="next-title">
-      <div className={styles.heading}><span>03</span><h2 id="next-title">다음에는 무엇을 하면 되나요?</h2></div>
-      <ol className={styles.steps}>
-        <li><span>1</span><div><h3>수리할지, 팔지 먼저 정하세요.</h3><p>다시 살 예정이면 지붕·실내·외벽의 항목별 수리 견적을 받으세요. 사용 계획이 없다면 철거 전에 매도 상담부터 받으세요.</p></div></li>
-        <li><span>2</span><div><h3>선택한 방향에 맞는 전문가를 연결해드려요.</h3><dl className={styles.contacts}><div><dt>수리</dt><dd>지붕·방수 · 실내·외벽 보수 업체</dd></div><div><dt>매매</dt><dd>지역 공인중개사</dd></div><div><dt>철거</dt><dd>철거업체 · 지자체 지원사업 담당자</dd></div></dl></div></li>
-        <li><span>3</span><div><h3>최종 비용을 확인하고 진행하세요.</h3><p>진단서와 집 정보를 업체에 전달해 상담을 도와드려요. 공사 범위와 추가 비용을 확인한 뒤 계약하세요.</p></div></li>
-      </ol>
+
+    <section id="recommendation" className={styles.section} aria-labelledby="recommendation-title">
+      <div className={styles.heading}><span>03</span><h2 id="recommendation-title">그래서, 무엇부터 할까요?</h2></div>
+      <div className={styles.recommendation}>
+        <div className={styles.rabbitAdvice}><Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={56} height={56} sizes="56px" /><span>집토끼의 제안</span></div>
+        <strong>매도 가능성을 먼저 확인한 뒤 결정하세요.</strong>
+        <p>유사 규모 거래를 기준으로 한 세금 전 예상 회수금은 {(referenceDeal.priceManwon - saleCommission).toLocaleString()}만 원이에요. 수리에는 {repairTotal.toLocaleString()}만 원, 철거에는 지원 반영 후 {demolitionNetCost.toLocaleString()}만 원이 먼저 필요해요.</p>
+        <p>매도 상담에서 가격·기간·성사 가능성이 낮다고 확인되면, 철거 뒤 남는 예상 토지가치 {estimatedLandValue.toLocaleString()}만 원과 순철거비를 반영한 토지 순가치 {demolitionLandNetValue.toLocaleString()}만 원을 다음 선택지로 비교하세요. 결정을 미루면 3년 예상 보유·방치 비용 {holdCost.toLocaleString()}만 원이 계속 쌓여요.</p>
+        <a href="#consultation">금액 기준으로 지역 전문가에게 상담 요청하기 ↓</a>
+      </div>
     </section>
+
     <section id="consultation" className={styles.section + ' ' + styles.consultation} aria-labelledby="consultation-title">
       <div className={styles.heading}><span>04</span><h2 id="consultation-title">내 빈집의 다음 단계,<br/>전문가와 함께해요.</h2></div>
-      <p className={styles.lead}>철거 견적이나 매도 상담이 필요하시면, 지역 전문가에게 상담을 요청해 보세요.</p>
+      <p className={styles.lead}>진단서와 계산 결과를 바탕으로 매도 또는 철거 상담을 요청할 수 있어요.</p>
       <ConsultationRequest/>
       <div className={styles.actions}><Link className={styles.home} href="/">← 홈으로</Link></div>
     </section>

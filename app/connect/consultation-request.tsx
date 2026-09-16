@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { providerFor, type Kind } from '@/src/consultations'
 import { requestConsultation } from './consultation-store'
+import { RabbitGuide } from './rabbit-guide'
 import s from './consultation-request.module.css'
 export default function ConsultationRequest() {
   const router = useRouter()
@@ -13,8 +14,9 @@ export default function ConsultationRequest() {
   const [busy, setBusy] = useState(false)
   const provider = providerFor(kind)
   return <div className={s.request}>
-    <div className={s.card}><h3>어떤 일을 도와드릴까요?</h3>
-      <form className={s.form} onSubmit={event => {
+    <div className={s.card}>
+      <RabbitGuide title="어떤 일을 도와드릴까요?" description="원하는 상담을 고르면, 다음 단계를 함께 준비해요." />
+      <form className={s.form} aria-label="전문가 상담 요청" onSubmit={event => {
         event.preventDefault()
         if (!consent || busy) return
         setBusy(true)
@@ -26,7 +28,7 @@ export default function ConsultationRequest() {
         <label htmlFor="initial-message">문의 내용(선택)<textarea id="initial-message" maxLength={2000} value={message} onChange={e => setMessage(e.target.value)} placeholder="방문 일정, 견적 항목 등 궁금한 내용을 남겨 주세요."/></label>
         <label className={s.check}><input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)}/><span>{provider}에게 집 정보·진단 내용과 문의 내용을 공유하는 데 동의합니다.</span></label>
         <button className={s.primary} disabled={!consent || busy}>{busy ? '요청 저장 중…' : '상담 요청하기'}</button>
-        <p className={s.note}>최종 계약 여부는 고객이 직접 결정해요.</p>
+        <p className={s.note}>상담 요청은 무료예요. 최종 계약 이전까지는 비용이 발생하지 않아요. 최종 계약 여부는 고객이 직접 결정해요.</p>
         {error && <p role="alert">{error}</p>}
       </form>
     </div>
