@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Brand, Icon } from '../../home-ui'
+import { HomeHeader, Icon } from '../../home-ui'
 import styles from './report-loading.module.css'
 
 const STEPS = [
@@ -32,7 +32,7 @@ export function ReportLoading() {
   }, [router])
 
   return <div className={styles.page}>
-    <header className={styles.header}><Brand /><span>예시 진단</span></header>
+    <HomeHeader><span className={styles.badge}>예시 진단</span></HomeHeader>
     <main className={styles.main}>
       <p className={styles.eyebrow}>집토끼가 꼼꼼히 살펴볼게요</p>
       <h1>우리 집의 다음 선택,<br />진단서로 정리하고 있어요.</h1>

@@ -1,8 +1,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 import styles from './home.module.css'
 import ui from './ui.module.css'
 import footer from './site-footer.module.css'
+import frame from './page-frame.module.css'
 
 export function Arrow() {
   return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -27,8 +29,8 @@ export function Brand({ href = '/', admin = false }: { href?: string; admin?: bo
   return <Link href={href} className={ui.brand}><LogoMark />빈집진단서{admin && <small>관리자</small>}</Link>
 }
 
-export function HomeHeader() {
-  return <header className={styles.header}><Brand /></header>
+export function HomeHeader({ children }: { children?: ReactNode }) {
+  return <header className={frame.header}><Brand />{children && <div className={frame.actions}>{children}</div>}</header>
 }
 
 export function HomeLink() {

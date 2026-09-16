@@ -1,5 +1,5 @@
 .footer { background: #f2f5ef; border-top: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: 14px; line-height: 1.7; }
-.inner { max-width: 1040px; margin: auto; padding: 32px 32px 22px; }
+.inner { max-width: var(--page-max-width); margin: auto; padding: 32px var(--page-gutter) 22px; }
 .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
 .brand { display: inline-flex; align-items: center; min-height: 44px; font-size: 20px; font-weight: 750; color: var(--brand-primary); text-decoration: none; }
 .tagline { margin: 0; }
@@ -16,7 +16,7 @@
 .information dd { margin: 0; overflow-wrap: anywhere; }
 .copyright { margin: 12px 0 0; font-size: 12px; }
 @media(max-width: 700px) {
-  .inner { padding: 24px 20px; }
+  .inner { padding: 24px var(--page-gutter); }
   .top { flex-direction: column; gap: 14px; }
   .links { gap: 0 20px; }
   .information { grid-template-columns: 1fr; gap: 16px; }
