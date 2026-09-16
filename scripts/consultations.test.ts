@@ -3,6 +3,7 @@ import {createConsultation,updateConsultation} from '../src/consultations'
 const at = '2026-09-15T00:00:00.000Z'
 for (const kind of ['철거','매도'] as const) {
   let row = createConsultation(kind,kind,'  방문 일정을 알고 싶어요.  ',at)
+  assert.deepEqual(row.entries[0],{role:'customer',event:false,text:`${kind} 상담 요청을 보냈어요.`,at})
   assert.equal(row.entries[1]?.text,'방문 일정을 알고 싶어요.')
   assert.throws(()=>updateConsultation(row,'customer',{type:'accept'},at))
   assert.throws(()=>updateConsultation(row,'expert',{type:'quote',amount:2000,scope:'전체'},at))
@@ -28,7 +29,7 @@ console.log('Consultation transitions: passed for demolition and sale')
 
 
 let scheduled = createConsultation('visit','철거','',at)
-assert.equal(scheduled.entries[0]?.role,'system')
+assert.equal(scheduled.entries[0]?.role,'customer')
 scheduled = updateConsultation(scheduled,'customer',{type:'message',text:'방문이 필요해요.'},at)
 assert.equal(scheduled.entries[1]?.event,false)
 assert.throws(()=>updateConsultation(scheduled,'expert',{type:'message',text:'안녕하세요'},at))

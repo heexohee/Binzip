@@ -30,7 +30,7 @@ export function formatVisit(slot: string): string {
 export function createConsultation(id: string, kind: Kind, inquiry: string, at: string): Consultation {
   if (inquiry.trim().length > 2000) throw new Error('문의는 2,000자 이내로 작성해 주세요.')
   return { version: 1, id, kind, provider: providerFor(kind), stage: 0, createdAt: at, updatedAt: at,
-    entries: [{ role: 'system', event: true, text: kind + ' 상담 요청이 접수됐어요. 담당자가 확인하면 이 상담방에서 답변을 드려요.', at },
+    entries: [{ role: 'customer', event: false, text: kind + ' 상담 요청을 보냈어요.', at },
       ...(inquiry.trim() ? [{ role: 'customer' as const, text: inquiry.trim(), at }] : [])] }
 }
 export function updateConsultation(current: Consultation, role: Role, action: Action, at: string): Consultation {
