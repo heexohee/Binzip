@@ -20,9 +20,6 @@
 .steps li[data-state="done"] .track { background: #35654b; }
 .steps li[data-state="active"] .track::after { content: ''; display: block; width: 100%; height: 100%; background: #35654b; transform-origin: left; animation: fill 1.4s linear both; }
 .steps li[data-state="active"], .steps li[data-state="done"] { color: #35654b; font-weight: 650; }
-.notice { margin: 22px 0 8px; font-size: 13px; line-height: 1.65; color: #6b766f; }
-.skip { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; font-size: 14px; color: #365b46; text-underline-offset: 4px; }
-.skip:focus-visible { outline: 3px solid #35654b; outline-offset: 5px; border-radius: 4px; }
 .srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 @keyframes read { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-5px) rotate(1deg); } }
 @keyframes spin { to { transform: rotate(360deg); } }
