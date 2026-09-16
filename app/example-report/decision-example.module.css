@@ -125,3 +125,8 @@
 .repairFindings > div:first-child .repairAmount { top:0; }
 .repairWork { margin-top:8px!important; color:var(--text-primary); }
 @media(max-width:420px) { .repairFindings dt { padding-right:0; }.repairAmount { position:static; display:block; margin-bottom:10px; } }
+
+.supportToggle { margin-top:20px; border-top:1px solid var(--border-subtle); padding-top:12px; }
+.supportToggle > summary { min-height:44px; padding:8px 0; color:var(--brand-primary); font-size:18px; font-weight:700; cursor:pointer; }
+.supportToggle > summary:focus-visible { outline:3px solid var(--brand-primary); outline-offset:4px; }
+.supportToggle .support { margin-top:12px; padding-top:0; border-top:0; }
