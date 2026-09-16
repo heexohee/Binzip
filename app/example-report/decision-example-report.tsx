@@ -8,9 +8,9 @@ import { EXAMPLE_CASE } from '@/src/example-report-data'
 import { buildSupports } from '@/src/supports'
 
 const repairItems = [
-  { area: '지붕', work: '파손 기와 교체 · 연결 부위 방수', amount: 500 },
-  { area: '실내', work: '누수 부위 건조 · 천장과 벽 마감재 교체', amount: 300 },
-  { area: '외벽', work: '손상된 표면 마감 부분 보수', amount: 100 },
+  { area: '지붕', status: '수리 필요', condition: '기와 일부가 깨지고 연결 부위가 벌어졌어요.', work: '파손 기와 교체 · 연결 부위 방수', amount: 500 },
+  { area: '실내', status: '정비 필요', condition: '천장과 벽에 누수 얼룩이 있어요. 지붕 수리 후 진행해요.', work: '누수 부위 건조 · 천장과 벽 마감재 교체', amount: 300 },
+  { area: '외벽', status: '부분 보수', condition: '표면 마감에 균열이 있어요.', work: '손상된 표면 마감 부분 보수', amount: 100 },
 ]
 const repairTotal = repairItems.reduce((total, item) => total + item.amount, 0)
 const referenceDeal = market.deals.reduce((closest, deal) => Math.abs(deal.floorArea - 66) < Math.abs(closest.floorArea - 66) ? deal : closest)
@@ -50,22 +50,19 @@ export function DecisionExampleReport() {
 
         <article className={styles.choiceCard}>
           <div className={styles.cardHead}><b className={styles.choiceIndex}>02</b><h3>수리 후 활용</h3><span>다시 살거나 사용할 때</span></div>
-          <dl className={styles.moneyFlow}>
-            <div><dt>나가는 돈</dt><dd><span>지붕·실내·외벽 수리</span><strong>−{repairTotal.toLocaleString()}만 원</strong></dd></div>
-          </dl>
-          <div className={styles.optionResult}><span>예상 선투입 비용</span><strong>−{repairTotal.toLocaleString()}만 원</strong></div>
-    <section id="condition" className={styles.repairCondition} aria-labelledby="condition-title">
-      <h4 id="condition-title">지금 집은 어떤 상태인가요?</h4>
-      <div className={styles.verdict}><span>진단 결과</span><strong>지붕 수리와 실내 정비가 필요해요.</strong><p>지붕 일부가 파손돼 빗물이 들어오고 있어요.<br />지붕을 먼저 고친 뒤, 실내 천장과 벽을 정비하세요.</p></div>
-      <dl className={styles.findings}>
-        <div><dt>지붕 <span>수리 필요</span></dt><dd>기와 일부가 깨지고 연결 부위가 벌어졌어요. 파손된 기와 교체와 방수 작업이 필요해요.</dd></div>
-        <div><dt>실내 <span>정비 필요</span></dt><dd>천장과 벽에 누수 얼룩이 있어요. 지붕 수리 후 충분히 말리고 마감재를 교체하세요.</dd></div>
-        <div><dt>외벽 <span>부분 보수</span></dt><dd>표면 마감에 균열이 있어요. 손상된 마감 부위를 보수하세요.</dd></div>
-      </dl>
-    </section>
-
-
-          <details className={styles.optionBasis}><summary>계산 근거 보기</summary><dl className={styles.repairCosts}>{repairItems.map(item => <div key={item.area}><dt><strong>{item.area}</strong><span>{item.work}</span></dt><dd>{item.amount.toLocaleString()}만 원</dd></div>)}</dl><p>수리 후 매각가 또는 사용 수익은 활용 계획과 현장 견적이 정해진 뒤 따로 계산해요.</p></details>
+          <div className={styles.optionResult}><span>예상 수리비 합계</span><strong>{repairTotal.toLocaleString()}만 원</strong></div>
+          <section id="condition" className={styles.repairCondition} aria-labelledby="condition-title">
+            <h4 id="condition-title">수리 항목과 예상 비용</h4>
+            <dl className={styles.repairFindings}>{repairItems.map(item => <div key={item.area}>
+              <dt>{item.area}<span>{item.status}</span></dt>
+              <dd>
+                <strong className={styles.repairAmount}>{item.amount.toLocaleString()}만 원</strong>
+                <p>{item.condition}</p>
+                <p className={styles.repairWork}>{item.work}</p>
+              </dd>
+            </div>)}</dl>
+          </section>
+          <p className={styles.note}>예시 금액으로, 실제 수리비는 현장 견적에서 확인해요. 수리 후 매각가 또는 사용 수익은 활용 계획이 정해진 뒤 따로 계산해요.</p>
         </article>
 
         <article className={styles.choiceCard}>
