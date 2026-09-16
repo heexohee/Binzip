@@ -33,20 +33,10 @@ export function DecisionExampleReport() {
       <div className={styles.heroCopy}><h1 id="report-title">우리 집의 다음 선택,<br />함께 살펴볼까요?</h1><p className={styles.bubble}>집 상태부터 비용, 다음 행동까지<br />하나씩 안내해 드릴게요.</p></div>
       <Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="서류와 돋보기를 들고 살펴보는 집토끼" width={260} height={260} sizes="(max-width: 640px) 150px, 240px" className={styles.heroRabbit} priority />
     </section>
-    <section id="condition" className={styles.section} aria-labelledby="condition-title">
-      <div className={styles.heading}><span>01</span><h2 id="condition-title">지금 집은 어떤 상태인가요?</h2></div>
-      <p className={styles.case}>포항시 남구 호미곶면 대보리 · 주택 66㎡</p>
-      <div className={styles.verdict}><span>진단 결과</span><strong>지붕 수리와 실내 정비가 필요해요.</strong><p>지붕 일부가 파손돼 빗물이 들어오고 있어요.<br />지붕을 먼저 고친 뒤, 실내 천장과 벽을 정비하세요.</p></div>
-      <dl className={styles.findings}>
-        <div><dt>지붕 <span>수리 필요</span></dt><dd>기와 일부가 깨지고 연결 부위가 벌어졌어요. 파손된 기와 교체와 방수 작업이 필요해요.</dd></div>
-        <div><dt>실내 <span>정비 필요</span></dt><dd>천장과 벽에 누수 얼룩이 있어요. 지붕 수리 후 충분히 말리고 마감재를 교체하세요.</dd></div>
-        <div><dt>외벽 <span>부분 보수</span></dt><dd>표면 마감에 균열이 있어요. 손상된 마감 부위를 보수하세요.</dd></div>
-      </dl>
-    </section>
-
     <section id="choices" className={styles.section} aria-labelledby="choices-title">
-      <div className={styles.heading}><span>02</span><h2 id="choices-title">어떤 선택이 가장 나을까요?</h2></div>
-      <p className={styles.lead}>각 선택지를 같은 기준으로 비교했어요. 들어오는 돈에서 나가는 돈을 빼면, 지금 선택의 예상 결과를 볼 수 있어요.</p>
+      <div className={styles.heading}><span>01</span><h2 id="choices-title">어떤 선택이 가장 나을까요?</h2></div>
+      <p className={styles.case}>포항시 남구 호미곶면 대보리 · 주택 66㎡</p>
+      <p className={styles.lead}>선택별로 필요한 비용과 예상 결과를 비교해 보세요.</p>
       <div className={styles.choiceGrid}>
         <article className={styles.choiceCard}>
           <div className={styles.cardHead}><b className={styles.choiceIndex}>01</b><h3>매매</h3><span>현재 상태로 팔 때</span></div>
@@ -61,10 +51,20 @@ export function DecisionExampleReport() {
         <article className={styles.choiceCard}>
           <div className={styles.cardHead}><b className={styles.choiceIndex}>02</b><h3>수리 후 활용</h3><span>다시 살거나 사용할 때</span></div>
           <dl className={styles.moneyFlow}>
-            <div><dt>들어오는 돈</dt><dd><span>즉시 현금 유입</span><strong>0원</strong></dd></div>
             <div><dt>나가는 돈</dt><dd><span>지붕·실내·외벽 수리</span><strong>−{repairTotal.toLocaleString()}만 원</strong></dd></div>
           </dl>
           <div className={styles.optionResult}><span>예상 선투입 비용</span><strong>−{repairTotal.toLocaleString()}만 원</strong></div>
+    <section id="condition" className={styles.repairCondition} aria-labelledby="condition-title">
+      <h4 id="condition-title">지금 집은 어떤 상태인가요?</h4>
+      <div className={styles.verdict}><span>진단 결과</span><strong>지붕 수리와 실내 정비가 필요해요.</strong><p>지붕 일부가 파손돼 빗물이 들어오고 있어요.<br />지붕을 먼저 고친 뒤, 실내 천장과 벽을 정비하세요.</p></div>
+      <dl className={styles.findings}>
+        <div><dt>지붕 <span>수리 필요</span></dt><dd>기와 일부가 깨지고 연결 부위가 벌어졌어요. 파손된 기와 교체와 방수 작업이 필요해요.</dd></div>
+        <div><dt>실내 <span>정비 필요</span></dt><dd>천장과 벽에 누수 얼룩이 있어요. 지붕 수리 후 충분히 말리고 마감재를 교체하세요.</dd></div>
+        <div><dt>외벽 <span>부분 보수</span></dt><dd>표면 마감에 균열이 있어요. 손상된 마감 부위를 보수하세요.</dd></div>
+      </dl>
+    </section>
+
+
           <details className={styles.optionBasis}><summary>계산 근거 보기</summary><dl className={styles.repairCosts}>{repairItems.map(item => <div key={item.area}><dt><strong>{item.area}</strong><span>{item.work}</span></dt><dd>{item.amount.toLocaleString()}만 원</dd></div>)}</dl><p>수리 후 매각가 또는 사용 수익은 활용 계획과 현장 견적이 정해진 뒤 따로 계산해요.</p></details>
         </article>
 
@@ -106,7 +106,7 @@ export function DecisionExampleReport() {
     </section>
 
     <section id="recommendation" className={styles.section} aria-labelledby="recommendation-title">
-      <div className={styles.heading}><span>03</span><h2 id="recommendation-title">그래서, 무엇부터 할까요?</h2></div>
+      <div className={styles.heading}><span>02</span><h2 id="recommendation-title">그래서, 무엇부터 할까요?</h2></div>
       <div className={styles.recommendation}>
         <div className={styles.rabbitAdvice}><Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={56} height={56} sizes="56px" /><span>집토끼의 제안</span></div>
         <strong>매도 가능성을 먼저 확인한 뒤 결정하세요.</strong>
@@ -117,7 +117,7 @@ export function DecisionExampleReport() {
     </section>
 
     <section id="consultation" className={styles.section + ' ' + styles.consultation} aria-labelledby="consultation-title">
-      <div className={styles.heading}><span>04</span><h2 id="consultation-title">전문가 상담 요청</h2></div>
+      <div className={styles.heading}><span>03</span><h2 id="consultation-title">전문가 상담 요청</h2></div>
       <ConsultationRequest/>
       <div className={styles.actions}><Link className={styles.home} href="/">← 홈으로</Link></div>
     </section>
