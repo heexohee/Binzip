@@ -27,13 +27,17 @@ export function visitDate(slot: string): number {
 export function formatVisit(slot: string): string {
   return new Date(visitDate(slot)).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', month: 'long', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit' })
 }
-export const consultationGreeting = '안녕하세요. 확인 후 메세지 드리겠습니다!'
+export const consultationGreeting = '안녕하세요. 곧 연락드리겠습니다.'
 
 export function conversationEntries(row: Consultation): Consultation['entries'] {
   const first = row.entries[0]
   if (!first) return row.entries
   const oldRequest = first.text === `${row.kind} 상담을 요청했어요.` || first.text === `${row.kind} 상담 요청이 접수됐어요. 담당자가 확인하면 이 상담방에서 답변을 드려요.`
-  const entries = oldRequest ? [{ ...first, role: 'customer' as const, event: false, text: `${row.kind} 상담 요청을 보냈어요.` }, ...row.entries.slice(1)] : [...row.entries]
+  const entries = (oldRequest ? [{ ...first, role: 'customer' as const, event: false, text: `${row.kind} 상담 요청을 보냈어요.` }, ...row.entries.slice(1)] : row.entries).map(entry =>
+    entry.role === 'expert' && entry.automated && entry.text === '안녕하세요. 확인 후 메세지 드리겠습니다!'
+      ? { ...entry, text: consultationGreeting }
+      : entry
+  )
   if (entries.some(entry => entry.automated) || (!oldRequest && first.text !== `${row.kind} 상담 요청을 보냈어요.`)) return entries
   let index = 1
   while (entries[index]?.role === 'customer' && entries[index]?.at === first.at) index++
