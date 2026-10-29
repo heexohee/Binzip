@@ -16,11 +16,13 @@ export function AddressStartForm() {
   const [pending, setPending] = useState(false)
   const [error, setError] = useState('')
   const controller = useRef<AbortController | null>(null)
+  const searchDialog = useRef<HTMLDialogElement>(null)
   const input = useRef<HTMLInputElement>(null)
   const confirmation = useRef<HTMLElement>(null)
   useEffect(() => () => { controller.current?.abort(); controller.current = null }, [])
   useEffect(() => {
     if (candidate) {
+      searchDialog.current?.close()
       confirmation.current?.focus({ preventScroll: true })
       confirmation.current?.scrollIntoView({ block: 'start' })
     }
@@ -68,6 +70,16 @@ export function AddressStartForm() {
   }
 
   return <div className={styles.addressForm}>
+    <button type="button" className={styles.changeAddress} onClick={() => searchDialog.current?.showModal()}>주소 검색 창 열기</button>
+    <dialog ref={searchDialog} className={styles.addressDialog} aria-labelledby="search-dialog-title">
+      <h2 id="search-dialog-title">도로명이나 지번으로 찾아요</h2>
+      <form onSubmit={event => {event.preventDefault(); void lookup()}}>
+        <label htmlFor="dialog-address">빈집 주소</label><input id="dialog-address" value={address} onChange={e => {clearLookup();setAddress(e.target.value)}} required minLength={3} maxLength={300} placeholder="예: 포항시 호미곶면 강사리 670"/>
+        <button className={styles.primary} disabled={pending}>{pending ? '찾는 중…' : '주소 찾기'}</button>
+      </form>
+      {error && <p role="alert">{error}</p>}
+      <button type="button" className={styles.changeAddress} onClick={() => searchDialog.current?.close()}>닫기</button>
+    </dialog>
     <form onSubmit={event => { event.preventDefault(); void lookup() }}>
       <div className={styles.addressInput}><Icon name="pin" /><input ref={input} id="home-address" aria-label="빈집 주소" name="address" type="text" required minLength={3} maxLength={300} autoComplete="street-address" enterKeyHint="search" placeholder="도로명주소 또는 지번주소" value={address} onChange={event => { clearLookup(); setAddress(event.target.value) }} aria-invalid={error ? true : undefined} aria-describedby={error ? 'address-error' : undefined} /></div>
       <button type="submit" className={styles.primary} disabled={pending}>{pending ? '주소 확인 중…' : '내 빈집 무료로 확인하기'}<Icon name="search" /></button>

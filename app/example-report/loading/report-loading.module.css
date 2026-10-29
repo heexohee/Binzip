@@ -1,7 +1,7 @@
 .page { min-height: 100svh; background: #f7f8f3; color: #243e34; }
-.badge { font-size: 13px; color: #52675a; background: #e7eee3; padding: 7px 12px; border-radius: 30px; }
+.badge { font-size:16px; color: #52675a; background: #e7eee3; padding: 7px 12px; border-radius: 30px; }
 .main { max-width: 560px; margin: 14px auto 0; padding: 0 24px 36px; text-align: center; }
-.eyebrow { margin: 0 0 12px; color: #52735e; font-size: 15px; font-weight: 600; }
+.eyebrow { margin: 0 0 12px; color: #52735e; font-size:16px; font-weight: 600; }
 .main h1 { font-size: clamp(26px, 4.7vw, 34px); line-height: 1.42; letter-spacing: -.045em; font-weight: 750; margin: 0; }
 .illustration { position: relative; width: 300px; height: 278px; margin: 8px auto 0; display: grid; place-items: center; }
 .halo { position: absolute; width: 224px; height: 224px; border-radius: 50%; background: radial-gradient(circle, #e2ecd9 20%, #eef3e7 66%, transparent 72%); }
@@ -11,11 +11,11 @@
 .statusCard { padding: 26px 24px 23px; text-align: left; border-radius: 24px; background: white; box-shadow: 0 8px 36px #203b3107; }
 .current { display: flex; align-items: center; gap: 16px; min-height: 63px; }
 .current h2 { font-size: 21px; letter-spacing: -.025em; margin: 0 0 6px; }
-.current p { margin: 0; color: #65756b; font-size: 14px; line-height: 1.6; word-break: keep-all; }
+.current p { margin: 0; color: #65756b; font-size:16px; line-height: 1.6; word-break: keep-all; }
 .spinner { flex: 0 0 23px; width: 23px; height: 23px; border: 3px solid #e6eee2; border-top-color: #35654b; border-radius: 50%; animation: spin 1s linear infinite; }
 .finished { flex: 0 0 23px; color: #35654b; }
 .steps { list-style: none; padding: 0; margin: 24px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.steps li { color: #6b766f; font-size: 12px; text-align: center; }
+.steps li { color: #6b766f; font-size:16px; text-align: center; }
 .track { display: block; height: 4px; border-radius: 4px; background: #e9ede7; margin-bottom: 10px; overflow: hidden; }
 .steps li[data-state="done"] .track { background: #35654b; }
 .steps li[data-state="active"] .track::after { content: ''; display: block; width: 100%; height: 100%; background: #35654b; transform-origin: left; animation: fill 1.4s linear both; }
@@ -35,7 +35,7 @@
   .statusCard { padding: 22px 18px; }
   .current { gap: 12px; }
   .current h2 { font-size: 19px; }
-  .current p { font-size: 13px; }
+  .current p { font-size:16px; }
   .steps { gap: 8px; }
   .steps li { font-size: 11px; }
 }

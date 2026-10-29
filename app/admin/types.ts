@@ -12,7 +12,7 @@ export type ApplicationRow = {
   speed: string | null
   channel: string | null
   contact: string
-  email: string
+  email: string | null
   created_at: string
   expires_at: string
   /** Absent on records predating the optional photo migration. */

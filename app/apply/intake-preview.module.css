@@ -40,7 +40,7 @@
 @media(max-width: 600px) {
   .card { padding: 20px 16px; gap: 24px; }
   .steps { gap: 8px; }
-  .steps li { flex-direction: column; gap: 7px; font-size: 12px; text-align: center; white-space: nowrap; }
+  .steps li { flex-direction: column; gap: 7px; font-size:16px; text-align: center; white-space: nowrap; }
   .steps li span { width: 24px; height: 24px; }
   .options, .goalGrid { grid-template-columns: 1fr; }
   .goal { padding: 16px; }

@@ -45,7 +45,7 @@ export function HomeFooter() {
         <nav className={footer.links} aria-label="하단 서비스 메뉴">
           <Link href="/">홈</Link>
           <Link href="/example-report">진단서 보기</Link>
-          <Link href="/resources">빈집 지원·정보 모음</Link>
+          <Link href="/interest">보유·관리 관심 등록</Link><Link href="/resources">빈집 지원·정보 모음</Link>
           <Link href="/privacy">개인정보 처리방침</Link>
         </nav>
       </div>
@@ -59,7 +59,7 @@ export function HomeFooter() {
           <div className={footer.contact}><a href="tel:01074282624">문의 010-7428-2624</a><span>평일 09:00–18:00</span></div>
           </section>
           <section aria-label="진단서 이용 안내"><h2>진단서 이용 안내</h2>
-            <p>현재 진단 신청은 무료입니다. 주소와 위치를 확인한 뒤 집 상태·소유관계와 사진을 보내주시면, 담당자가 확인 범위와 일정을 안내하고 검토한 진단서를 이메일로 보내드립니다. 사진은 선택 사항입니다.</p>
+            <p>현재 진단 신청은 무료입니다. 주소와 위치를 확인한 뒤 집 상태·소유관계와 사진을 보내주시면, 담당자가 확인 범위와 일정을 안내하고 확인 결과와 전달 방법을 전화로 안내합니다. 이메일로 받으실 수도 있습니다. 사진은 선택 사항입니다.</p>
             <p>진단서는 공적 자료와 확인 내용을 정리한 참고 자료입니다. 구조 안전, 세금·법률의 최종 판단이나 거래·공사 견적을 보증하지 않습니다. 지원사업의 선정 여부와 본인 부담은 담당 기관에 확인해야 합니다.</p>
           </section>
       </div>

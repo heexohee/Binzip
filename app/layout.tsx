@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { InstantFlowProvider } from './instant-flow'
+import { CampaignSource } from './campaign-source'
 import { HomeFooter } from './home-ui'
 
 export const metadata: Metadata = {
@@ -20,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
       </head>
-      <body><InstantFlowProvider><div className="site-content">{children}</div></InstantFlowProvider><HomeFooter /></body>
+      <body><CampaignSource/><InstantFlowProvider><div className="site-content">{children}</div></InstantFlowProvider><HomeFooter /></body>
     </html>
   )
 }
