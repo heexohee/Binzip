@@ -49,7 +49,6 @@ export default function Management() {
         <h2 className={s.blockTitle}>방문 후 받게 될 소식 (구상)</h2>
         <p className={s.blockLead}>다녀온 뒤 이런 내용을 보내드리려고 해요. 의견을 듣고 바꿀 수 있어요.</p>
         <dl className={`${s.facts} ${s.sketch}`}>{REPORT_SKETCH.map(item => <div key={item.title}><dt>{item.title}</dt><dd>{item.text}</dd></div>)}</dl>
-        <p className={s.textLinkNote}>아직 운영 전이라 실제로 보낸 보고가 아니에요.</p>
       </div>
 
       <div className={s.block}>
