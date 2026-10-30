@@ -19,6 +19,6 @@ export default function ResourcesPage() {
       <a className={styles.external} href={resource.href} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">{resource.linkLabel}<span aria-hidden="true">↗</span><span className="sr-only"> (새 창)</span></a>
     </article>)}</div>{group.id === 'pohang' && <Link className={styles.supportLink} href="/example-report#choices">지원 조건이 보고서에 어떻게 나오는지 보기<Arrow /></Link>}</section>)}
     <p className={styles.checked}>사이트와 안내 내용 확인: {RESOURCE_CHECKED_AT}<br />실시간 공고 수집 결과는 아니에요. 신청·계약 전에는 공식 페이지의 최신 공고를 확인해 주세요.</p>
-    <aside className={styles.bottom}><h2>내 집에서는 무엇부터 확인할까요?</h2><p>주소와 알고 있는 내용을 남기면, 집의 기록과 다음 할 일을 정리해요.</p><Link href="/#address-search" className={home.primary}>내 빈집 진단 시작하기<Arrow /></Link></aside>
+    <aside className={styles.bottom}><h2>내 집에서는 무엇부터 확인할까요?</h2><p>주소와 알고 있는 내용을 남기면, 집의 기록과 다음 할 일을 정리해요.</p><Link href="/diagnosis#apply" className={home.primary}>내 빈집 진단 시작하기<Arrow /></Link></aside>
   </main></div></div>
 }

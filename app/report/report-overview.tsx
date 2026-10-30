@@ -44,7 +44,7 @@ const COST_SCOPE = [
 export function ReportOverview({ example = false, exampleNotice = '예시 데이터로 구성한 진단서입니다.', address, dateLabel, documentLabel, blocks, supports, records, attention = [], ownerCondition, photoCount = 0, fieldVerified = false, initialDecision, onDecisionChange, introNotice, summary, followUp, propertyDetails, decisionActions }: ReportOverviewProps) {
   return <div className={styles.site} data-report>
     <div className={styles.shell}>
-      <header className={styles.header}><Brand /><div className={styles.headerActions}><Link href="/resources">지원·정보 모음</Link>{example && <Link href="/#address-search">내 집으로 시작하기</Link>}<ReportTools /></div></header>
+      <header className={styles.header}><Brand /><div className={styles.headerActions}><Link href="/resources">지원·정보 모음</Link>{example && <Link href="/diagnosis#apply">내 집으로 시작하기</Link>}<ReportTools /></div></header>
       <main className={styles.main}>
         {example && <p className={styles.exampleBanner} data-example-notice><strong>서비스 미리보기</strong> {exampleNotice}</p>}
         <HomeLink />
@@ -67,7 +67,7 @@ export function ReportOverview({ example = false, exampleNotice = '예시 데이
         </section>
         {followUp}
         <aside className={styles.helpCard}><div><h2>틀린 정보나 빠진 내용이 있나요?</h2><p>주소와 수정할 항목을 알려주시면 다시 확인할게요.</p></div><a href="tel:01074282624">문의하기 ↗</a></aside>
-        {example && <Link href="/#address-search" className={styles.cta}>내 빈집 주소로 시작하기 <span aria-hidden="true">→</span></Link>}
+        {example && <Link href="/diagnosis#apply" className={styles.cta}>내 빈집 주소로 시작하기 <span aria-hidden="true">→</span></Link>}
       </main>
       <aside className={styles.footer} aria-label="진단서 이용 안내"><p><strong>빈집진단서</strong> · {documentLabel}</p><p>이 진단서는 확인한 자료와 입력값을 정리한 의사결정 참고 자료예요. 매도·철거의 가능 여부, 실제 거래가격과 공사비는 개별 확인이 필요해요.</p></aside>
     </div>
