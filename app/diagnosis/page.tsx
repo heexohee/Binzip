@@ -45,8 +45,6 @@ export default function Diagnosis() {
       <div className={s.block}>
         <h2 className={s.blockTitle}>진단서에 담기는 내용</h2>
         <Gets items={GETS} />
-        <Link className={s.textLink} href="/example-report">진단서 예시 보기 →</Link>
-        <p className={s.textLinkNote}>가정한 집으로 만든 예시예요. 실제 조사 결과는 아니에요.</p>
       </div>
 
       <div className={s.block}>
