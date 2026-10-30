@@ -49,7 +49,6 @@ main.service { padding-top: 0; min-height: 70vh; }
 .gets span { color: var(--text-secondary); font-size: var(--type-help); line-height: 1.6; }
 .planned li::before { content: ""; width: 14px; height: 14px; margin: 7px 0 0 4px; border: 2px dashed var(--status-unknown-border); border-radius: 50%; }
 .textLink { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; color: var(--brand-primary); font-weight: 700; text-decoration: underline !important; text-underline-offset: 4px; }
-.textLinkNote { margin: 0; color: var(--text-secondary); font-size: var(--type-help); }
 
 .steps { display: grid; margin: 0; padding: 0; list-style: none; counter-reset: step; }
 .steps li { position: relative; padding: 0 0 20px 44px; counter-increment: step; }
