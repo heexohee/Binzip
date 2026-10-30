@@ -21,7 +21,7 @@ export default function InterestForm() {
     <input type="hidden" name="requestId" value={requestId}/><input type="hidden" name="source" value={source}/>
     <div hidden aria-hidden="true"><label>웹사이트<input name="website" tabIndex={-1} autoComplete="off"/></label></div>
     <label>빈집이 있는 시·군 (필수)<input value={values.region ?? ''} onChange={e => setValues(v => ({...v,region:e.target.value}))} name="region" required minLength={2} maxLength={80} placeholder="예: 경북 포항시, 전남 고흥군" aria-describedby={state.errors.region ? 'region-error' : undefined}/>{error('region')}</label>
-    <label>대략적인 위치 (선택)<input value={values.location ?? ''} onChange={e => setValues(v => ({...v,location:e.target.value}))} name="location" maxLength={200} placeholder="예: 호미곶면 강사리"/><span>정확한 번지를 몰라도 괜찮아요. 주민번호나 등기 서류는 보내지 마세요.</span>{error('location')}</label>
+    <label>대략적인 위치 (선택)<input value={values.location ?? ''} onChange={e => setValues(v => ({...v,location:e.target.value}))} name="location" maxLength={200} placeholder="예: 호미곶면 강사리"/>{error('location')}</label>
     {group('residence', '소유주께서는 어디에 살고 계세요?', RESIDENCES)}
     {group('intent', '지금은 어떤 방향을 고민하세요?', INTENTS)}
     {optionalGroup('inheritance', '상속 정리는 어디까지 됐나요?', INHERITANCE)}
