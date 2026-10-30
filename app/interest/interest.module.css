@@ -7,4 +7,7 @@
 .option:has(input:checked) {background:var(--surface-soft);border-color:var(--brand-primary)}
 .option input {width:22px;height:22px;flex-shrink:0;accent-color:var(--brand-primary)}
 .form span {font-size:16px;font-weight:400}.form button {min-height:56px;background:var(--brand-primary);color:white;border-radius:10px;font:inherit;font-weight:700;padding:14px;cursor:pointer}
-.notice,.success {padding:24px;background:var(--surface-soft);border-radius:12px}.error {color:var(--status-error-text);font-weight:600}.page a {display:inline-flex;align-items:center;min-height:48px;text-decoration:underline}
+.notice,.success {padding:24px;background:var(--surface-soft);border-radius:12px}.error {color:var(--status-error-text);font-weight:600}.page main a {display:inline-flex;align-items:center;min-height:48px;text-decoration:underline}
+.hint {margin:-4px 0 8px;color:var(--text-secondary);font-size:16px}
+.form label.price {display:grid;gap:6px;margin:12px 0;font-weight:600}
+.priceInput {display:flex;align-items:center;gap:8px}.form .priceInput input {max-width:120px}

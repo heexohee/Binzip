@@ -146,7 +146,7 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
     return (
       <div className={styles.success}>
         <h2>진단 신청이 접수됐습니다.</h2>
-        <p className="mt-3 text-[16px] leading-[1.75] text-muted">확인한 뒤 연락드립니다.</p>
+        <p className="mt-3 text-[16px] leading-[1.75] text-muted">담당자가 신청 내용을 확인한 뒤 남겨주신 연락처로 진행 가능 여부와 결과 전달 일정을 안내해요. 현장 방문은 별도 협의 후 진행하며, 지금 예약된 것은 아니에요.</p>
       </div>
     )
   }
