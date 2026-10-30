@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Arrow, HomeHeader } from '../home-ui'
+import { AddressStartForm } from '../address-start-form'
 import { ShareButton } from '../share-button'
 import { Facts, Gets, type Item, kakaoChannel, PHONE, Steps } from '../landing-parts'
 import home from '../home.module.css'
@@ -14,16 +15,16 @@ const GETS: Item[] = [
 ]
 
 const STEPS: Item[] = [
-  { title: '참여 안내를 읽고 신청해요', text: '주소로 집을 찾은 뒤, 집 상태와 고민, 연락처를 남겨요.' },
+  { title: '주소로 집을 찾아 신청해요', text: '이 페이지 아래에서 주소로 집을 찾은 뒤, 집 상태와 고민, 연락처를 남겨요.' },
   { title: '담당자가 연락드려요', text: '자료를 살펴보고 진행할 수 있는지, 결과는 언제 받는지 알려드려요.' },
   { title: '진단서를 받아요', text: '담당자가 직접 검토한 결과를 보내드려요. 받아보신 뒤 소감을 들려주세요.' },
 ]
 
 const FACTS: Item[] = [
   { title: '누가 참여할 수 있나요', text: '빈집이 있는 소유자와 가족이라면 전국 어디든 신청할 수 있어요. 지금 사는 곳도 상관없어요.' },
-  { title: '비용', text: '기본 자료 진단은 무료예요. 현장 방문이 필요하면 따로 상의해요.' },
+  { title: '비용과 방문', text: '기본 자료 진단은 무료예요. 현장 방문은 자동으로 잡히지 않고, 필요할 때 따로 상의해요.' },
   { title: '지역에 따라 다른 점', text: '건축물·토지 정보와 선택지 비교는 어느 지역이든 같아요. 현장 방문은 포항·경주권만 가능하고, 지원사업은 포항부터 정리하고 있어서 다른 지역은 확인할 곳을 안내해 드려요.' },
-  { title: '언제 연락드리나요', text: '신청 순서대로 연락드려요. 신청이 많으면 시간이 걸릴 수 있어요.' },
+  { title: '언제 연락드리나요', text: '신청 순서대로 연락드려요. 그때 진행할 수 있는지와 결과를 보내드릴 일정을 알려드려요. 신청이 많으면 시간이 걸릴 수 있어요.' },
   { title: '진단서가 대신하지 않는 것', text: '법률·세무·구조 안전 판단, 실제 거래 가격과 공사 견적은 전문가 확인이 필요해요.' },
 ]
 
@@ -37,7 +38,7 @@ export default function Diagnosis() {
       <h1>우리 집 상황과 선택지를<br />한 번에 정리해 드려요</h1>
       <p className={s.lead}>집 정보를 확인하고, 선택지마다 드는 비용과 조건, 먼저 알아볼 일을 진단서로 정리해요. 자동으로 만들어지는 결과가 아니라 담당자가 자료를 직접 살펴보고 보내드려요.</p>
       <div className={s.heroActions}>
-        <Link className={s.button} href="/participate">진단 참여 안내 보기<Arrow /></Link>
+        <a className={s.button} href="#apply">참여 신청하기<Arrow /></a>
         <Link className={s.textLink} href="/example-report">진단서 예시 먼저 보기 →</Link>
       </div>
 
@@ -58,15 +59,21 @@ export default function Diagnosis() {
         <Facts items={FACTS} />
       </div>
 
-      <div className={s.cta}>
-        <Link className={s.button} href="/participate">진단 참여 안내 보기<Arrow /></Link>
-        <p className={s.ctaNote}>다음 화면에서 참여 조건을 확인하고, 주소로 집을 찾아 신청해요.</p>
+      <section className={s.apply} id="apply" aria-labelledby="apply-title">
+        <h2 id="apply-title">참여 신청하기</h2>
+        <ol className={s.applySteps} aria-label="신청 순서">
+          <li aria-current="step"><b>1</b>주소로 집 찾기 (지금 단계)</li>
+          <li><b>2</b>집 상태·고민·연락처 입력</li>
+          <li><b>3</b>신청 완료 → 담당자 연락</li>
+        </ol>
+        <p>진단할 집을 정확히 찾고 건축물·토지 자료를 확인하려면 주소가 필요해요. 검색만으로는 신청되지 않으니, 지도에서 집을 확인한 뒤 다음 단계로 넘어가 주세요.</p>
+        <AddressStartForm />
         <div className={s.contact}>
-          <a href={`tel:${PHONE.replaceAll('-', '')}`}>전화로 물어보기 · {PHONE}</a>
+          <a href={`tel:${PHONE.replaceAll('-', '')}`}>주소를 모르면 전화로 물어보기 · {PHONE}</a>
           {kakao && <a href={kakao} target="_blank" rel="noopener noreferrer">카카오톡 채널로 문의하기</a>}
           <p>포항에 사는 정소희가 직접 운영해요.</p>
         </div>
-      </div>
+      </section>
 
       <p className={s.crossLink}>팔 생각은 없고 관리가 고민이라면 <Link href="/management">빈집 관리 알아보기 →</Link></p>
       <ShareButton />

@@ -60,7 +60,7 @@ export function RenewedExampleReport() {
         </section>
 
         <ExampleJourney />
-        <div className={reading.tools}><ReportTools /><Link className={reading.actionLink} href="/#address-search">내 빈집 주소로 시작하기 <span aria-hidden="true">→</span></Link></div>
+        <div className={reading.tools}><ReportTools /><Link className={reading.actionLink} href="/diagnosis#apply">내 빈집 주소로 시작하기 <span aria-hidden="true">→</span></Link></div>
       </main>
 
     </div>

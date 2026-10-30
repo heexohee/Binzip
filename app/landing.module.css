@@ -1,4 +1,4 @@
-/* Landing and /participate layout. Tokens come from globals.css; .site/.sheet from home.module.css. */
+/* Landing layout. Tokens come from globals.css; .site/.sheet from home.module.css. */
 .main { padding-bottom: 32px; }
 
 /* Hero: who it is for + choose a path */
@@ -90,9 +90,7 @@ main.service { padding-top: 0; min-height: 70vh; }
 .skipLink { position: absolute; left: 12px; top: -60px; z-index: 30; padding: 8px 12px; border-radius: var(--radius-compact); background: var(--brand-primary); color: #fff !important; }
 .skipLink:focus { top: 12px; }
 
-/* /participate */
-.page { padding: 0 var(--page-gutter) 56px; }
-.page h1 { margin: 8px 0 0; font-size: clamp(1.75rem, 1.2rem + 2.4vw, 2.25rem); }
+/* Page shell + diagnosis apply section */
 .back { display: inline-flex; align-items: center; min-height: 44px; margin: 16px 0 8px; color: var(--text-secondary); font-size: var(--type-help); font-weight: 600; }
 .back:hover { color: var(--brand-primary); }
 .apply { margin-top: 40px; padding: 24px 20px; border-radius: var(--radius-card); background: var(--surface-soft); scroll-margin-top: 8px; }
@@ -104,7 +102,7 @@ main.service { padding-top: 0; min-height: 70vh; }
 .applySteps b { display: inline-grid; place-items: center; flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--surface-raised); color: var(--brand-primary); font-size: .875rem; }
 
 @media (max-width: 600px) {
-  .hero, .service, .reference, .page { --page-gutter: 20px; }
+  .hero, .service, .reference { --page-gutter: 20px; }
   .heroRabbit { width: 76px; }
   .service { padding-top: 48px; padding-bottom: 48px; }
 }
