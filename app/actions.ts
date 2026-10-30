@@ -30,12 +30,9 @@ export async function submitApplication(
   } else if (contact.replace(/\D/g, '').length < 9) {
     errors.contact = '전화번호를 다시 확인해 주세요. 예) 010-0000-0000'
   }
-  // 이메일은 항상 받는다. 문자 발송은 발신번호 사전등록이 필요해 MVP 에서 불가능하므로,
-  // 진단서를 실제로 보낼 수 있는 경로가 이메일뿐이다.
-  if (!email) {
-    errors.email = '진단서를 받으실 이메일 주소를 적어 주세요.'
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errors.email = '이메일 주소를 다시 확인해 주세요. 예) name@example.com'
+  // 이메일이 없어도 전화로 확인 결과를 안내할 수 있다.
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errors.email = '이메일 주소를 확인하거나 비워 주세요.'
   }
   if (!agreed) errors.agree = '동의에 체크해 주세요.'
   for (const [name, limit] of Object.entries({ address: 300, condition: 3000, taxNote: 2000, contact: 50, email: 254, acquisition: 100, ownership: 100, concern: 100, speed: 200, channel: 100 })) {
@@ -66,7 +63,7 @@ export async function submitApplication(
       speed: text('speed') || null,
       channel: channel || null,
       contact,
-      email,
+      email: email || null,
       createdAt: now.toISOString(),
       expiresAt: expiryFrom(now),
       pnu: text('pnu') || null,

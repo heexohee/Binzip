@@ -70,7 +70,7 @@ export function AddressStartForm() {
   return <div className={styles.addressForm}>
     <form onSubmit={event => { event.preventDefault(); void lookup() }}>
       <div className={styles.addressInput}><Icon name="pin" /><input ref={input} id="home-address" aria-label="빈집 주소" name="address" type="text" required minLength={3} maxLength={300} autoComplete="street-address" enterKeyHint="search" placeholder="도로명주소 또는 지번주소" value={address} onChange={event => { clearLookup(); setAddress(event.target.value) }} aria-invalid={error ? true : undefined} aria-describedby={error ? 'address-error' : undefined} /></div>
-      <button type="submit" className={styles.primary} disabled={pending}>{pending ? '주소 확인 중…' : '내 빈집 무료로 확인하기'}<Icon name="search" /></button>
+      <button type="submit" className={styles.primary} disabled={pending}>{pending ? '주소 확인 중…' : '주소 검색하기'}<Icon name="search" /></button>
     </form>
     {pending && <p className={styles.lookupMessage} role="status">입력한 주소와 지도 위치를 찾고 있어요.</p>}
     {error && <p id="address-error" className={styles.lookupError} role="alert">{error}</p>}
@@ -80,7 +80,7 @@ export function AddressStartForm() {
       {candidate.roadAddress && candidate.roadAddress !== candidate.address && <p className={styles.candidateRoad}>{candidate.roadAddress}</p>}
       <SatelliteMap address={candidate.address} x={candidate.x} y={candidate.y} />
       <p className={styles.confirmHelp}>{candidate.quality === 'fuzzy' ? '입력한 주소와 다른 결과일 수 있어요. 번지와 주변 위치를 꼭 확인해 주세요.' : '주소와 주변 위치가 맞으면 상세 정보를 입력해 주세요.'}</p>
-      <button className={styles.primary} type="button" onClick={continueToForm}>이 집이 맞아요 · 상세 정보 입력<Arrow /></button>
+      <button className={styles.primary} type="button" onClick={continueToForm}>이 집으로 참여 신청하기<Arrow /></button>
       <button className={styles.changeAddress} type="button" onClick={() => { clearLookup(); input.current?.focus() }}>다른 집이에요 · 주소 수정</button>
     </section>}
   </div>

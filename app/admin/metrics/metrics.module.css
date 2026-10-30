@@ -1,0 +1,13 @@
+.grid { display: grid; gap: 16px; margin-top: 24px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.kpi { padding: 16px; border: 1px solid var(--border-subtle); border-radius: var(--radius-card); background: var(--surface-raised); }
+.kpi strong { display: block; font-size: 1.75rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.kpi span { color: var(--text-secondary); font-size: var(--type-help); }
+.tables { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.card { padding: 16px; border: 1px solid var(--border-subtle); border-radius: var(--radius-card); background: var(--surface-raised); }
+.card h3 { margin: 0 0 8px; font-size: var(--type-help); }
+.card table { width: 100%; border-collapse: collapse; font-size: var(--type-help); }
+.card td { padding: 4px 0; border-top: 1px solid var(--border-subtle); vertical-align: top; }
+.card td:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: 12px; }
+.bar { display: block; height: 4px; margin-top: 4px; border-radius: 2px; background: var(--brand-primary); opacity: .55; }
+.note { margin: 8px 0 0; color: var(--text-secondary); font-size: var(--type-help); line-height: 1.6; }

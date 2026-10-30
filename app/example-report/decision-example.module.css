@@ -42,7 +42,7 @@
 .marketTable caption { text-align:left; padding-bottom:12px; color:var(--text-secondary); }
 .marketTable :is(th,td) { padding:14px 10px; text-align:right; border-bottom:1px solid var(--border-subtle); white-space:nowrap; }
 .marketTable th:first-child { text-align:left; padding-left:0; }
-.marketTable th span { display:block; font-size:15px; font-weight:400; color:var(--text-secondary); }
+.marketTable th span { display:block; font-size:16px; font-weight:400; color:var(--text-secondary); }
 .marketTable td:last-child { font-weight:700; color:var(--brand-primary); }
 .evidenceLink { display:inline-block; color:var(--brand-primary); margin-top:16px; text-underline-offset:4px; }
 .marketTableWrap:focus-visible,.evidenceLink:focus-visible { outline:3px solid var(--brand-primary); outline-offset:3px; }
@@ -85,10 +85,10 @@
 
 @media print { .consultation { display:none; } }
 
-.reportBadge { font-size: 13px; color: var(--text-secondary); background: var(--surface-soft); border-radius: 20px; padding: 4px 12px; white-space: nowrap; }
+.reportBadge { font-size:16px; color: var(--text-secondary); background: var(--surface-soft); border-radius: 20px; padding: 4px 12px; white-space: nowrap; }
 .rabbitHero { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 40px var(--page-gutter) 32px; background: #f2f6ec; }
 .heroCopy { min-width: 0; }
-.eyebrow { color: var(--brand-primary); font-weight: 650; font-size: 15px; margin-bottom: 12px!important; }
+.eyebrow { color: var(--brand-primary); font-weight: 650; font-size:16px; margin-bottom: 12px!important; }
 .rabbitHero h1 { font-size: var(--type-page); line-height: 1.45; color: var(--text-primary); }
 .bubble { position: relative; display: inline-block; margin-top: 22px!important; padding: 16px 22px; background: white; border-radius: 18px; color: var(--brand-primary); font-size: 17px; line-height: 1.6; }
 .bubble::after { content: ''; position: absolute; top: 24px; right: -10px; width: 18px; height: 18px; background: white; transform: rotate(45deg); }
@@ -98,8 +98,8 @@
 @media(max-width: 640px) {
   .rabbitHero { position: relative; display: block; padding: 28px 20px 26px; min-height: 304px; }
   .rabbitHero h1 { font-size: var(--type-page); }
-  .eyebrow { font-size: 13px; }
-  .bubble { font-size: 14px; padding: 12px 14px; margin-top: 32px!important; max-width: calc(100% - 104px); }
+  .eyebrow { font-size:16px; }
+  .bubble { font-size:16px; padding: 12px 14px; margin-top: 32px!important; max-width: calc(100% - 104px); }
   .heroRabbit { position: absolute; width: 150px; height: 150px; right: 4px; bottom: 15px; }
 }
 @media print { .rabbitHero { padding: 20px 0; }.heroRabbit { width: 150px; height: 150px; } }

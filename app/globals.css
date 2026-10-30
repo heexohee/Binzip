@@ -41,9 +41,9 @@
   --type-page: 2rem;
   --type-section: 1.5rem;
   --type-card: 1.25rem;
-  --type-body: 1rem;
-  --type-help: .875rem;
-  --type-meta: .75rem;
+  --type-body: 1.125rem;
+  --type-help: 1rem;
+  --type-meta: 1rem;
   --type-amount: 2rem;
   --type-brand: 1.25rem;
   --space-1: .25rem; --space-2: .5rem; --space-3: .75rem;
@@ -134,3 +134,7 @@ input::placeholder, textarea::placeholder { color: var(--text-secondary); opacit
 /* Keep the shared footer after page content, including short and error pages. */
 body { display: flex; flex-direction: column; min-height: 100svh; }
 .site-content { flex: 1 0 auto; min-width: 0; }
+
+/* Readable touch controls for the public intake and report. */
+main summary {min-height:48px;padding-top:12px;padding-bottom:12px;font-size:16px!important}
+main small {font-size:16px}

@@ -26,7 +26,7 @@ export type Application = {
 }
 
 /**
- * 보관 기간 — 진단서 발송 후 6개월.
+ * 보관 기간 — 신청일부터 6개월.
  * 개인정보보호법 제21조(보유기간 경과·목적 달성 시 지체 없는 파기) 취지에 맞춰
  * 화면에 약속한 6개월을 레코드에 기록한다.
  * 그 전에 정보주체가 삭제를 요구하면(같은 법 제36조) 즉시 삭제한다 — 푸터의 전화·이메일이 그 창구다.
@@ -63,37 +63,11 @@ export async function saveApplication(
     catch { console.error('[application] 사진 신청 저장 완료, 알림 실패') }
     return { stored: ['supabase'], applicationId: id }
   }
-  const stored: string[] = []
-  const failures: string[] = []
-  let applicationId: string | null = null
-
-  const [sb, mail] = await Promise.allSettled([saveToSupabase(app), notifyByEmail(app)])
-
-  if (sb.status === 'fulfilled') {
-    if (sb.value) {
-      stored.push('supabase')
-      applicationId = sb.value
-    }
-  } else {
-    failures.push(describe(sb.reason))
-  }
-
-  if (mail.status === 'fulfilled') {
-    if (mail.value) stored.push(mail.value)
-  } else {
-    failures.push(describe(mail.reason))
-  }
-
-  // 부분 실패도 반드시 남긴다. 한쪽이 성공하면 다른 쪽 실패가 묻혀서,
-  // 화면에는 '접수됐습니다'가 뜨는데 DB 에는 아무것도 없는 상태가 된다.
-  if (failures.length > 0) {
-    console.error('[application] 일부 저장 경로 실패', { stored, failures })
-  }
-  if (stored.length === 0) {
-    // 신청 유실은 되돌릴 수 없으므로 조용히 넘기지 않는다.
-    console.error('[application] 저장 경로가 하나도 동작하지 않았다', failures)
-    throw new Error('NO_STORAGE_CONFIGURED')
-  }
+  const applicationId = await saveToSupabase(app)
+  if (!applicationId) throw new Error('DATABASE_RECEIPT_REQUIRED')
+  const stored = ['supabase']
+  try { const sent = await notifyByEmail(app); if (sent) stored.push(sent) }
+  catch { console.error('[application] 신청 저장 완료, 운영자 알림 실패') }
   return { stored, applicationId }
 }
 

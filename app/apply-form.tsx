@@ -19,13 +19,13 @@ const CONCERN = [
   '세금',
   '등기·상속',
   '건물 상태',
-  '관리',
+  '보유하며 관리',
   '매각 가능성',
   '철거비·공적 지원',
   '활용 방법',
   '잘 모르겠음',
 ]
-const CHANNEL = ['문자로 받겠습니다', '이메일로 받겠습니다']
+const CHANNEL = ['전화로 설명을 듣고 싶어요', '문자로 링크를 받고 싶어요', '이메일로 받고 싶어요']
 const SPEED = [
   '서류와 사진으로 확인할 수 있는 부분부터 알고 싶어요',
   '현장 확인이 필요한지 상담하고 싶어요',
@@ -146,7 +146,7 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
     return (
       <div className={styles.success}>
         <h2>진단 신청이 접수됐습니다.</h2>
-        <p className="mt-3 text-[16px] leading-[1.75] text-muted">확인한 뒤 연락드립니다.</p>
+        <p className="mt-3 text-[16px] leading-[1.75] text-muted">담당자가 신청 내용을 확인한 뒤 남겨주신 연락처로 진행 가능 여부와 결과 전달 일정을 안내해요. 현장 방문은 별도 협의 후 진행하며, 지금 예약된 것은 아니에요.</p>
       </div>
     )
   }
@@ -211,7 +211,7 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
         </label>
 
         {addr.kind === 'checking' && (
-          <span className="text-[14px] leading-[1.6] text-muted">주소를 확인하고 있습니다.</span>
+          <span className="text-[16px] leading-[1.6] text-muted">주소를 확인하고 있습니다.</span>
         )}
         {addr.kind === 'found' && (
           <div className={styles.status}>
@@ -230,7 +230,7 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
                 맞는지 확인해 주세요
               </span>
               <span className="mt-1 font-semibold text-body">{addr.addr}</span>
-              <span className="text-[14px] text-muted">
+              <span className="text-[16px] text-muted">
                 비슷한 주소를 찾았습니다. 다르면 주소를 고쳐 주세요. 그대로 신청하셔도 됩니다.
               </span>
             </span>
@@ -242,7 +242,7 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
               <span className={styles.unknown}>
                 찾지 못했습니다
               </span>
-              <span className="mt-1 text-[14px] text-muted">
+              <span className="mt-1 text-[16px] text-muted">
                 그대로 신청하셔도 됩니다. 저희가 찾습니다.
               </span>
             </span>
@@ -275,7 +275,7 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
       <PhotoPicker onChange={setPhotos} onBusyChange={setPhotoBusy} disabled={pending} error={state.errors.photos} />
       {photos.length > 0 && <label className={styles.consent}>
         <input type="checkbox" name="photoAgree" checked={photoAgreed} onChange={e => setPhotoAgreed(e.currentTarget.checked)} className="mt-1 h-5 w-5 flex-none accent-deep" aria-invalid={state.errors.photoAgree ? true : undefined} />
-        <span>첨부 사진을 담당자가 집 상태 확인과 진단서 작성에 사용하는 데 동의해요. 사진은 진단서 발송 후 6개월 동안 보관하며, 공개 진단서에 사진 자체를 게시하지 않아요. 동의하지 않으면 사진을 빼고 신청할 수 있어요.
+        <span>첨부 사진을 담당자가 집 상태 확인과 진단서 작성에 사용하는 데 동의해요. 사진은 신청일부터 6개월 동안 보관하며, 공개 진단서에 사진 자체를 게시하지 않아요. 동의하지 않으면 사진을 빼고 신청할 수 있어요.
           {state.errors.photoAgree && <span role="alert" className="block font-semibold">{state.errors.photoAgree}</span>}
         </span>
       </label>}
@@ -357,7 +357,7 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
 
       {/* 이메일 — 항상 필수. 진단서를 보낼 수 있는 유일한 경로다 */}
       <label className="flex flex-col gap-2">
-        <Legend text="진단서를 받으실 이메일 주소를 알려주세요" need="must" />
+        <Legend text="이메일로 받으려면 주소를 알려주세요" need="may" />
         <input
           name="email"
           value={values.email ?? ''}
@@ -370,8 +370,8 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
           aria-describedby={state.errors.email ? 'apply-email-error' : undefined}
           className={state.errors.email ? INPUT + ' border-earth' : INPUT}
         />
-        <span className="text-[14px] leading-[1.6] text-muted">
-          진단서는 이 주소로 보내드립니다. 문자로도 알려드릴 수 있습니다.
+        <span className="text-[16px] leading-[1.6] text-muted">
+          이메일이 없어도 신청할 수 있어요. 담당자가 전화로 확인하고 전달 방법을 안내해요. 자동 문자·카카오톡 발송은 제공하지 않아요.
         </span>
         {err('email')}
       </label>
@@ -400,10 +400,10 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
           */}
           <span className="flex flex-col gap-1">
             <span>
-              주소·연락처(전화번호·이메일)와 집에 대해 답해주신 내용을 진단에만 쓰는 데
+              주소·전화번호·선택 입력한 이메일와 집에 대해 답해주신 내용을 진단에만 쓰는 데
               동의합니다.
             </span>
-            <span>진단서를 보낸 뒤 6개월이 지나면 지우고, 그 전에 말씀하시면 바로 지웁니다.</span>
+            <span>신청일부터 6개월이 지나면 지우고, 그 전에 말씀하시면 바로 지웁니다.</span>
             <span className="text-muted">
               동의하지 않으셔도 되지만, 그러면 신청 접수가 되지 않습니다.
             </span>

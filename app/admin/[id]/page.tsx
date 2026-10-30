@@ -355,7 +355,7 @@ export default async function Review({ params }: { params: Promise<{ id: string 
                   className={ui.input}
                 />
                 <p className="text-[length:var(--type-help)] leading-[1.6] text-muted">
-                  {app.email} 로 보내시면 됩니다. 전화는 {app.contact}.
+                  {app.email ? `${app.email}로 보내거나 전화로 전달 방법을 안내하세요.` : '이메일 미입력: 전화로 전달 방법을 안내하세요.'} 전화는 {app.contact}.
                   <br />
                   승인은 이메일·문자를 자동으로 발송하지 않습니다. 고객에게 전달한 뒤 내부 메모에 기록해 주세요.
                 </p>

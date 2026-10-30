@@ -29,7 +29,7 @@ create table if not exists public.applications (
   -- 전화번호와 이메일은 항상 받는다.
   -- 이메일은 진단서를 보낼 유일한 경로이고, 전화번호는 발송이 실패했을 때 닿을 수단이다.
   contact           text not null,
-  email             text not null,
+  email             text,
 
   -- 관리자 업무 기록. 고객 진단서의 메모와 별개이며 공개하지 않는다.
   review_status     text not null default 'received'
