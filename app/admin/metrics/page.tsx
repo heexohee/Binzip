@@ -37,8 +37,10 @@ export default async function MetricsPage() {
         <Table title="진단 신청 · 주차" rows={summary.applications.byWeek} />
         <Table title="설문 · 유입 경로" rows={summary.interests.bySource} />
         <Table title="설문 · 시도" rows={summary.interests.byProvince} />
+        <Table title="설문 · 시군" rows={summary.interests.byRegion} />
         <Table title="설문 · 주차" rows={summary.interests.byWeek} />
         <Table title="설문 · 소유자 거주" rows={summary.interests.byResidence} />
+        <Table title="설문 · 소유자가 사는 시도 (다른 시·군)" rows={summary.interests.byOwnerProvince} />
         <Table title="설문 · 고민 방향" rows={summary.interests.byIntent} />
         <Table title="설문 · 월 최대 금액" rows={summary.interests.byBudget} />
         <Table title="설문 · 필요한 관리" rows={summary.interests.byService} />
