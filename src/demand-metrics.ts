@@ -170,7 +170,7 @@ const csvCell = (v: string | number | null) => { const s = v === null ? '' : Str
 export function demandCsv(summary: DemandSummary, generatedAt: string): string {
   const { interests: i, applications: a } = summary
   const rows: (string | number | null)[][] = [['구분', '항목', '값'], ['기준 시각', generatedAt, ''],
-    ['진단 신청', '합계', a.total], ['관리 설문', '합계', i.total], ['관리 설문', '인터뷰 수락', i.interviewOk], ['관리 설문', '전화 설명 요청', i.phoneExplanation]]
+    ['진단 신청', '합계', a.total], ['관리 설문', '합계', i.total], ['관리 설문', '인터뷰·시범 방문 연락 수락', i.interviewOk], ['관리 설문', '전화 설명 요청', i.phoneExplanation]]
   const add = (section: string, counts: Count[]) => counts.forEach(c => rows.push([section, c.key, c.count]))
   add('진단 신청 · 시도', a.byProvince); add('진단 신청 · 주차', a.byWeek)
   add('설문 · 유입 경로', i.bySource); add('설문 · 시도', i.byProvince); add('설문 · 시군', i.byRegion); add('설문 · 소유자 거주', i.byResidence); add('설문 · 소유자 사는 시도(다른 시·군)', i.byOwnerProvince)

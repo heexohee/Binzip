@@ -38,6 +38,7 @@ export function AddressStartForm() {
   async function lookup() {
     const query = address.trim()
     clearLookup()
+    if (!query) { setError('찾을 주소를 적어 주세요.'); input.current?.focus(); return }
     if (query.length < 3 || query.length > 300) { setError('시·군·구와 도로명 또는 지번을 3자 이상 적어 주세요.'); input.current?.focus(); return }
     flow.setDraft({ address: query, decision: flow.draft?.decision ?? 'undecided' })
     const request = new AbortController()
@@ -68,7 +69,7 @@ export function AddressStartForm() {
   }
 
   return <div className={styles.addressForm}>
-    <form onSubmit={event => { event.preventDefault(); void lookup() }}>
+    <form noValidate onSubmit={event => { event.preventDefault(); void lookup() }}>
       <div className={styles.addressInput}><Icon name="pin" /><input ref={input} id="home-address" aria-label="빈집 주소" name="address" type="text" required minLength={3} maxLength={300} autoComplete="street-address" enterKeyHint="search" placeholder="도로명주소 또는 지번주소" value={address} onChange={event => { clearLookup(); setAddress(event.target.value) }} aria-invalid={error ? true : undefined} aria-describedby={error ? 'address-error' : undefined} /></div>
       <button type="submit" className={styles.primary} disabled={pending}>{pending ? '주소 확인 중…' : '주소 검색하기'}<Icon name="search" /></button>
     </form>
