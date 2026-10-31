@@ -29,7 +29,9 @@ export type DemandSummary = {
     hasExtendedAnswers: boolean
     bySource: Count[]
     byProvince: Count[]
+    byRegion: Count[]
     byResidence: Count[]
+    byOwnerProvince: Count[]
     byIntent: Count[]
     byBudget: Count[]
     byService: Count[]
@@ -125,7 +127,9 @@ export function summarizeDemand(interests: InterestMetricRow[], applications: Ap
       hasExtendedAnswers: interests.some(row => row.answers !== undefined),
       bySource: tally(interests.map(row => row.source)),
       byProvince: tally(interests.map(row => provinceFromText(row.region))),
+      byRegion: tally(interests.map(row => row.region.trim())),
       byResidence: tally(interests.map(row => row.residence)),
+      byOwnerProvince: tally(interests.map(row => text(row, 'owner_region')).filter((v): v is string => v !== null).map(provinceFromText)),
       byIntent: tally(interests.map(row => row.intent)),
       byBudget: tally(interests.map(row => row.budget)),
       byService: tally(interests.flatMap(row => row.services ?? [])),
@@ -152,7 +156,7 @@ export function demandCsv(summary: DemandSummary, generatedAt: string): string {
     ['진단 신청', '합계', a.total], ['관리 설문', '합계', i.total], ['관리 설문', '인터뷰 수락', i.interviewOk], ['관리 설문', '전화 설명 요청', i.phoneExplanation]]
   const add = (section: string, counts: Count[]) => counts.forEach(c => rows.push([section, c.key, c.count]))
   add('진단 신청 · 시도', a.byProvince); add('진단 신청 · 주차', a.byWeek)
-  add('설문 · 유입 경로', i.bySource); add('설문 · 시도', i.byProvince); add('설문 · 소유자 거주', i.byResidence)
+  add('설문 · 유입 경로', i.bySource); add('설문 · 시도', i.byProvince); add('설문 · 시군', i.byRegion); add('설문 · 소유자 거주', i.byResidence); add('설문 · 소유자 사는 시도(다른 시·군)', i.byOwnerProvince)
   add('설문 · 고민 방향', i.byIntent); add('설문 · 월 최대 금액', i.byBudget); add('설문 · 필요한 관리', i.byService)
   add('설문 · 상속 정리', i.byInheritance); add('설문 · 마지막 방문', i.byLastVisit); add('설문 · 현재 관리 비용', i.byCurrentSpend)
   add('설문 · 주차', i.byWeek)

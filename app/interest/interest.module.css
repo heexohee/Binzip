@@ -11,3 +11,6 @@
 .hint {margin:-4px 0 8px;color:var(--text-secondary);font-size:16px}
 .form label.price {display:grid;gap:6px;margin:12px 0;font-weight:600}
 .priceInput {display:flex;align-items:center;gap:8px}.form .priceInput input {max-width:120px}
+.regionRow {display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form select {width:100%;min-height:52px;border:1px solid var(--border-control);border-radius:8px;padding:12px;background:white;font:inherit;font-weight:400;color:var(--text-primary)}
+.form select:disabled {background:var(--surface-soft);color:var(--text-secondary)}
