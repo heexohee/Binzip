@@ -28,7 +28,7 @@ export default async function MetricsPage() {
       <div className={m.kpis}>
         <div className={m.kpi}><strong>{summary.applications.total}</strong><span>진단 신청</span></div>
         <div className={m.kpi}><strong>{summary.interests.total}</strong><span>관리 설문 응답</span></div>
-        <div className={m.kpi}><strong>{summary.interests.interviewOk}</strong><span>인터뷰 수락</span></div>
+        <div className={m.kpi}><strong>{summary.interests.interviewOk}</strong><span>인터뷰·시범 방문 연락 수락</span></div>
         <div className={m.kpi}><strong>{summary.interests.phoneExplanation}</strong><span>전화 설명 요청</span></div>
       </div>
       {!summary.interests.hasExtendedAnswers && <p className={styles.notice}>설문 추가 문항(상속·방문·가격 범위·인터뷰)을 저장하려면 데이터베이스 업데이트(20261031 마이그레이션)가 필요해요.</p>}

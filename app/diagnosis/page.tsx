@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { Arrow, HomeHeader } from '../home-ui'
 import { AddressStartForm } from '../address-start-form'
@@ -16,12 +17,13 @@ const GETS: Item[] = [
 
 const STEPS: Item[] = [
   { title: '주소로 집을 찾아 신청해요', text: '이 페이지 아래에서 주소로 집을 찾은 뒤, 집 상태와 고민, 연락처를 남겨요.' },
-  { title: '담당자가 연락드려요', text: '신청 순서대로 자료를 살펴보고, 진행할 수 있는지와 결과를 받는 일정을 알려드려요. 신청이 많으면 조금 걸릴 수 있어요.' },
+  { title: '진행 여부를 알려드려요', text: '신청 내용을 살펴본 뒤, 무료 진단을 진행할 수 있는지와 예상 시기를 문자나 이메일로 알려드려요.' },
   { title: '진단서를 받아요', text: '담당자가 직접 검토한 결과를 보내드려요. 받아보신 뒤 소감을 들려주세요.' },
 ]
 
 const FACTS: Item[] = [
   { title: '누가 참여할 수 있나요', text: '빈집이 있는 소유자와 가족이라면 전국 어디든 신청할 수 있어요. 지금 사는 곳도 상관없어요.' },
+  { title: '모든 신청에 진단서를 드리진 못해요', text: '담당자 한 명이 직접 검토해서 진단에 시간이 오래 걸릴 수 있어요. 신청 상황에 따라 무료 진단을 드리지 못할 수도 있고, 그때도 문자나 이메일로 알려드려요.' },
   { title: '비용과 방문', text: '기본 자료 진단은 무료예요. 현장 방문은 자동으로 잡히지 않고, 필요할 때 따로 상의해요.' },
   { title: '지역에 따라 다른 점', text: '건축물·토지 정보와 선택지 비교는 어느 지역이든 같아요. 현장 방문은 포항·경주권만 가능하고, 지원사업은 포항부터 정리하고 있어서 다른 지역은 확인할 곳을 안내해 드려요.' },
   { title: '진단서가 대신하지 않는 것', text: '법률·세무·구조 안전 판단, 실제 거래 가격과 공사 견적은 전문가 확인이 필요해요.' },
@@ -32,9 +34,12 @@ export default function Diagnosis() {
   return <div className={home.site}><div className={home.sheet}><HomeHeader />
     <main className={`${s.service} ${s.diagnosis}`}>
       <Link className={s.back} href="/">← 처음으로</Link>
-      <div className={s.chips}><span className={s.chip}>빈집 진단</span><span className={s.status}>시범 참여 모집 · 무료 · 전국</span></div>
-      <p className={s.quote}>“계속 갖고 있을지, 고칠지, 팔거나 철거할지 모르겠어요.”</p>
-      <h1>우리 집 상황과 선택지를<br />한 번에 정리해 드려요</h1>
+      <div className={s.chips}><span className={s.chip}>빈집 진단</span><span className={s.status}>무료 시범 진단 · 전국 신청</span></div>
+      <div className={s.serviceHead}>
+        <div><p className={s.quote}>“계속 갖고 있을지, 고칠지, 팔거나 철거할지 모르겠어요.”</p>
+        <h1>우리 집 상황과 선택지를<br />한 번에 정리해 드려요</h1></div>
+        <Image className={s.serviceRabbit} src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={160} height={160} sizes="(max-width: 600px) 96px, 160px" priority />
+      </div>
       <p className={s.lead}>집 정보를 확인하고, 선택지마다 드는 비용과 조건, 먼저 알아볼 일을 진단서로 정리해요. 자동으로 만들어지는 결과가 아니라 담당자가 자료를 직접 살펴보고 보내드려요.</p>
       <div className={s.heroActions}>
         <a className={s.button} href="#apply">참여 신청하기<Arrow /></a>
@@ -42,35 +47,33 @@ export default function Diagnosis() {
       </div>
 
       <div className={s.block}>
-        <h2 className={s.blockTitle}>진단서에 담기는 내용</h2>
+        <h2 className={s.blockTitle}><span className={s.blockMark} aria-hidden="true">📋</span>진단서에 담기는 내용</h2>
         <Gets items={GETS} />
       </div>
 
       <div className={s.block}>
-        <h2 className={s.blockTitle}>참여는 이렇게 진행돼요</h2>
+        <h2 className={s.blockTitle}><span className={s.blockMark} aria-hidden="true">🧭</span>참여는 이렇게 진행돼요</h2>
         <Steps items={STEPS} />
       </div>
 
       <div className={s.block}>
-        <h2 className={s.blockTitle}>미리 알아두세요</h2>
+        <h2 className={s.blockTitle}><span className={s.blockMark} aria-hidden="true">💡</span>미리 알아두세요</h2>
         <Facts items={FACTS} />
       </div>
 
       <section className={s.apply} id="apply" aria-labelledby="apply-title">
         <h2 id="apply-title">참여 신청하기</h2>
         <p className={s.applyNow}><b>1</b>주소로 집 찾기<span>· 3단계 중 첫 단계</span></p>
-        <p>주소로 집을 찾아 지도에서 확인하면 다음 단계로 넘어가요. 집 상태와 연락처는 그다음에 적어요.</p>
         <AddressStartForm />
         <div className={s.contact}>
           <a href={`tel:${PHONE.replaceAll('-', '')}`}>주소를 모르면 전화로 물어보기 · <span className={s.nowrap}>{PHONE}</span></a>
           {kakao && <a href={kakao} target="_blank" rel="noopener noreferrer">카카오톡 채널로 문의하기</a>}
-          <p>포항에 사는 정소희가 직접 운영해요.</p>
         </div>
       </section>
 
       <aside className={s.closing} aria-label="다른 서비스와 공유">
-        <p className={s.crossLink}>팔 생각은 없고 관리가 고민이라면 <Link href="/management">빈집 관리 알아보기 →</Link></p>
-        <ShareButton lead="형제·가족과 같이 정하고 있다면 이 페이지를 보내 보세요." />
+        <Link className={s.tile} href="/management"><span className={s.tileIcon} aria-hidden="true">🏡</span><small>팔 생각은 없고 관리가 고민이라면</small><strong>빈집 관리 알아보기 →</strong></Link>
+        <ShareButton lead="가족과 같이 정하고 있다면" />
       </aside>
     </main>
   </div></div>

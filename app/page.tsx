@@ -32,7 +32,7 @@ export default function Home() {
           <h2 className={s.chooseTitle} id="choose-title">지금 어떤 고민이세요?</h2>
           <ul className={s.paths} aria-labelledby="choose-title">
             <li><Link className={s.path} href="/diagnosis">
-              <span className={s.status}>무료 시범 참여 모집 · 전국</span>
+              <span className={s.status}>무료 시범 진단 · 전국 신청</span>
               <p className={s.pathQuote}>“이 집을 어떻게 해야 할지 모르겠어요.”</p>
               <span className={s.pathName}>빈집 진단 알아보기<Arrow /></span>
               <p className={s.pathDesc}>선택지별 비용과 조건을 진단서로 정리해 드려요.</p>
@@ -41,7 +41,7 @@ export default function Home() {
               <span className={`${s.status} ${s.statusPending}`}>서비스 준비 중</span>
               <p className={s.pathQuote}>“계속 갖고 있을 건데, 누가 돌봐주죠?”</p>
               <span className={s.pathName}>빈집 관리 알아보기<Arrow /></span>
-              <p className={s.pathDesc}>전국 어디서든 어떤 관리가 필요한지 의견을 들려주세요.</p>
+              <p className={s.pathDesc}>필요한 관리와 요금에 의견을 남겨 주세요. 일부 분과는 인터뷰나 시범 방문을 해요.</p>
             </Link></li>
           </ul>
         </section>
@@ -52,7 +52,7 @@ export default function Home() {
           <Link className={s.textLink} href="/resources">공식 지원·정보 모음 보기 →</Link>
         </section>
 
-        <aside className={s.closing} aria-label="가족에게 공유"><ShareButton lead="형제·가족과 같이 정하고 있다면 이 페이지를 보내 보세요." /></aside>
+        <aside className={s.closing} aria-label="가족에게 공유"><ShareButton lead="가족과 같이 정하고 있다면" /></aside>
       </main>
     </div>
   </div>

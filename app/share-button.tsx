@@ -20,5 +20,5 @@ export function ShareButton({ lead }: { lead?: string }) {
       setStatus('링크를 복사하지 못했어요. 주소창의 주소를 복사해 보내 주세요.')
     }
   }
-  return <div className={s.share}>{lead && <p>{lead}</p>}<button type="button" onClick={share}>가족에게 이 페이지 보내기</button><span role="status">{status}</span></div>
+  return <div className={s.shareTile}><button type="button" className={s.tile} onClick={share}><span className={s.tileIcon} aria-hidden="true">📨</span>{lead && <small>{lead}</small>}<strong>가족에게 링크 보내기</strong></button><span role="status" className={s.shareStatus}>{status}</span></div>
 }

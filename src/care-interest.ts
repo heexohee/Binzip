@@ -1,11 +1,11 @@
 import { regionLabel } from './regions'
 
-export const CARE_CONSENT_VERSION = '2026-10-31-v4'
+export const CARE_CONSENT_VERSION = '2026-11-01-v5'
 export const OTHER_REGION_RESIDENCE = '다른 시·군'
 export const RESIDENCES = ['빈집과 같은 시·군', '다른 시·군', '해외', '답변하지 않음'] as const
 export const INTENTS = ['보유하며 관리', '수리 후 사용', '매각 검토', '철거 검토', '아직 미정'] as const
 export const BUDGETS = ['월 3만 원 이하', '월 5만 원 이하', '월 10만 원 이하', '월 10만 원 초과도 검토', '유료 이용 의사 없음', '아직 모르겠어요'] as const
-export const SERVICES = ['정기 방문·외관 사진', '잡초·마당 정리', '비·태풍 뒤 상태 확인', '수리업체 문의·일정 확인'] as const
+export const SERVICES = ['정기 방문·외관 사진', '집 안 환기·곰팡이·누수 확인', '잡초·마당 정리', '비·태풍 뒤 상태 확인', '수리업체 문의·일정 확인'] as const
 export const INHERITANCE = ['상속 정리가 끝났어요', '정리하고 있어요', '아직 시작하지 않았어요', '상속받은 집이 아니에요', '잘 모르겠어요'] as const
 export const LAST_VISITS = ['한 달 안', '1~6개월 전', '6개월~1년 전', '1년 넘었어요', '기억나지 않아요'] as const
 export const CURRENT_SPENDS = ['거의 들지 않아요', '월 3만 원 이하', '월 3~10만 원', '월 10만 원 넘게', '잘 모르겠어요'] as const
