@@ -62,8 +62,10 @@ export default function Management() {
         <div className={s.contact}><a href={`tel:${PHONE.replaceAll('-', '')}`}>전화로 물어보기 · {PHONE}</a></div>
       </div>
 
-      <p className={s.crossLink}>팔지, 고칠지 아직 정하지 못했다면 <Link href="/diagnosis">빈집 진단 알아보기 →</Link></p>
-      <ShareButton />
+      <aside className={s.closing} aria-label="다른 서비스와 공유">
+        <p className={s.crossLink}>팔지, 고칠지 아직 정하지 못했다면 <Link href="/diagnosis">빈집 진단 알아보기 →</Link></p>
+        <ShareButton lead="형제·가족과 같이 정하고 있다면 이 페이지를 보내 보세요." />
+      </aside>
     </main>
   </div></div>
 }
