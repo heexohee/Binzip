@@ -14,3 +14,4 @@
 .regionRow {display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .form select {width:100%;min-height:52px;border:1px solid var(--border-control);border-radius:8px;padding:12px;background:white;font:inherit;font-weight:400;color:var(--text-primary)}
 .form select:disabled {background:var(--surface-soft);color:var(--text-secondary)}
+.follow {margin:0 0 8px 22px;padding:4px 0 8px 16px;border-left:2px solid var(--brand-primary)}.follow legend {font-weight:650;margin-bottom:8px}

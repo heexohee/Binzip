@@ -1,5 +1,5 @@
 'use client'
-import { startTransition, useActionState, useEffect, useRef, useState } from 'react'
+import { startTransition, useActionState, useEffect, useRef, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { submitInterest } from './actions'
 import { RegionSelect } from './region-select'
@@ -15,7 +15,8 @@ export default function InterestForm() {
   useEffect(() => { setRequestId(crypto.randomUUID()); const q = new URLSearchParams(location.search); let campaign = ''; try { campaign = sessionStorage.getItem('binzip-campaign') ?? '' } catch {} const known = (v: string | null) => v && (SOURCES as readonly string[]).includes(v) ? v : null; setSource(known(q.get('source')) ?? known(q.get('utm_source')) ?? known(campaign) ?? 'website') }, [])
   useEffect(() => { if (state.message) feedback.current?.focus() }, [state])
   const error = (name: string) => state.errors[name] && <p id={`${name}-error`} role="alert" className={s.error}>{state.errors[name]}</p>
-  const group = (name: string, label: string, choices: readonly string[]) => <fieldset><legend>{label} (필수)</legend>{choices.map(choice => <label key={choice} className={s.option}><input type="radio" name={name} value={choice} checked={values[name] === choice} onChange={() => setValues(v => ({...v,[name]:choice}))} required aria-describedby={state.errors[name] ? `${name}-error` : undefined}/>{choice}</label>)}{error(name)}</fieldset>
+  /** `follow` renders right under a choice while it is selected (e.g. the owner's region under 다른 시·군). */
+  const group = (name: string, label: string, choices: readonly string[], follow: Record<string, ReactNode> = {}) => <fieldset><legend>{label} (필수)</legend>{choices.map(choice => <div key={choice}><label className={s.option}><input type="radio" name={name} value={choice} checked={values[name] === choice} onChange={() => setValues(v => ({...v,[name]:choice}))} required aria-describedby={state.errors[name] ? `${name}-error` : undefined}/>{choice}</label>{values[name] === choice && follow[choice] && <div className={s.follow}>{follow[choice]}</div>}</div>)}{error(name)}</fieldset>
   const optionalGroup = (name: string, label: string, choices: readonly string[]) => <fieldset><legend>{label} (선택)</legend>{choices.map(choice => <label key={choice} className={s.option}><input type="radio" name={name} value={choice} checked={values[name] === choice} onChange={() => setValues(v => ({...v,[name]:choice}))}/>{choice}</label>)}</fieldset>
   if (state.ok) return <div ref={feedback} tabIndex={-1} role="status" className={s.success}><h2>의견이 잘 전달됐어요</h2><p>{state.message}</p><p>서비스는 포항부터 준비하고 있어요. 다른 지역은 의견을 모으는 단계이며 제공 일정은 정해지지 않았어요.</p><Link href="/">홈으로 돌아가기</Link></div>
   return <form onSubmit={event => {event.preventDefault(); if (pending) return; const data = new FormData(event.currentTarget); startTransition(() => action(data))}} className={s.form}>
@@ -23,8 +24,7 @@ export default function InterestForm() {
     <div hidden aria-hidden="true"><label>웹사이트<input name="website" tabIndex={-1} autoComplete="off"/></label></div>
     <RegionSelect prefix="region" legend="빈집이 있는 곳" error={error('region')} errorId="region-error"/>
     <label>대략적인 위치 (선택)<input value={values.location ?? ''} onChange={e => setValues(v => ({...v,location:e.target.value}))} name="location" maxLength={200} placeholder="예: 호미곶면 강사리"/>{error('location')}</label>
-    {group('residence', '소유주께서는 어디에 살고 계세요?', RESIDENCES)}
-    {values.residence === OTHER_REGION_RESIDENCE && <RegionSelect prefix="owner" legend="소유주께서 사시는 곳" error={error('ownerRegion')} errorId="ownerRegion-error"/>}
+    {group('residence', '소유주께서는 어디에 살고 계세요?', RESIDENCES, {[OTHER_REGION_RESIDENCE]: <RegionSelect prefix="owner" legend="어느 시·군에 사세요?" error={error('ownerRegion')} errorId="ownerRegion-error"/>})}
     {group('intent', '지금은 어떤 방향을 고민하세요?', INTENTS)}
     {optionalGroup('inheritance', '상속 정리는 어디까지 됐나요?', INHERITANCE)}
     {optionalGroup('lastVisit', '마지막으로 집에 가 보신 건 언제예요?', LAST_VISITS)}
