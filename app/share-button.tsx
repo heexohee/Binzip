@@ -5,7 +5,7 @@ import s from './landing.module.css'
 const SHARE_SOURCE = 'family-share'
 
 /** Siblings often decide on an inherited house together, so sharing is aimed at family. The link carries only a source tag. */
-export function ShareButton() {
+export function ShareButton({ lead }: { lead?: string }) {
   const [status, setStatus] = useState('')
   async function share() {
     const url = new URL(location.pathname, location.origin)
@@ -20,5 +20,5 @@ export function ShareButton() {
       setStatus('링크를 복사하지 못했어요. 주소창의 주소를 복사해 보내 주세요.')
     }
   }
-  return <div className={s.share}><button type="button" onClick={share}>가족에게 이 페이지 보내기</button><span role="status">{status}</span></div>
+  return <div className={s.share}>{lead && <p>{lead}</p>}<button type="button" onClick={share}>가족에게 이 페이지 보내기</button><span role="status">{status}</span></div>
 }

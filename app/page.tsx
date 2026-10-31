@@ -44,7 +44,6 @@ export default function Home() {
               <p className={s.pathDesc}>전국 어디서든 어떤 관리가 필요한지 의견을 들려주세요.</p>
             </Link></li>
           </ul>
-          <ShareButton />
         </section>
 
         <section className={s.reference} aria-labelledby="reference-title">
@@ -52,6 +51,8 @@ export default function Home() {
           <ul>{BEFORE_DECIDING.map(item => <li key={item.title}><strong>{item.title}</strong><span>{item.text}</span></li>)}</ul>
           <Link className={s.textLink} href="/resources">공식 지원·정보 모음 보기 →</Link>
         </section>
+
+        <aside className={s.closing} aria-label="가족에게 공유"><ShareButton lead="형제·가족과 같이 정하고 있다면 이 페이지를 보내 보세요." /></aside>
       </main>
     </div>
   </div>

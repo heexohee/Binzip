@@ -130,3 +130,58 @@
 .supportToggle > summary { min-height:44px; padding:8px 0; color:var(--brand-primary); font-size:18px; font-weight:700; cursor:pointer; }
 .supportToggle > summary:focus-visible { outline:3px solid var(--brand-primary); outline-offset:4px; }
 .supportToggle .support { margin-top:12px; padding-top:0; border-top:0; }
+
+/* Three choices: each keeps one accent from the comparison table down to its card */
+.toneSell { --tone: #8a5a1f; --tone-soft: #f7eedf; --tone-line: #d9bf95; }
+.toneRepair { --tone: #2f6b4f; --tone-soft: #e6f1e8; --tone-line: #a9c9b3; }
+.toneKeep { --tone: #2f5a78; --tone-soft: #e6eff5; --tone-line: #a8c1d3; }
+.hero { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px 16px; align-items:end; }
+.heroText h1 { font-size:clamp(1.75rem,1.3rem + 2vw,2.5rem); line-height:1.35; margin:4px 0 12px; }
+.heroText .lead { font-size:16px; }
+.rabbit { width:88px; height:auto; }
+.disclaimer { grid-column:1/-1; font-size:15px; color:var(--text-secondary); padding:12px 16px; border-radius:12px; background:var(--status-unknown-surface); }
+.report h2 { font-size:24px; line-height:1.4; margin-bottom:16px; }
+.compareWrap { overflow-x:auto; }
+.compareWrap:focus-visible { outline:3px solid var(--focus-ring); outline-offset:2px; }
+.compare { width:100%; min-width:520px; border-collapse:separate; border-spacing:6px 0; font-size:15px; line-height:1.5; table-layout:fixed; }
+.compare th, .compare td { padding:12px 10px; text-align:left; vertical-align:top; border-bottom:1px solid var(--border-subtle); }
+.compare thead th { border-bottom:0; }
+.compare thead th:first-child, .compare tbody th { width:76px; padding-left:0; color:var(--text-secondary); font-weight:600; }
+.compare thead th:not(:first-child) { background:var(--tone-soft); border-radius:12px 12px 0 0; border-top:4px solid var(--tone); }
+.compare thead a { display:flex; align-items:center; gap:8px; color:var(--tone); font-size:18px; font-weight:800; text-decoration:none; }
+.compare thead a span, .choiceTag span { display:inline-grid; place-items:center; width:24px; height:24px; border-radius:50%; background:var(--tone); color:#fff; font-size:13px; font-weight:800; }
+.compare tbody td:nth-child(2) { background:#f7eedf66; }
+.compare tbody td:nth-child(3) { background:#e6f1e866; }
+.compare tbody td:nth-child(4) { background:#e6eff566; }
+.compare tbody tr:first-child td { font-weight:800; color:var(--text-primary); }
+.choiceGrid { display:grid; grid-template-columns:1fr; gap:16px; margin-top:8px; }
+.choiceCard { padding:20px; border:1px solid var(--tone-line); border-top:6px solid var(--tone); border-radius:16px; background:var(--surface-raised); font-size:16px; line-height:1.6; }
+.choiceTag { display:flex; align-items:center; gap:8px; color:var(--tone); font-size:22px; font-weight:800; }
+.choiceWhen { color:var(--text-secondary); margin-top:2px!important; }
+.choiceResult { margin:16px 0 8px; padding:14px 16px; border-radius:12px; background:var(--tone-soft); }
+.choiceResult span { display:block; font-size:14px; color:var(--text-secondary); }
+.choiceResult strong { display:block; color:var(--tone); font-size:30px; font-weight:800; line-height:1.3; }
+.choiceLines > div { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px dashed var(--border-subtle); }
+.choiceLines dt { color:var(--text-secondary); }
+.choiceLines dd { font-weight:700; white-space:nowrap; }
+.choiceExtra { margin-top:12px!important; padding-left:12px; border-left:3px solid var(--tone-line); }
+.choiceCard h3 { margin-top:16px; font-size:16px; }
+.choiceCard ul { margin:6px 0 0; padding-left:20px; }
+.choiceLink { display:inline-block; margin-top:12px; color:var(--tone); font-weight:700; text-underline-offset:4px; }
+@media (min-width: 760px) {
+  .choiceGrid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .rabbit { width:132px; }
+}
+.srOnly { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+@media (max-width: 640px) {
+  .compare { min-width:0; border-spacing:3px 0; font-size:14px; }
+  .compare th, .compare td { padding:10px 6px; word-break:keep-all; overflow-wrap:anywhere; }
+  .compare thead th:first-child, .compare tbody th { width:44px; }
+  .compare thead a { flex-direction:column; align-items:flex-start; gap:4px; font-size:16px; }
+  .choiceResult strong { font-size:26px; }
+}
+.taxBox { margin-top:16px; padding:14px 16px; border-radius:12px; border:1px dashed var(--tone-line); background:var(--surface); }
+.taxBox h3 { margin:0!important; }
+.taxBox p { margin-top:8px!important; font-size:15px; color:var(--text-secondary); }
+.taxBox a { display:inline-block; margin-top:8px; color:var(--tone); font-weight:700; text-underline-offset:4px; }
+.choiceCard ul { list-style:disc; }.choiceCard li::marker { color:var(--tone); }

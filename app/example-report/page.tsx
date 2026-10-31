@@ -3,8 +3,8 @@ import { DecisionExampleReport } from './decision-example-report'
 
 export const revalidate = 86400
 export const metadata: Metadata = {
-  title: '집 상태부터 다음 행동까지 — 빈집진단서',
-  description: '집의 현재 상태, 보수·매도·철거 선택지, 예상 비용과 다음 행동을 한눈에 살펴보세요.',
+  title: '진단서 예시 | 빈집진단서',
+  description: '포항의 시골집을 가정해 보유·수리·매각·철거 선택지를 비교한 진단서 예시예요.',
   robots: { index: false, follow: false },
 }
 

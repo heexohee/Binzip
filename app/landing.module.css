@@ -70,7 +70,7 @@ main.service { padding-top: 0; min-height: 70vh; }
 .button:hover { background: var(--brand-hover); }
 .ctaNote { margin: 10px 0 0; color: var(--text-secondary); font-size: var(--type-help); line-height: 1.6; }
 .contact { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 16px; font-size: var(--type-help); }
-.contact a { display: inline-flex; align-items: center; min-height: 44px; color: var(--brand-primary); font-weight: 600; text-decoration: underline !important; text-underline-offset: 4px; }
+.contact a { display: inline-block; padding: 10px 0; line-height: 1.5; color: var(--brand-primary); font-weight: 600; text-decoration: underline !important; text-underline-offset: 4px; }
 .contact p { flex-basis: 100%; margin: 0; color: var(--text-secondary); }
 .notice { margin: 16px 0 0; padding: 14px 16px; border-radius: var(--radius-compact); background: var(--status-unknown-surface); color: var(--status-unknown-text); font-size: var(--type-help); line-height: 1.6; }
 
@@ -95,10 +95,7 @@ main.service { padding-top: 0; min-height: 70vh; }
 .apply { margin-top: 40px; padding: 24px 20px; border-radius: var(--radius-card); background: var(--surface-soft); scroll-margin-top: 8px; }
 .apply h2 { margin: 0; font-size: var(--type-section); }
 .apply > p { margin: 8px 0 0; font-size: var(--type-help); line-height: 1.6; }
-.applySteps { display: grid; gap: 6px; margin: 16px 0; padding: 0; list-style: none; font-size: var(--type-help); }
-.applySteps li { display: flex; gap: 8px; color: var(--text-secondary); }
-.applySteps li[aria-current="step"] { color: var(--text-primary); font-weight: 700; }
-.applySteps b { display: inline-grid; place-items: center; flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--surface-raised); color: var(--brand-primary); font-size: .875rem; }
+.applyNow b { display: inline-grid; place-items: center; flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--surface-raised); color: var(--brand-primary); font-size: .875rem; }
 
 @media (max-width: 600px) {
   .hero, .service, .reference { --page-gutter: 20px; }
@@ -115,3 +112,14 @@ main.service { padding-top: 0; min-height: 70vh; }
   .reference ul { grid-template-columns: repeat(3, 1fr); gap: 20px; }
   .button { display: inline-flex; width: auto; min-width: 280px; }
 }
+/* Apply box: only the current step, the full flow is described above */
+.applyNow { display: flex; align-items: center; gap: 8px; margin: 16px 0 8px; font-size: var(--type-help); font-weight: 700; }
+.applyNow span { font-weight: 400; color: var(--text-secondary); }
+.nowrap { white-space: nowrap; }
+/* Page end: cross link and family share in one card */
+.closing { display: grid; gap: 16px; margin-top: 32px; padding: 20px; border-radius: var(--radius-card); background: var(--surface-soft); }
+.management .closing { background: var(--surface-raised); }
+.closing .crossLink { margin: 0; padding: 0 0 16px; border-radius: 0; background: none; border-bottom: 1px solid var(--border-subtle); }
+.closing .share { margin-top: 0; }
+.share p { flex-basis: 100%; margin: 0; color: var(--text-primary); }
+.main > .closing { margin: 0 var(--page-gutter); }
