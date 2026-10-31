@@ -19,6 +19,7 @@ export type InterestMetricRow = {
 export type ApplicationMetricRow = { address: string; resolved_address: string | null; pnu: string | null; created_at: string }
 
 export type Count = { key: string; count: number }
+export type Share = { key: string; count: number; percent: number }
 export type PriceStat = { key: string; label: string; n: number; p25: number | null; median: number | null; p75: number | null }
 
 export type DemandSummary = {
@@ -34,6 +35,7 @@ export type DemandSummary = {
     byOwnerProvince: Count[]
     byIntent: Count[]
     byBudget: Count[]
+    willingness: { base: number; rows: Share[] }
     byService: Count[]
     byInheritance: Count[]
     byLastVisit: Count[]
@@ -104,6 +106,20 @@ function quantile(sorted: number[], q: number): number | null {
   return Math.round((lo + (hi - lo) * (pos - Math.floor(pos))) * 10) / 10
 }
 
+/** Top of each max-budget bucket in 만 원; "아직 모르겠어요" is left out of the base. */
+const BUDGET_CEILING: Record<string, number> = { '월 3만 원 이하': 3, '월 5만 원 이하': 5, '월 10만 원 이하': 10, '월 10만 원 초과도 검토': Infinity, '유료 이용 의사 없음': 0 }
+const WILLINGNESS_PRICES = [{ key: '월 3만 원', manwon: 3 }, { key: '월 5만 원', manwon: 5 }, { key: '월 10만 원', manwon: 10 }, { key: '월 10만 원 넘게', manwon: Infinity }]
+
+/** Share of answers whose max budget reaches each price: a cumulative read of the single max-budget question. */
+export function willingnessByPrice(budgets: string[]): { base: number; rows: Share[] } {
+  const ceilings = budgets.map(b => BUDGET_CEILING[b]).filter((c): c is number => c !== undefined)
+  const base = ceilings.length
+  return { base, rows: WILLINGNESS_PRICES.map(({ key, manwon }) => {
+    const count = ceilings.filter(c => c >= manwon).length
+    return { key, count, percent: base ? Math.round((count / base) * 100) : 0 }
+  }) }
+}
+
 export const PRICE_KEYS = [
   { key: 'price_too_cheap', label: '너무 싸서 믿기 어려운 가격' },
   { key: 'price_cheap', label: '싸다고 느끼는 가격' },
@@ -132,6 +148,7 @@ export function summarizeDemand(interests: InterestMetricRow[], applications: Ap
       byOwnerProvince: tally(interests.map(row => text(row, 'owner_region')).filter((v): v is string => v !== null).map(provinceFromText)),
       byIntent: tally(interests.map(row => row.intent)),
       byBudget: tally(interests.map(row => row.budget)),
+      willingness: willingnessByPrice(interests.map(row => row.budget)),
       byService: tally(interests.flatMap(row => row.services ?? [])),
       byInheritance: tally(answered.map(row => text(row, 'inheritance'))),
       byLastVisit: tally(answered.map(row => text(row, 'last_visit'))),
@@ -160,6 +177,7 @@ export function demandCsv(summary: DemandSummary, generatedAt: string): string {
   add('설문 · 고민 방향', i.byIntent); add('설문 · 월 최대 금액', i.byBudget); add('설문 · 필요한 관리', i.byService)
   add('설문 · 상속 정리', i.byInheritance); add('설문 · 마지막 방문', i.byLastVisit); add('설문 · 현재 관리 비용', i.byCurrentSpend)
   add('설문 · 주차', i.byWeek)
-  for (const p of i.prices) rows.push([`가격(만 원) · ${p.label}`, `응답 ${p.n} · 25%/중앙/75%`, [p.p25, p.median, p.p75].map(v => v ?? '-').join(' / ')])
+  for (const w of i.willingness.rows) rows.push([`금액별 이용 의향 (응답 ${i.willingness.base})`, w.key, `${w.count} (${w.percent}%)`])
+  for (const p of i.prices) rows.push([`이전 방식 가격(만 원) · ${p.label}`, `응답 ${p.n} · 25%/중앙/75%`, [p.p25, p.median, p.p75].map(v => v ?? '-').join(' / ')])
   return '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\n')
 }

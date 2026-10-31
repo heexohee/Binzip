@@ -43,11 +43,12 @@ export default async function MetricsPage() {
         <Table title="설문 · 소유자가 사는 시도 (다른 시·군)" rows={summary.interests.byOwnerProvince} />
         <Table title="설문 · 고민 방향" rows={summary.interests.byIntent} />
         <Table title="설문 · 월 최대 금액" rows={summary.interests.byBudget} />
+        <section className={m.card}><h3>금액별 이용 의향</h3>{summary.interests.willingness.base ? <table><tbody>{summary.interests.willingness.rows.map(w => <tr key={w.key}><td>{w.key}<span className={m.bar} style={{ width: `${w.percent}%` }} /></td><td>{w.percent}%<br /><small>{w.count}명</small></td></tr>)}</tbody></table> : <p className={m.note}>아직 응답이 없어요.</p>}<p className={m.note}>최대 금액이 그 금액 이상인 응답의 비율이에요(응답 {summary.interests.willingness.base}명, '아직 모르겠어요' 제외). 구간의 위쪽 끝으로 계산해서 실제보다 조금 높게 나올 수 있어요.</p></section>
         <Table title="설문 · 필요한 관리" rows={summary.interests.byService} />
         <Table title="설문 · 상속 정리" rows={summary.interests.byInheritance} />
         <Table title="설문 · 마지막 방문" rows={summary.interests.byLastVisit} />
         <Table title="설문 · 현재 관리 비용" rows={summary.interests.byCurrentSpend} />
-        <section className={m.card}><h3>가격 범위 (월, 만 원)</h3><table><tbody>{summary.interests.prices.map(p => <tr key={p.key}><td>{p.label}<br /><small>응답 {p.n}</small></td><td>{p.median ?? '-'}<br /><small>{p.p25 ?? '-'}~{p.p75 ?? '-'}</small></td></tr>)}</tbody></table><p className={m.note}>오른쪽 큰 숫자는 중앙값, 아래는 25~75% 범위예요.</p></section>
+        <section className={m.card}><h3>가격 범위 (이전 방식 응답, 월·만 원)</h3><table><tbody>{summary.interests.prices.map(p => <tr key={p.key}><td>{p.label}<br /><small>응답 {p.n}</small></td><td>{p.median ?? '-'}<br /><small>{p.p25 ?? '-'}~{p.p75 ?? '-'}</small></td></tr>)}</tbody></table><p className={m.note}>오른쪽 큰 숫자는 중앙값, 아래는 25~75% 범위예요.</p></section>
       </div>
     </div>}
   </AdminFrame>
