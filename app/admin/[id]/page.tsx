@@ -82,7 +82,7 @@ export default async function Review({ params }: { params: Promise<{ id: string 
           <Field label="취득 경위" value={app.acquisition} />
           <Field label="소유관계" value={app.ownership} />
           <Field label="가장 걱정" value={app.concern} />
-          <Field label="원하는 확인" value={app.speed} />
+          <Field label="인터뷰·방문 의향" value={app.speed} />
           <Field label="선호 방법" value={app.channel} />
           <Field label="전화번호" value={app.contact} />
           <Field label="이메일" value={app.email} />

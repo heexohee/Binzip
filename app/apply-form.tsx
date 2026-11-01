@@ -26,10 +26,10 @@ const CONCERN = [
   '잘 모르겠음',
 ]
 const CHANNEL = ['전화로 설명을 듣고 싶어요', '문자로 링크를 받고 싶어요', '이메일로 받고 싶어요']
+/** Stored in the existing `speed` column, so the operator sees it as 원하는 확인 without a schema change. */
 const SPEED = [
-  '서류와 사진으로 확인할 수 있는 부분부터 알고 싶어요',
-  '현장 확인이 필요한지 상담하고 싶어요',
-  '상관없습니다',
+  '인터뷰·시범 방문 연락을 받아도 괜찮아요',
+  '서류와 사진으로 하는 진단만 원해요',
 ]
 
 const INPUT = styles.input
@@ -376,8 +376,13 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
         {err('email')}
       </label>
 
-      {/* 9. 희망 소요 — 문항이 길어 한 줄씩 쌓는다 */}
-      <RadioGroup name="speed" label="어떤 확인을 원하시나요?" options={SPEED} layout="stack" value={values.speed ?? ''} onChange={v => setValue('speed', v)} />
+      {/* 9. 인터뷰·시범 방문 의향 — 문항이 길어 한 줄씩 쌓는다 */}
+      <div className="flex flex-col gap-2">
+        <RadioGroup name="speed" label="인터뷰나 시범 방문에 참여해 주실 수 있나요?" options={SPEED} layout="stack" value={values.speed ?? ''} onChange={v => setValue('speed', v)} />
+        <span className="text-[16px] leading-[1.6] text-muted">
+          인터뷰는 30~40분 정도 전화로 여쭤보고, 참여해 주신 분께 소정의 감사 선물(모바일 상품권)을 드려요. 시범 방문은 포항·경주에 빈집이 있는 분 중 몇 분과 무료로 해요. 인원이 정해져 있어 담당자가 연락드린 분과만 진행해요.
+        </span>
+      </div>
 
       {/* 8. 동의 — 법적 확인이라 제출 버튼 바로 앞에 둔다 */}
       <div className="flex flex-col gap-2">
@@ -400,8 +405,9 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
           */}
           <span className="flex flex-col gap-1">
             <span>
-              주소·전화번호·선택 입력한 이메일와 집에 대해 답해주신 내용을 진단에만 쓰는 데
-              동의합니다.
+              주소·전화번호·선택 입력한 이메일과 집에 대해 답해주신 내용, 인터뷰·시범 방문 참여 의향을
+              진단과 이번 신청에 대한 연락에만 쓰는 데 동의합니다. 인터뷰에 참여하시면 감사 선물 발송에도
+              전화번호를 써요.
             </span>
             <span>신청일부터 6개월이 지나면 지우고, 그 전에 말씀하시면 바로 지웁니다.</span>
             <span className="text-muted">
@@ -426,7 +432,7 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
           disabled={pending || photoBusy}
           className={styles.submit}
         >
-          {photoBusy ? '사진을 준비하고 있어요' : pending ? '신청하고 있습니다' : values.speed === SPEED[1] ? '현장 방문 상담 신청하기' : '무료 진단 신청하기'}
+          {photoBusy ? '사진을 준비하고 있어요' : pending ? '신청하고 있습니다' : '무료 진단 신청하기'}
         </button>
         {state.message && (
           <p role="alert" className={styles.error}>{state.message}</p>

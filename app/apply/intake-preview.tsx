@@ -1,10 +1,14 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useInstantFlow } from '../instant-flow'
+import { submitApplication } from '../actions'
+import { PhotoPicker } from '../photo-picker'
 import styles from './intake-preview.module.css'
 import { intakeScreens, toggleGoal, type IntakeGoal } from '../../src/intake-flow'
+
+const PHONE = '010-7428-2624'
 
 const GOALS: { value: IntakeGoal; title: string; text: string }[] = [
   { value: 'sell', title: '매매', text: '팔 수 있을지, 얼마에 팔릴지' },
@@ -19,7 +23,6 @@ const TITLES: Record<string, string> = {
 }
 
 export function IntakePreview({ initialAddress = '' }: { initialAddress?: string }) {
-  const router = useRouter()
   const { draft, confirmedAddress } = useInstantFlow()
   const [answers, setAnswers] = useState<Record<string, string>>({ address: initialAddress || confirmedAddress?.address || draft?.address || '' })
   const [goals, setGoals] = useState<IntakeGoal[]>([])
@@ -29,22 +32,20 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
   const [submitting, setSubmitting] = useState(false)
   const submittingRef = useRef(false)
   const [error, setError] = useState('')
-  const [photos, setPhotos] = useState<{ name: string; url: string }[]>([])
-  const photoRef = useRef(photos)
+  const [photos, setPhotos] = useState<File[]>([])
+  const [photoBusy, setPhotoBusy] = useState(false)
+  const [agreed, setAgreed] = useState(false)
+  const [photoAgreed, setPhotoAgreed] = useState(false)
+  const [done, setDone] = useState(false)
   const heading = useRef<HTMLHeadingElement>(null)
   const didNavigate = useRef(false)
   const screens = intakeScreens(goals)
   const index = screens.indexOf(screen)
   const phase = review ? 3 : screen === 'house' ? 0 : screen === 'contact' ? 2 : 1
   const set = (key: string, value: string) => setAnswers(current => ({ ...current, [key]: value }))
-  useEffect(() => { photoRef.current = photos }, [photos])
-  useEffect(() => () => photoRef.current.forEach(photo => URL.revokeObjectURL(photo.url)), [])
   useEffect(() => {
     if (didNavigate.current) heading.current?.focus()
-  }, [screen, review])
-  useEffect(() => {
-    if (review) router.prefetch('/example-report/loading')
-  }, [review, router])
+  }, [screen, review, done])
   function move(next: string | undefined) {
     if (!next) return
     didNavigate.current = true; setError(''); setScreen(next)
@@ -55,6 +56,8 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
     if (screen === 'contact') {
       if (!/^0\d{8,10}$/.test((answers.phone || '').replace(/[\s-]/g, ''))) { setError('연락받을 휴대폰 번호를 확인해 주세요.'); return }
       if (answers.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(answers.email)) { setError('이메일 주소를 확인해 주세요.'); return }
+      if (photos.length && !photoAgreed) { setError('사진 이용에 동의하거나 첨부 사진을 삭제해 주세요.'); return }
+      if (!agreed) { setError('개인정보 수집·이용에 동의해 주세요.'); return }
       didNavigate.current = true; setError(''); setReview(true); return
     }
     move(screens[index + 1])
@@ -66,6 +69,33 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
       </label>)}
     </div></fieldset>
   }
+  /** Sends the answers to the same server action the operator's admin list reads from. */
+  async function submit() {
+    submittingRef.current = true
+    setSubmitting(true); setError('')
+    const data = new FormData()
+    const address = (answers.address ?? '').trim()
+    data.set('address', address)
+    if (confirmedAddress && (address === confirmedAddress.address || address === confirmedAddress.query)) {
+      data.set('pnu', confirmedAddress.pnu); data.set('resolvedAddress', confirmedAddress.address); data.set('matchQuality', confirmedAddress.quality)
+    }
+    data.set('condition', rows.filter(([label]) => !['빈집 주소', '궁금한 내용', '소유관계', '인터뷰·시범 방문 연락', '휴대폰 번호', '이메일'].includes(String(label))).map(([label, value]) => `${label}: ${value}`).join('\n'))
+    goals.forEach(goal => data.append('concern', GOALS.find(item => item.value === goal)?.title ?? goal))
+    if (answers.ownership) data.set('ownership', answers.ownership)
+    if (answers.visit === 'yes') data.set('speed', '인터뷰·시범 방문 연락을 받아도 괜찮아요')
+    data.set('contact', answers.phone || ''); if (answers.email) data.set('email', answers.email)
+    data.set('agree', 'on'); if (photoAgreed) data.set('photoAgree', 'on')
+    photos.forEach(photo => data.append('photos', photo))
+    try {
+      const result = await submitApplication({ ok: false, errors: {}, message: null }, data)
+      if (result.ok) { didNavigate.current = true; setDone(true); return }
+      setError(result.message ?? Object.values(result.errors)[0] ?? '입력 내용을 다시 확인해 주세요.')
+    } catch {
+      setError(`접수 결과를 확인하지 못했어요. 잠시 후 다시 시도하거나 ${PHONE}로 연락 주세요.`)
+    }
+    submittingRef.current = false
+    setSubmitting(false)
+  }
   const selected = (goal: IntakeGoal) => goals.includes('all') || goals.includes(goal)
   const rows = [
     ['빈집 주소', answers.address], ['최근 집 상태', answers.condition || '확인 필요'],
@@ -75,18 +105,27 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
     ['소유관계', answers.ownership || '확인 필요'],
     ...(answers.ownership === '공동 소유' || answers.ownership === '상속 정리 중' ? [['가족·공동 소유자 협의', answers.agreement || '확인 필요']] : []),
     ...(selected('sell') ? [['매매 시기', answers.timing || '미정']] : []),
-    ['현장 방문 상담', answers.visit === 'yes' ? '희망해요' : '선택하지 않음'],
+    ['인터뷰·시범 방문 연락', answers.visit === 'yes' ? '받아도 괜찮아요' : '선택하지 않음'],
     ['휴대폰 번호', answers.phone], ...(answers.email ? [['이메일', answers.email]] : []),
   ]
+
+  if (done) return <div className={styles.card} role="status">
+    <header className={styles.heading}>
+      <p>접수 완료</p>
+      <h2 ref={heading} tabIndex={-1}>신청이 접수됐어요</h2>
+    </header>
+    <p className={styles.nextHint}>담당자가 신청 내용을 살펴보고, <strong>7일 안에</strong> 문자로 진행 여부를 알려드려요. 이메일을 남기셨다면 진단서는 메일로 보내드려요.</p>
+    <p className={styles.nextHint}>연락이 없거나 급하면 전화 주세요 · <a href={`tel:${PHONE.replaceAll('-', '')}`}>{PHONE}</a></p>
+    <div className={styles.navigation}>
+      <Link className={styles.secondary} href="/">처음으로</Link>
+      <Link className={styles.primary} href="/example-report">기다리는 동안 진단서 예시 보기<span aria-hidden="true"> →</span></Link>
+    </div>
+  </div>
 
   return <form className={styles.form} onSubmit={event => {
     event.preventDefault()
     if (submittingRef.current) return
-    if (review) {
-      submittingRef.current = true
-      setSubmitting(true)
-      router.push('/example-report/loading')
-    }
+    if (review) void submit()
     else next()
   }}>
     <ol className={styles.steps} aria-label="진단 신청 단계">
@@ -102,29 +141,18 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
       {review ? <>
         <dl className={styles.summary}>{rows.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}<div><dt>첨부 사진</dt><dd>{photos.length}장</dd></div></dl>
         <button className={styles.edit} type="button" disabled={submitting} onClick={() => { setReview(false); move('house') }}>입력 내용 수정하기</button>
-        <p className={styles.nextHint}>제출 후 집토끼가 선택별 비용을 비교하는 예시 진단서를 보여드려요. 입력한 내용은 실제 신청으로 접수되지 않아요.</p>
-        {submitting && <p role="status">집토끼를 불러오고 있어요.</p>}
+        <p className={styles.nextHint}>제출하면 신청이 접수돼요. 담당자가 살펴보고 7일 안에 문자로 진행 여부를 알려드려요.</p>
+        {submitting && <p role="status">신청을 보내고 있어요.</p>}
+        {error && <p className={styles.error} role="alert">{error}</p>}
         <div className={styles.navigation}>
           <button className={styles.secondary} type="button" disabled={submitting} onClick={() => { setReview(false); move('contact') }}>이전</button>
-          <button className={styles.primary} type="submit" disabled={submitting}>{submitting ? '진단서 준비 중…' : '제출하기'}<span aria-hidden="true"> →</span></button>
+          <button className={styles.primary} type="submit" disabled={submitting}>{submitting ? '접수 중…' : '신청 접수하기'}<span aria-hidden="true"> →</span></button>
         </div>
       </> : <>
       {screen === 'house' && <>
         <label className={styles.question}>빈집 주소 <span className={styles.optional}>필수</span><input className={styles.input} value={answers.address} onChange={e => set('address', e.target.value)} placeholder="빈집의 도로명 또는 지번 주소" autoComplete="street-address" /></label>
         {choices('condition', '최근에 본 집 상태는 어떤가요?', ['큰 이상은 없어 보여요', '수리가 필요한 곳이 있어요', '최근 상태를 몰라요'])}
-        <fieldset className={styles.question}><legend>집 사진 <span className={styles.optional}>선택</span></legend>
-          <label className={styles.upload}>＋ 사진 추가하기 <span>{photos.length} / 6</span><input type="file" accept="image/jpeg,image/png,image/webp" multiple aria-label="집 사진 추가" onChange={e => {
-            const files = Array.from(e.target.files || []); e.target.value = ''
-            if (photos.length + files.length > 6) { setError('사진은 최대 6장까지 선택해 주세요.'); return }
-            if (files.some(file => !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 20 * 1024 * 1024)) { setError('20MB 이하 JPG·PNG·WebP 사진을 선택해 주세요.'); return }
-            setError(''); setPhotos(current => [...current, ...files.map(file => ({ name: file.name, url: URL.createObjectURL(file) }))])
-          }} /></label>
-          {photos.length > 0 && <ul className={styles.photos}>{photos.map((photo, i) => <li key={photo.url}>
-            {/* Local previews stay in this browser and are never uploaded. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={photo.url} alt={`집 사진 ${i + 1}`} /><button type="button" aria-label={`사진 ${i + 1} 삭제`} onClick={() => { URL.revokeObjectURL(photo.url); setPhotos(current => current.filter(item => item.url !== photo.url)) }}>삭제</button>
-          </li>)}</ul>}
-        </fieldset>
+        <PhotoPicker onChange={setPhotos} onBusyChange={setPhotoBusy} disabled={submitting} />
       </>}
       {screen === 'goals' && <>
         <fieldset className={styles.question}><legend className={styles.srOnly}>궁금한 내용 · 복수 선택</legend><div className={styles.goalGrid}>
@@ -148,10 +176,13 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
       {screen === 'contact' && <>
         <label className={styles.question}>휴대폰 번호 <span className={styles.optional}>필수</span><input className={styles.input} type="tel" autoComplete="tel" value={answers.phone || ''} onChange={e => set('phone', e.target.value)} placeholder="010-0000-0000" /></label>
         <label className={styles.question}>이메일 <span className={styles.optional}>선택</span><input className={styles.input} type="email" autoComplete="email" value={answers.email || ''} onChange={e => set('email', e.target.value)} placeholder="name@example.com" /></label>
-        <div><label className={styles.option}><input type="checkbox" checked={answers.visit === 'yes'} onChange={e => set('visit', e.target.checked ? 'yes' : '')} />멀리 있어서 현장 방문 상담을 받고 싶어요</label>{answers.visit === 'yes' && <p className={styles.nextHint}>지역과 확인 범위에 따라 비용이 발생할 수 있으며, 방문 전 안내해 드려요.</p>}</div>
+        <div><label className={styles.option}><input type="checkbox" checked={answers.visit === 'yes'} onChange={e => set('visit', e.target.checked ? 'yes' : '')} />인터뷰·시범 방문 연락을 받아도 괜찮아요 (선택)</label><p className={styles.nextHint}>인터뷰는 30~40분 전화로 여쭤보고, 참여해 주신 분께 소정의 감사 선물을 드려요. 시범 방문은 포항·경주에 빈집이 있는 분 중 몇 분과 무료로 해요.</p></div>
+        {photos.length > 0 && <label className={styles.option}><input type="checkbox" checked={photoAgreed} onChange={e => setPhotoAgreed(e.target.checked)} />첨부 사진을 담당자가 집 상태 확인과 진단서 작성에 쓰는 데 동의해요. 사진은 6개월 보관하고, 공개 진단서에 사진 자체를 올리지 않아요.</label>}
+        <div><label className={styles.option}><input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} />개인정보 수집·이용에 동의해요 (필수)</label>
+          <p className={styles.nextHint}>주소·전화번호·이메일(선택)과 집에 대해 답해주신 내용, 인터뷰·시범 방문 참여 의향을 진단과 이번 신청에 대한 연락에만 써요. 인터뷰에 참여하시면 감사 선물 발송에도 전화번호를 써요. 신청일부터 6개월 뒤 지우고, 그 전에 말씀하시면 바로 지워요. 동의하지 않으면 신청이 접수되지 않아요. <Link href="/privacy" target="_blank">개인정보 처리방침</Link></p></div>
       </>}
       {error && <p className={styles.error} role="alert">{error}</p>}
-      <div className={styles.navigation}>{index > 0 && <button className={styles.secondary} type="button" onClick={() => move(screens[index - 1])}>이전</button>}<button className={styles.primary} type="submit">{screen === 'contact' ? '입력 내용 확인하기' : '다음'}<span aria-hidden="true"> →</span></button></div>
+      <div className={styles.navigation}>{index > 0 && <button className={styles.secondary} type="button" onClick={() => move(screens[index - 1])}>이전</button>}<button className={styles.primary} type="submit" disabled={photoBusy}>{screen === 'contact' ? '입력 내용 확인하기' : '다음'}<span aria-hidden="true"> →</span></button></div>
       </>}
     </div>
   </form>
