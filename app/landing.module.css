@@ -10,7 +10,9 @@
 .heroAudience { margin: 16px 0 0; max-width: 34em; color: var(--text-secondary); }
 .chooseTitle { margin: 32px 0 12px; font-size: var(--type-help); font-weight: 700; }
 .paths { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
-.path { display: grid; gap: 6px; padding: 20px; border: 1px solid var(--border-subtle); border-radius: var(--radius-card); background: var(--surface-raised); color: var(--text-primary); }
+/* Each card fills its row so both choices end at the same height. */
+.paths > li { display: grid; }
+.path { display: grid; align-content: start; height: 100%; gap: 6px; padding: 20px; border: 1px solid var(--border-subtle); border-radius: var(--radius-card); background: var(--surface-raised); color: var(--text-primary); }
 .path:hover { border-color: var(--brand-primary); }
 .pathQuote { margin: 0; font-size: 1.0625rem; font-weight: 600; line-height: 1.55; }
 .pathName { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; color: var(--brand-primary); font-weight: 700; }

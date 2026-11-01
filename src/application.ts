@@ -1,4 +1,4 @@
-import { sbInsert, sbRpc } from './supabase'
+import { sbInsert, sbRpc, sbSelect } from './supabase'
 import type { PreparedPhoto } from './photos'
 
 /** 진단 신청 레코드. 개인정보는 주소와 연락처 둘뿐이다 — 이름·주민번호는 받지 않는다. */
@@ -37,6 +37,30 @@ export function expiryFrom(base: Date): string {
   const d = new Date(base)
   d.setMonth(d.getMonth() + RETENTION_MONTHS)
   return d.toISOString()
+}
+
+/** 같은 번호로 1시간에 받을 수 있는 신청 수. 봇이 DB와 알림 메일을 채우지 못하게 한다. */
+export const HOURLY_LIMIT_PER_CONTACT = 3
+/** 같은 번호·같은 주소가 이 시간 안에 다시 오면 두 번 눌린 것으로 보고 새로 저장하지 않는다. */
+const DUPLICATE_WINDOW_MS = 10 * 60_000
+
+/**
+ * 최근 신청과 비교해 중복·과다 제출을 가른다.
+ * 조회가 실패하면 막지 않는다 — 진짜 신청을 놓치는 쪽이 더 나쁘다.
+ */
+export async function checkRecentApplications(contact: string, address: string, now: Date): Promise<'ok' | 'duplicate' | 'limited'> {
+  const since = new Date(now.getTime() - 60 * 60_000).toISOString()
+  try {
+    const rows = await sbSelect<{ address: string; created_at: string }>(
+      'applications?select=address,created_at&contact=eq.' + encodeURIComponent(contact)
+      + '&created_at=gte.' + encodeURIComponent(since) + '&order=created_at.desc&limit=' + HOURLY_LIMIT_PER_CONTACT,
+    )
+    if (rows.some(r => r.address === address && now.getTime() - new Date(r.created_at).getTime() < DUPLICATE_WINDOW_MS)) return 'duplicate'
+    return rows.length >= HOURLY_LIMIT_PER_CONTACT ? 'limited' : 'ok'
+  } catch {
+    console.error('[application] 최근 신청 조회 실패')
+    return 'ok'
+  }
 }
 
 /** Server Action 반환 상태. 필드 오류는 필드명 → 문구. */

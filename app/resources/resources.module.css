@@ -1,8 +1,10 @@
 .main { padding: 30px 36px 38px; }
 .intro {color: var(--text-secondary);  line-height: 1.85; margin-top: 15px; font-size: var(--type-body); }
-.notice { font-size: var(--type-help); color: var(--text-secondary); background: var(--surface-soft); border-radius: var(--radius-control); padding: 16px; margin-top: 22px; line-height: 1.85; }
+.notice { font-size: var(--type-help); color: var(--text-secondary); border-left: 3px solid var(--border-control); padding: 4px 0 4px 14px; margin-top: 22px; line-height: 1.85; }
 .nav { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 22px; }
-.nav a { display: inline-flex; align-items: center; min-height: 44px; background: var(--surface-soft); border-radius: 999px; padding: 8px 13px; font-size: var(--type-help); color: var(--brand-primary); }
+.nav a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; background: var(--surface-raised); border: 1px solid var(--brand-primary); border-radius: 999px; padding: 8px 16px; font-size: var(--type-help); font-weight: 650; color: var(--brand-primary); transition: background .15s, color .15s; }
+.nav a:hover, .nav a:focus-visible { background: var(--brand-primary); color: white; }
+.nav a span { font-size: .875em; }
 .group { scroll-margin-top: 24px; margin-top: 36px; border-top: 1px solid var(--border-subtle); padding-top: 30px; }
 .group h2 { font-size: var(--type-section); }
 .groupIntro {margin: 8px 0 18px; color: var(--text-secondary); font-size: var(--type-body); }
