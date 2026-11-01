@@ -166,7 +166,7 @@
 .subpageIntro h1 { font-size: var(--type-page); }
 .subpageIntro > p:last-child { color: var(--home-muted); margin-top: 13px; font-size: var(--type-help); }
 .application { padding: var(--space-8) var(--space-10); background: var(--surface-soft); border-block: 1px solid var(--border-subtle); }
-.application form { max-width: var(--form-max-width); margin-inline: 0; }
+.application form { max-width: var(--form-max-width); margin-inline: auto; }
 .sampleBody { padding: 0 42px 38px; }
 .sampleNotice { padding: 15px 18px; border-left: 3px solid var(--status-unknown-border); background: var(--home-warm); color: var(--status-unknown-text); font-size: var(--type-help); line-height: 1.8; }
 .sampleSection { padding: 30px 0 4px; }

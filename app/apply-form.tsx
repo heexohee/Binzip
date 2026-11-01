@@ -380,7 +380,7 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
       <div className="flex flex-col gap-2">
         <RadioGroup name="speed" label="인터뷰나 시범 방문에 참여해 주실 수 있나요?" options={SPEED} layout="stack" value={values.speed ?? ''} onChange={v => setValue('speed', v)} />
         <span className="text-[16px] leading-[1.6] text-muted">
-          인터뷰는 30~40분 정도 전화로 여쭤보고, 참여해 주신 분께 소정의 감사 선물(모바일 상품권)을 드려요. 시범 방문은 포항·경주에 빈집이 있는 분 중 몇 분과 무료로 해요. 인원이 정해져 있어 담당자가 연락드린 분과만 진행해요.
+          인터뷰는 30~40분 정도 전화로 여쭤보고, 참여해 주신 분께 소정의 감사 선물(모바일 상품권)을 드려요. 시범 방문은 포항·경주에 빈집이 있는 분 중 몇 분과 무료로 진행해 드려요. 인원이 정해져 있어 담당자가 연락드린 분과만 진행해요.
         </span>
       </div>
 

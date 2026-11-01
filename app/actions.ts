@@ -1,6 +1,6 @@
 'use server'
 
-import { expiryFrom, saveApplication, type ApplyState } from '../src/application'
+import { checkRecentApplications, expiryFrom, saveApplication, type ApplyState } from '../src/application'
 import { createDraftReport } from '../src/report'
 import { preparePhotos, type PreparedPhoto } from '../src/photos'
 import { MAX_PHOTOS } from '../src/photo-limits'
@@ -40,8 +40,17 @@ export async function submitApplication(
   }
   if (photoEntries.length > MAX_PHOTOS) errors.photos = '사진은 최대 6장까지 첨부해 주세요.'
   if (photoEntries.length && formData.get('photoAgree') == null) errors.photoAgree = '사진 이용에 동의하거나 첨부 사진을 삭제해 주세요.'
+  // 화면에 보이지 않는 칸이다. 사람이 채울 일이 없으니 값이 있으면 봇으로 본다.
+  if (text('website')) return { ok: false, errors: {}, message: '접수할 수 없는 입력입니다.' }
   if (Object.keys(errors).length > 0) {
     return { ok: false, errors, message: null }
+  }
+
+  const now = new Date()
+  const recent = await checkRecentApplications(contact, address, now)
+  if (recent === 'duplicate') return { ok: true, errors: {}, message: null }
+  if (recent === 'limited') {
+    return { ok: false, errors: {}, message: '이 번호로 신청이 여러 번 들어와 잠시 접수를 멈췄어요. 앞서 보내주신 신청은 담당자가 확인하고 있어요. 더 남길 내용은 010-7428-2624로 알려주세요.' }
   }
 
   let photos: PreparedPhoto[] = []
@@ -51,7 +60,6 @@ export async function submitApplication(
     return { ok: false, errors: { photos: '현재 사진 접수를 준비하고 있어요. 사진을 삭제하고 신청하거나 전화로 문의해 주세요.' }, message: null }
   }
 
-  const now = new Date()
   let applicationId: string | null = null
   try {
     const saved = await saveApplication({

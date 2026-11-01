@@ -34,16 +34,22 @@ async function compress(file: File): Promise<File> {
   } finally { URL.revokeObjectURL(url) }
 }
 
-export function PhotoPicker({ onChange, onBusyChange, disabled, error }: {
-  onChange: (photos: File[]) => void; onBusyChange: (busy: boolean) => void; disabled: boolean; error?: string
+/** `initial` restores already-chosen files when a step-by-step form remounts the picker. */
+export function PhotoPicker({ onChange, onBusyChange, disabled, error, initial = [] }: {
+  onChange: (photos: File[]) => void; onBusyChange: (busy: boolean) => void; disabled: boolean; error?: string; initial?: File[]
 }) {
-  const [photos, setPhotos] = useState<Photo[]>([])
+  const [photos, setPhotos] = useState<Photo[]>(() => initial.map(file => ({ id: crypto.randomUUID(), file, url: '' })))
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
-  const live = useRef<Photo[]>([])
+  const live = useRef<Photo[]>(photos)
   const busyRef = useRef(false)
   const mounted = useRef(true)
-  useEffect(() => { mounted.current = true; return () => { mounted.current = false; live.current.forEach(p => URL.revokeObjectURL(p.url)) } }, [])
+  useEffect(() => {
+    mounted.current = true
+    // Preview URLs are made here, not during render, so the cleanup below can always revoke them.
+    if (live.current.length) { const restored = live.current.map(p => ({ ...p, url: URL.createObjectURL(p.file) })); live.current = restored; setPhotos(restored) }
+    return () => { mounted.current = false; live.current.forEach(p => URL.revokeObjectURL(p.url)) }
+  }, [])
 
   function update(next: Photo[]) { live.current = next; setPhotos(next); onChange(next.map(p => p.file)) }
   async function select(input: HTMLInputElement) {
@@ -72,10 +78,10 @@ export function PhotoPicker({ onChange, onBusyChange, disabled, error }: {
     {photos.length > 0 && <ul className={styles.grid}>{photos.map((p, index) => <li key={p.id}>
       {/* Object URLs are local-only previews; no remote image optimizer is involved. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={p.url} alt={`첨부할 집 사진 ${index + 1}`} />
+      {p.url && <img src={p.url} alt={`첨부할 집 사진 ${index + 1}`} />}
       <div><span>사진 {index + 1}</span><button type="button" onClick={() => { URL.revokeObjectURL(p.url); update(photos.filter(x => x.id !== p.id)) }} aria-label={`사진 ${index + 1} 삭제`}>삭제</button></div>
     </li>)}</ul>}
-    <div id="photo-status" role="status">{(busy || photos.length > 0) && <p className={styles.help}>{busy ? '사진 용량을 줄이고 있어요…' : `${photos.length}장 선택했어요. 신청하기를 누르면 함께 전송돼요.`}</p>}</div>
+    <div id="photo-status" role="status">{busy && <p className={styles.help}>사진 용량을 줄이고 있어요…</p>}</div>
     {(message || error) && <p role="alert" className={styles.error}>{message || error}</p>}
   </fieldset>
 }
