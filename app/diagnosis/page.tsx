@@ -15,17 +15,10 @@ const GETS: Item[] = [
   { title: '다음 할 일', text: '먼저 챙길 서류와 전문가에게 물어볼 내용을 정리해요.' },
 ]
 
-/** Who gets what in the free pilot, from every applicant down to the few visited. */
-const TIERS: { who: string; text: string }[] = [
-  { who: '신청하신 모든 분', text: '신청 내용을 살펴보고, 진단을 진행할 수 있는지 문자나 이메일로 알려드려요.' },
-  { who: '일부 분', text: '집 정보와 사진, 주변 거래를 바탕으로 진단서를 보내드려요.' },
-  { who: '몇 분 · 포항·경주', text: '통화 인터뷰 후 직접 집에 가서 살펴보고, 그 결과까지 진단서에 담아요.' },
-]
-
 const STEPS: Item[] = [
-  { title: '주소로 집을 찾아 신청해요', text: '이 페이지 아래에서 주소로 집을 찾은 뒤, 집 상태와 고민, 연락처를 남겨요.' },
-  { title: '진행 여부를 알려드려요', text: '신청 내용을 살펴본 뒤, 무료 진단을 진행할 수 있는지와 예상 시기를 문자나 이메일로 알려드려요.' },
-  { title: '일부 분과는 인터뷰하고 집에 가 봐요', text: '30~40분 통화 인터뷰에 참여하시면 소정의 감사 선물을 드려요. 포항·경주에서는 몇 분의 집에 직접 가서 살펴봐요.' },
+  { title: '주소 조회 후 신청해 주세요', text: '이 페이지 아래에서 주소로 집을 찾은 뒤, 집 상태와 고민, 연락처를 남겨 주세요.' },
+  { title: '진행 여부를 알려드려요', text: '신청 내용을 살펴본 뒤, 진단을 진행할 수 있는지와 예상 시기를 7일 안에 문자나 메일로 알려드려요.' },
+  { title: '일부 분과는 인터뷰하고 집에 가 봐요', text: '선정된 일부 분께 20분 통화 인터뷰를 여쭤봐요. 참여하시면 소정의 감사 선물을 드려요. 포항·경주에서는 선정된 몇 분의 집을 직접 방문해 무료로 진단해 드려요.' },
   { title: '진단서를 받아요', text: '담당자가 직접 검토한 결과를 보내드려요. 받아보신 뒤 소감을 들려주세요.' },
 ]
 
@@ -34,7 +27,7 @@ const FACTS: Item[] = [
   { title: '담당자가 살펴보고 보내드려요', text: '건물·땅 자료와 주변 거래는 시스템으로 바로 찾아요. 그다음 담당자가 보내주신 사진과 함께 살펴보고 진단서를 써요. 그래서 며칠 걸릴 수 있어요.' },
   { title: '비용', text: '진단서와 시범 방문 모두 무료예요. 방문은 인원이 정해져 있어 연락드린 분과만 진행해요.' },
   { title: '지역에 따라 다른 점', text: '건축물·토지 정보와 선택지 비교는 어느 지역이든 같아요. 지원사업은 포항부터 정리하고 있어서 다른 지역은 확인할 곳을 안내해 드려요.' },
-  { title: '진단서가 대신하지 않는 것', text: '법률·세무·구조 안전 판단, 실제 거래 가격과 공사 견적은 전문가 확인이 필요해요.' },
+  { title: '진단서로 할 수 있는 것과 없는 것', text: '진단서는 공공자료와 보내주신 사진으로 선택지를 비교하고, 누구에게 무엇을 물어볼지 정리해 드려요. 법률·세금·건물 안전을 판단하거나 실제 팔릴 가격과 공사비를 정해 드리지는 않아요. 이런 부분은 진단서에 적힌 질문을 들고 전문가에게 확인해 주세요.' },
 ]
 
 export default function Diagnosis() {
@@ -48,8 +41,7 @@ export default function Diagnosis() {
         <h1>우리 집 상황과 선택지를<br />한 번에 정리해 드려요</h1></div>
         <Image className={s.serviceRabbit} src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={160} height={160} sizes="(max-width: 600px) 96px, 160px" priority />
       </div>
-      <p className={s.lead}>팔지, 고칠지, 계속 갖고 있을지 진단서로 정리해 드려요. 지금은 무료 시범 진단이라 신청을 살펴보고 일부 분께 보내드려요. 몇 분과는 인터뷰하고 무료 시범 방문도 해 드려요.</p>
-      <ol className={s.tiers} aria-label="참여 방식">{TIERS.map(t => <li key={t.who}><strong>{t.who}</strong><span>{t.text}</span></li>)}</ol>
+      <p className={s.lead}>팔지, 고칠지, 계속 갖고 있을지 진단서로 정리해 드려요. 지금은 무료 시범 진단이에요. 신청하시면 7일 안에 진행 여부를 문자나 메일로 알려드려요.</p>
       <div className={s.heroActions}>
         <a className={s.button} href="#apply">참여 신청하기<Arrow /></a>
         <Link className={s.textLink} href="/example-report">진단서 예시 먼저 보기 →</Link>
