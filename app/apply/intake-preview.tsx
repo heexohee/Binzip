@@ -54,6 +54,7 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
   const [photos, setPhotos] = useState<File[]>([])
   const [photoBusy, setPhotoBusy] = useState(false)
   const [agreed, setAgreed] = useState(false)
+  const [overseasAgreed, setOverseasAgreed] = useState(false)
   const [photoAgreed, setPhotoAgreed] = useState(false)
   const [done, setDone] = useState(false)
   const heading = useRef<HTMLHeadingElement>(null)
@@ -84,6 +85,7 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
       if (answers.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(answers.email)) { setError('이메일 주소를 확인해 주세요.'); return }
       if (photos.length && !photoAgreed) { setError('사진 이용에 동의하거나 첨부 사진을 삭제해 주세요.'); return }
       if (!agreed) { setError('개인정보 수집·이용에 동의해 주세요.'); return }
+      if (!overseasAgreed) { setError('개인정보 국외 이전에 동의해 주세요. 원하지 않으시면 전화로 상담해 드려요.'); return }
       didNavigate.current = true; setError(''); setReview(true); return
     }
     move(screens[index + 1])
@@ -110,7 +112,7 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
     if (answers.ownership) data.set('ownership', answers.ownership)
     if (answers.visit === 'yes') data.set('speed', '인터뷰·시범 방문 연락을 받아도 괜찮아요')
     data.set('contact', answers.phone || ''); if (answers.email) data.set('email', answers.email)
-    data.set('agree', 'on'); if (photoAgreed) data.set('photoAgree', 'on')
+    data.set('agree', 'on'); if (overseasAgreed) data.set('overseasAgree', 'on'); if (photoAgreed) data.set('photoAgree', 'on')
     photos.forEach(photo => data.append('photos', photo))
     data.set('website', honeypot.current?.value ?? '')
     try {
@@ -182,6 +184,7 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
         <label className={styles.question}>빈집 주소 <span className={styles.optional}>필수</span><input className={styles.input} value={answers.address} onChange={e => set('address', e.target.value)} placeholder="빈집의 도로명 또는 지번 주소" autoComplete="street-address" /></label>
         {choices('condition', '최근에 본 집 상태는 어떤가요?', ['큰 이상은 없어 보여요', '수리가 필요한 곳이 있어요', '최근 상태를 몰라요'])}
         <PhotoPicker initial={photos} onChange={setPhotos} onBusyChange={setPhotoBusy} disabled={submitting} />
+        <p className={styles.fieldHint}>사람 얼굴, 차량번호, 우편물·서류, 다른 사람의 연락처가 보이지 않게 찍어 주세요. 보이면 진단에 필요 없는 부분은 가리거나 사진을 지울 수 있어요.</p>
       </>}
       {screen === 'goals' && <>
         <fieldset className={styles.question}><legend className={styles.srOnly}>궁금한 내용 · 복수 선택</legend><div className={styles.goalGrid}>
@@ -203,12 +206,14 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
         {selected('sell') && choices('timing', '매매 시기를 생각해 두셨나요?', ['가능한 빨리', '서두르지 않아도 돼요', '가격부터 알고 싶어요'], '매매')}
       </>}
       {screen === 'contact' && <>
-        <label className={styles.question}>연락받을 휴대폰 번호 <span className={styles.optional}>필수</span><span id="phone-hint" className={styles.fieldHint}>숫자만 적어도 돼요. 신청 내용 확인 연락에만 써요.</span><input className={styles.input} type="tel" inputMode="tel" autoComplete="tel" maxLength={20} aria-describedby="phone-hint" value={answers.phone || ''} onChange={e => set('phone', e.target.value)} placeholder="예: 010-1234-5678" /></label>
+        <label className={styles.question}>연락받을 휴대폰 번호 <span className={styles.optional}>필수</span><span id="phone-hint" className={styles.fieldHint}>숫자만 적어도 돼요. 진행 안내와 진단 관련 연락에 써요.</span><input className={styles.input} type="tel" inputMode="tel" autoComplete="tel" maxLength={20} aria-describedby="phone-hint" value={answers.phone || ''} onChange={e => set('phone', e.target.value)} placeholder="예: 010-1234-5678" /></label>
         <label className={styles.question}>이메일 <span className={styles.optional}>선택</span><input className={styles.input} type="email" autoComplete="email" value={answers.email || ''} onChange={e => set('email', e.target.value)} placeholder="예: name@example.com" /></label>
-        <div><label className={styles.option}><input type="checkbox" checked={answers.visit === 'yes'} onChange={e => set('visit', e.target.checked ? 'yes' : '')} />인터뷰·시범 방문 연락을 받아도 괜찮아요 (선택)</label><p className={styles.nextHint}>인터뷰는 20분 정도 전화로 여쭤보고, 참여해 주신 분께 소정의 감사 선물을 드려요. 시범 방문은 포항·경주에 빈집이 있는 분 중 몇 분과 무료로 진행해 드려요.</p></div>
-        {photos.length > 0 && <label className={styles.option}><input type="checkbox" checked={photoAgreed} onChange={e => setPhotoAgreed(e.target.checked)} />첨부 사진을 담당자가 집 상태 확인과 진단서 작성에 쓰는 데 동의해요. 사진은 6개월 보관하고, 공개 진단서에 사진 자체를 올리지 않아요.</label>}
+        <div><label className={styles.option}><input type="checkbox" checked={answers.visit === 'yes'} onChange={e => set('visit', e.target.checked ? 'yes' : '')} />인터뷰·시범 방문 연락을 받아도 괜찮아요 (선택)</label><p className={styles.nextHint}>인터뷰는 20분 정도 전화로 여쭤보고, 인터뷰를 마친 분께 모바일 상품권을 드려요. 시범 방문은 포항·경주에 빈집이 있는 분 중 일부께 따로 연락드려 무료로 진행해요. 체크하셔도 인터뷰·방문이 정해지는 것은 아니에요.</p></div>
+        {photos.length > 0 && <label className={styles.option}><input type="checkbox" checked={photoAgreed} onChange={e => setPhotoAgreed(e.target.checked)} />첨부 사진을 담당자가 집 상태 확인과 진단서 작성에 쓰는 데 동의해요. 사진은 최대 6개월 보관하고, 공개 진단서에 사진 자체를 올리지 않아요.</label>}
         <div><label className={styles.option}><input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} />개인정보 수집·이용에 동의해요 (필수)</label>
-          <p className={styles.nextHint}>주소·전화번호·이메일(선택)과 집에 대해 답해주신 내용, 인터뷰·시범 방문 참여 의향을 진단과 이번 신청에 대한 연락에만 써요. 인터뷰에 참여하시면 감사 선물 발송에도 전화번호를 써요. 신청일부터 6개월 뒤 지우고, 그 전에 말씀하시면 바로 지워요. 동의하지 않으면 신청이 접수되지 않아요. <Link className={styles.inlineLink} href="/privacy" target="_blank">개인정보 처리방침 보기</Link></p></div>
+          <p className={styles.nextHint}>집 주소·필지번호, 휴대폰 번호, 집 상태·궁금한 내용·소유 관계 답변을 신청 접수, 공공자료 확인, 진단서 작성과 진행·결과 안내에 써요. 이메일과 사진을 남기시면 같은 목적으로 써요. 인터뷰·방문 연락은 위에서 따로 체크하신 분께만 드리고, 인터뷰를 마치시면 감사 선물 발송에도 전화번호를 써요. 접수일부터 최대 6개월 보관하고, 그 전에 필요가 없어지거나 삭제를 요청하시면 지체 없이 지워요. 동의하지 않으실 수 있지만, 그러면 신청이 접수되지 않아요. <Link className={styles.inlineLink} href="/privacy" target="_blank">개인정보 처리방침 보기</Link></p></div>
+        <div><label className={styles.option}><input type="checkbox" checked={overseasAgreed} onChange={e => setOverseasAgreed(e.target.checked)} />개인정보 국외 이전에 동의해요 (필수)</label>
+          <p className={styles.nextHint}>신청 내용은 해외 업체의 서버에 저장·처리돼요. 제출할 때 암호화된 통신으로 보내요. Supabase Pte. Ltd.(일본 도쿄): 신청 내용과 사진 저장, 접수일부터 최대 6개월. Vercel Inc.(대한민국 서울·미국): 사이트 운영과 신청 처리. Plus Five Five, Inc.(Resend, 미국): 운영자 접수 알림 메일, 사진 제외. 동의하지 않으셔도 {PHONE}로 전화 주시면 온라인에 저장하지 않고 상담해 드려요. 업체 연락처는 처리방침에서 볼 수 있어요.</p></div>
       </>}
       {error && <p ref={errorRef} className={styles.error} role="alert">{error}</p>}
       <div className={styles.navigation}>{index > 0 && <button className={styles.secondary} type="button" onClick={() => move(screens[index - 1])}>이전</button>}<button className={styles.primary} type="submit" disabled={photoBusy}>{screen === 'contact' ? '입력 내용 확인하기' : '다음'}<span aria-hidden="true"> →</span></button></div>

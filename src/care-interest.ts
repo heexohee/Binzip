@@ -1,6 +1,6 @@
 import { regionLabel } from './regions'
 
-export const CARE_CONSENT_VERSION = '2026-11-01-v5'
+export const CARE_CONSENT_VERSION = '2026-11-02-v6'
 export const OTHER_REGION_RESIDENCE = '다른 시·군'
 export const RESIDENCES = ['빈집과 같은 시·군', '다른 시·군', '해외', '답변하지 않음'] as const
 export const INTENTS = ['보유하며 관리', '수리 후 사용', '매각 검토', '철거 검토', '아직 미정'] as const
@@ -30,6 +30,7 @@ export function validateInterest(data: FormData) {
   if (services.some(v => !(SERVICES as readonly string[]).includes(v))) errors.services = '필요한 관리 항목을 다시 선택해 주세요.'
   const pick = (name: string, choices: readonly string[]) => { const v = text(name); return choices.includes(v) ? v : null }
   if (data.get('agree') !== 'on') errors.agree = '수집 항목과 연락 목적을 읽고 동의해 주세요.'
+  if (data.get('overseasAgree') !== 'on') errors.overseasAgree = '개인정보 국외 이전에 동의해 주세요. 원하지 않으시면 전화로 의견을 들려주세요.'
   if (text('website')) errors.form = '접수할 수 없는 입력입니다.'
   if (!/^[0-9a-f-]{36}$/i.test(text('requestId'))) errors.form = '화면을 새로고침한 뒤 다시 신청해 주세요.'
   const source = (SOURCES as readonly string[]).includes(text('source')) ? text('source') : 'website'
