@@ -16,3 +16,15 @@
 .form select {width:100%;min-height:52px;border:1px solid var(--border-control);border-radius:8px;padding:12px;background:white;font:inherit;font-weight:400;color:var(--text-primary)}
 .form select:disabled {background:var(--surface-soft);color:var(--text-secondary)}
 .follow {margin:0 0 8px 22px;padding:4px 0 8px 16px;border-left:2px solid var(--brand-primary)}.follow legend {font-weight:650;margin-bottom:8px}
+.steps {display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0;padding:0;list-style:none}
+.steps li {display:grid;justify-items:center;gap:6px;padding-bottom:10px;border-bottom:3px solid var(--border-subtle);color:var(--text-secondary);font-size:15px;font-weight:600}
+.steps li span {display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--surface-soft);color:var(--text-secondary);font-size:14px;font-weight:700}
+.steps li[aria-current=step] {border-color:var(--brand-primary);color:var(--brand-primary)}
+.steps li[aria-current=step] span {background:var(--brand-primary);color:white}
+.steps li[data-complete=true] {border-color:var(--brand-primary)}
+.steps li[data-complete=true] span {background:var(--surface-soft);color:var(--brand-primary)}
+.stepTitle {display:grid;gap:4px;margin:0;font-size:1.375rem;line-height:1.4;scroll-margin-top:96px}.stepTitle:focus {outline:none}
+.stepTitle small {font-size:15px;font-weight:650;color:var(--brand-primary)}
+.stepBody {display:grid;gap:28px}.stepBody[hidden] {display:none}
+.stepNav {display:flex;gap:10px}.stepNav button[type=submit] {flex:1}
+.form .secondary {background:white;color:var(--brand-primary);border:1px solid var(--brand-primary);padding:14px 20px}
