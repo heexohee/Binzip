@@ -12,6 +12,7 @@
 .paths { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
 /* Each card fills its row so both choices end at the same height. */
 .paths > li { display: grid; }
+.pathsNote { margin: 14px 0 0; color: var(--text-secondary); font-size: 1rem; line-height: 1.6; }
 .path { display: grid; align-content: start; height: 100%; gap: 6px; padding: 20px; border: 1px solid var(--border-subtle); border-radius: var(--radius-card); background: var(--surface-raised); color: var(--text-primary); }
 .path:hover { border-color: var(--brand-primary); }
 .pathQuote { margin: 0; font-size: 1.0625rem; font-weight: 600; line-height: 1.55; }
@@ -83,7 +84,7 @@ main.service { padding-top: 0; min-height: 70vh; }
 .reference h2 { margin: 0 0 16px; font-size: var(--type-card); }
 .reference ul { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
 .reference li strong { display: block; font-size: var(--type-help); }
-.reference li span { color: var(--text-secondary); font-size: var(--type-help); line-height: 1.6; }
+.reference li span { display: block; margin-top: 4px; color: var(--text-secondary); font-size: var(--type-help); line-height: 1.6; }
 
 .skipLink { position: absolute; left: 12px; top: -60px; z-index: 30; padding: 8px 12px; border-radius: var(--radius-compact); background: var(--brand-primary); color: #fff !important; }
 .skipLink:focus { top: 12px; }
@@ -132,11 +133,3 @@ main.service { padding-top: 0; min-height: 70vh; }
 .serviceRabbit { width: 160px; height: auto; flex-shrink: 0; }
 @media (max-width: 600px) { .serviceRabbit { width: 96px; } }
 
-/* Diagnosis pilot tiers: each row narrows from every applicant to the few visited. */
-.tiers { display: grid; gap: 0; margin: 20px 0 0; padding: 0; list-style: none; max-width: 36em; border: 1px solid var(--border-subtle); border-radius: var(--radius-card); background: var(--surface-raised); overflow: hidden; }
-.tiers li { display: grid; grid-template-columns: 9.5em 1fr; gap: 12px; padding: 14px 16px; }
-.tiers li + li { border-top: 1px solid var(--border-subtle); }
-.tiers li:last-child { background: var(--surface-soft); }
-.tiers strong { color: var(--brand-primary); font-size: .9375rem; }
-.tiers span { color: var(--text-secondary); font-size: var(--type-help); line-height: 1.6; }
-@media (max-width: 600px) { .tiers li { grid-template-columns: 1fr; gap: 2px; } }

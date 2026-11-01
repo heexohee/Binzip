@@ -9,9 +9,9 @@ import s from './landing.module.css'
 export const maxDuration = 60
 
 const BEFORE_DECIDING: Item[] = [
-  { title: '철거 후 세금', text: '철거 전후 재산세가 어떻게 달라지는지 소재지 세무 부서에 확인해요.' },
-  { title: '지원 조건과 남는 비용', text: '지원액만이 아니라 본인 부담과 철거 후 땅 사용 조건을 최신 공고로 확인해요.' },
-  { title: '집과 땅의 소유 관계', text: '소유자가 다르거나 상속 정리가 끝나지 않았다면 전문가 확인이 먼저예요.' },
+  { title: '집과 땅의 주인', text: '집과 땅 주인이 다르거나 상속 정리가 끝나지 않았다면, 팔기·고치기·철거 모두 이것부터 정리해야 해요. 법무사에게 물어보세요.' },
+  { title: '달라지는 세금', text: '팔면 양도소득세, 철거하면 재산세가 달라질 수 있어요. 정하기 전에 세무사나 소재지 세무 부서에 확인해요.' },
+  { title: '지원사업 조건', text: '수리·철거 지원금은 본인 부담금과 지켜야 할 조건이 있어요. 금액만 보지 말고 최신 공고를 확인해요.' },
 ]
 
 export default function Home() {
@@ -32,18 +32,19 @@ export default function Home() {
           <h2 className={s.chooseTitle} id="choose-title">지금 어떤 고민이세요?</h2>
           <ul className={s.paths} aria-labelledby="choose-title">
             <li><Link className={s.path} href="/diagnosis">
-              <span className={s.status}>무료 시범 진단 · 전국 신청</span>
+              <span className={s.status}>무료 시범 진단 · 전국</span>
               <p className={s.pathQuote}>“이 집을 어떻게 해야 할지 모르겠어요.”</p>
               <span className={s.pathName}>빈집 진단 알아보기<Arrow /></span>
               <p className={s.pathDesc}>선택지별 비용과 조건을 진단서로 정리해 드려요.</p>
             </Link></li>
             <li><Link className={s.path} href="/management">
-              <span className={`${s.status} ${s.statusPending}`}>서비스 준비 중</span>
+              <span className={`${s.status} ${s.statusPending}`}>준비 중 · 의견 받는 중</span>
               <p className={s.pathQuote}>“계속 갖고 있을 건데, 누가 돌봐주죠?”</p>
               <span className={s.pathName}>빈집 관리 알아보기<Arrow /></span>
-              <p className={s.pathDesc}>필요한 관리와 요금에 의견을 남겨 주세요. 일부 분과는 인터뷰나 시범 방문을 해요.</p>
+              <p className={s.pathDesc}>필요한 관리와 적당한 금액을 들려주세요.</p>
             </Link></li>
           </ul>
+          <p className={s.pathsNote}>어느 쪽이든 남겨 주신 내용은 담당자가 직접 읽고 연락드려요. 일부 분께는 전화 인터뷰를, 포항·경주에 빈집이 있는 분께는 방문을 따로 여쭤봐요.</p>
         </section>
 
         <section className={s.reference} aria-labelledby="reference-title">

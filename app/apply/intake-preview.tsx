@@ -141,7 +141,7 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
       <p>접수 완료</p>
       <h2 ref={heading} tabIndex={-1}>신청이 접수됐어요</h2>
     </header>
-    <p className={styles.nextHint}>담당자가 신청 내용을 살펴보고, <strong>7일 안에</strong> 문자로 진행 여부를 알려드려요. 이메일을 남기셨다면 진단서는 메일로 보내드려요.</p>
+    <p className={styles.nextHint}>담당자가 신청 내용을 살펴보고, <strong>7일 안에</strong> 문자나 메일로 진행 여부를 알려드려요. 이메일을 남기셨다면 진단서는 메일로 보내드려요.</p>
     <p className={styles.nextHint}>연락이 없거나 급하면 전화 주세요 · <a href={`tel:${PHONE.replaceAll('-', '')}`}>{PHONE}</a></p>
     <div className={styles.navigation}>
       <Link className={styles.secondary} href="/">처음으로</Link>
@@ -170,7 +170,7 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
       {review ? <>
         <dl className={styles.summary}>{rows.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}<div><dt>첨부 사진</dt><dd>{photos.length}장</dd></div></dl>
         <button className={styles.edit} type="button" disabled={submitting} onClick={() => { setReview(false); move('house') }}>입력 내용 수정하기</button>
-        <p className={styles.nextHint}>제출하면 신청이 접수돼요. 담당자가 살펴보고 7일 안에 문자로 진행 여부를 알려드려요.</p>
+        <p className={styles.nextHint}>제출하면 신청이 접수돼요. 담당자가 살펴보고 7일 안에 문자나 메일로 진행 여부를 알려드려요.</p>
         {submitting && <p role="status">신청을 보내고 있어요.</p>}
         {error && <p ref={errorRef} className={styles.error} role="alert">{error}</p>}
         <div className={styles.navigation}>
@@ -205,7 +205,7 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
       {screen === 'contact' && <>
         <label className={styles.question}>연락받을 휴대폰 번호 <span className={styles.optional}>필수</span><span id="phone-hint" className={styles.fieldHint}>숫자만 적어도 돼요. 신청 내용 확인 연락에만 써요.</span><input className={styles.input} type="tel" inputMode="tel" autoComplete="tel" maxLength={20} aria-describedby="phone-hint" value={answers.phone || ''} onChange={e => set('phone', e.target.value)} placeholder="예: 010-1234-5678" /></label>
         <label className={styles.question}>이메일 <span className={styles.optional}>선택</span><input className={styles.input} type="email" autoComplete="email" value={answers.email || ''} onChange={e => set('email', e.target.value)} placeholder="예: name@example.com" /></label>
-        <div><label className={styles.option}><input type="checkbox" checked={answers.visit === 'yes'} onChange={e => set('visit', e.target.checked ? 'yes' : '')} />인터뷰·시범 방문 연락을 받아도 괜찮아요 (선택)</label><p className={styles.nextHint}>인터뷰는 30~40분 전화로 여쭤보고, 참여해 주신 분께 소정의 감사 선물을 드려요. 시범 방문은 포항·경주에 빈집이 있는 분 중 몇 분과 무료로 진행해 드려요.</p></div>
+        <div><label className={styles.option}><input type="checkbox" checked={answers.visit === 'yes'} onChange={e => set('visit', e.target.checked ? 'yes' : '')} />인터뷰·시범 방문 연락을 받아도 괜찮아요 (선택)</label><p className={styles.nextHint}>인터뷰는 20분 정도 전화로 여쭤보고, 참여해 주신 분께 소정의 감사 선물을 드려요. 시범 방문은 포항·경주에 빈집이 있는 분 중 몇 분과 무료로 진행해 드려요.</p></div>
         {photos.length > 0 && <label className={styles.option}><input type="checkbox" checked={photoAgreed} onChange={e => setPhotoAgreed(e.target.checked)} />첨부 사진을 담당자가 집 상태 확인과 진단서 작성에 쓰는 데 동의해요. 사진은 6개월 보관하고, 공개 진단서에 사진 자체를 올리지 않아요.</label>}
         <div><label className={styles.option}><input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} />개인정보 수집·이용에 동의해요 (필수)</label>
           <p className={styles.nextHint}>주소·전화번호·이메일(선택)과 집에 대해 답해주신 내용, 인터뷰·시범 방문 참여 의향을 진단과 이번 신청에 대한 연락에만 써요. 인터뷰에 참여하시면 감사 선물 발송에도 전화번호를 써요. 신청일부터 6개월 뒤 지우고, 그 전에 말씀하시면 바로 지워요. 동의하지 않으면 신청이 접수되지 않아요. <Link className={styles.inlineLink} href="/privacy" target="_blank">개인정보 처리방침 보기</Link></p></div>
