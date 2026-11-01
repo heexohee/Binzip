@@ -35,6 +35,7 @@ export async function submitApplication(
     errors.email = '이메일 주소를 확인하거나 비워 주세요.'
   }
   if (!agreed) errors.agree = '동의에 체크해 주세요.'
+  if (formData.get('overseasAgree') == null) errors.overseasAgree = '개인정보 국외 이전에 동의해 주세요.'
   for (const [name, limit] of Object.entries({ address: 300, condition: 3000, taxNote: 2000, contact: 50, email: 254, acquisition: 100, ownership: 100, concern: 100, speed: 200, channel: 100 })) {
     if ((name === 'concern' ? concern : text(name)).length > limit) errors[name] = `입력 내용을 ${limit}자 이내로 줄여 주세요.`
   }

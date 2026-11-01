@@ -47,7 +47,7 @@ export default function Management() {
       <div className={s.block}>
         <h2 className={s.blockTitle}><span className={s.blockMark} aria-hidden="true">🛠️</span>준비 중인 관리</h2>
         <Gets items={PLANS} planned />
-        <p className={s.notice}>시범 방문은 포항·경주부터 해요. 요금과 서비스 범위에 대해 의견을 받고 있어요.</p>
+        <p className={s.notice}>위 내용은 검토 중인 관리 예시예요. 지금은 정기 관리를 제공하지 않고, 방문 범위·요금·지역도 정해지지 않았어요. 시범 방문은 포항·경주부터 해요.</p>
       </div>
 
       <div className={s.block}>
