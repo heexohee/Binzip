@@ -32,6 +32,7 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
   const [submitting, setSubmitting] = useState(false)
   const submittingRef = useRef(false)
   const [error, setError] = useState('')
+  const errorRef = useRef<HTMLParagraphElement>(null)
   const [photos, setPhotos] = useState<File[]>([])
   const [photoBusy, setPhotoBusy] = useState(false)
   const [agreed, setAgreed] = useState(false)
@@ -46,6 +47,9 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
   useEffect(() => {
     if (didNavigate.current) heading.current?.focus()
   }, [screen, review, done])
+  useEffect(() => {
+    if (error) errorRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+  }, [error])
   function move(next: string | undefined) {
     if (!next) return
     didNavigate.current = true; setError(''); setScreen(next)
@@ -100,11 +104,11 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
   const rows = [
     ['빈집 주소', answers.address], ['최근 집 상태', answers.condition || '확인 필요'],
     ['궁금한 내용', GOALS.filter(goal => goals.includes(goal.value)).map(goal => goal.title).join(' · ')],
-    ...(selected('demolish') ? [['집 안의 짐', answers.belongings || '확인 필요'], ['차량 접근', answers.access || '확인 필요']] : []),
-    ...(selected('repair') ? [['수리할 곳', damage.join(' · ') || '확인 필요'], ['수리 후 용도', answers.use || '미정']] : []),
     ['소유관계', answers.ownership || '확인 필요'],
     ...(answers.ownership === '공동 소유' || answers.ownership === '상속 정리 중' ? [['가족·공동 소유자 협의', answers.agreement || '확인 필요']] : []),
     ...(selected('sell') ? [['매매 시기', answers.timing || '미정']] : []),
+    ...(selected('repair') ? [['수리할 곳', damage.join(' · ') || '확인 필요'], ['수리 후 용도', answers.use || '미정']] : []),
+    ...(selected('demolish') ? [['집 안의 짐', answers.belongings || '확인 필요'], ['차량 접근', answers.access || '확인 필요']] : []),
     ['인터뷰·시범 방문 연락', answers.visit === 'yes' ? '받아도 괜찮아요' : '선택하지 않음'],
     ['휴대폰 번호', answers.phone], ...(answers.email ? [['이메일', answers.email]] : []),
   ]
@@ -133,7 +137,7 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
     </ol>
     <div className={styles.card}>
       <header className={styles.heading}>
-        <p>{review ? '4단계 · 확인·제출' : `${phase + 1}단계${phase === 1 ? ` · ${index} / ${screens.length - 2}` : ''}`}</p>
+        <p>{review ? '4단계 · 확인·제출' : `${phase + 1}단계${phase === 1 && screen !== 'goals' ? ` · ${index - 1} / ${screens.length - 3}` : ''}`}</p>
         <h2 ref={heading} tabIndex={-1}>{review ? '제출 전에 내용을 확인해 주세요' : TITLES[screen]}</h2>
         {!review && <p>{screen === 'goals' ? '여러 개 골라도 괜찮아요.' : screen === 'contact' ? '휴대폰 번호는 필수, 이메일은 선택이에요.' : '아는 만큼 답해 주세요. 모르는 부분은 확인이 필요한 항목으로 남겨요.'}</p>}
       </header>
@@ -143,7 +147,7 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
         <button className={styles.edit} type="button" disabled={submitting} onClick={() => { setReview(false); move('house') }}>입력 내용 수정하기</button>
         <p className={styles.nextHint}>제출하면 신청이 접수돼요. 담당자가 살펴보고 7일 안에 문자로 진행 여부를 알려드려요.</p>
         {submitting && <p role="status">신청을 보내고 있어요.</p>}
-        {error && <p className={styles.error} role="alert">{error}</p>}
+        {error && <p ref={errorRef} className={styles.error} role="alert">{error}</p>}
         <div className={styles.navigation}>
           <button className={styles.secondary} type="button" disabled={submitting} onClick={() => { setReview(false); move('contact') }}>이전</button>
           <button className={styles.primary} type="submit" disabled={submitting}>{submitting ? '접수 중…' : '신청 접수하기'}<span aria-hidden="true"> →</span></button>
@@ -179,9 +183,9 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
         <div><label className={styles.option}><input type="checkbox" checked={answers.visit === 'yes'} onChange={e => set('visit', e.target.checked ? 'yes' : '')} />인터뷰·시범 방문 연락을 받아도 괜찮아요 (선택)</label><p className={styles.nextHint}>인터뷰는 30~40분 전화로 여쭤보고, 참여해 주신 분께 소정의 감사 선물을 드려요. 시범 방문은 포항·경주에 빈집이 있는 분 중 몇 분과 무료로 해요.</p></div>
         {photos.length > 0 && <label className={styles.option}><input type="checkbox" checked={photoAgreed} onChange={e => setPhotoAgreed(e.target.checked)} />첨부 사진을 담당자가 집 상태 확인과 진단서 작성에 쓰는 데 동의해요. 사진은 6개월 보관하고, 공개 진단서에 사진 자체를 올리지 않아요.</label>}
         <div><label className={styles.option}><input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} />개인정보 수집·이용에 동의해요 (필수)</label>
-          <p className={styles.nextHint}>주소·전화번호·이메일(선택)과 집에 대해 답해주신 내용, 인터뷰·시범 방문 참여 의향을 진단과 이번 신청에 대한 연락에만 써요. 인터뷰에 참여하시면 감사 선물 발송에도 전화번호를 써요. 신청일부터 6개월 뒤 지우고, 그 전에 말씀하시면 바로 지워요. 동의하지 않으면 신청이 접수되지 않아요. <Link href="/privacy" target="_blank">개인정보 처리방침</Link></p></div>
+          <p className={styles.nextHint}>주소·전화번호·이메일(선택)과 집에 대해 답해주신 내용, 인터뷰·시범 방문 참여 의향을 진단과 이번 신청에 대한 연락에만 써요. 인터뷰에 참여하시면 감사 선물 발송에도 전화번호를 써요. 신청일부터 6개월 뒤 지우고, 그 전에 말씀하시면 바로 지워요. 동의하지 않으면 신청이 접수되지 않아요. <Link className={styles.inlineLink} href="/privacy" target="_blank">개인정보 처리방침 보기</Link></p></div>
       </>}
-      {error && <p className={styles.error} role="alert">{error}</p>}
+      {error && <p ref={errorRef} className={styles.error} role="alert">{error}</p>}
       <div className={styles.navigation}>{index > 0 && <button className={styles.secondary} type="button" onClick={() => move(screens[index - 1])}>이전</button>}<button className={styles.primary} type="submit" disabled={photoBusy}>{screen === 'contact' ? '입력 내용 확인하기' : '다음'}<span aria-hidden="true"> →</span></button></div>
       </>}
     </div>

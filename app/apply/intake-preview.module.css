@@ -46,3 +46,5 @@
   .goal { padding: 16px; }
   .summary > div { grid-template-columns: 100px minmax(0,1fr); gap: 12px; }
 }
+
+.inlineLink { color: var(--brand-primary); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }

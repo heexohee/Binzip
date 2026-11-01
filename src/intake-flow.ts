@@ -8,8 +8,8 @@ export function toggleGoal(current: IntakeGoal[], goal: IntakeGoal): IntakeGoal[
 
 export function intakeScreens(goals: IntakeGoal[]): string[] {
   const includes = (goal: IntakeGoal) => goals.includes('all') || goals.includes(goal)
-  return ['house', 'goals',
-    ...(includes('demolish') ? ['demolition'] : []),
+  return ['house', 'goals', 'ownership',
     ...(includes('repair') ? ['repair'] : []),
-    'ownership', 'contact']
+    ...(includes('demolish') ? ['demolition'] : []),
+    'contact']
 }
