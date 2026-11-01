@@ -93,7 +93,7 @@ async function notifyByEmail(app: Application): Promise<string | null> {
     '취득 경위: ' + or(app.acquisition),
     '소유 관계: ' + or(app.ownership),
     '궁금한 내용: ' + or(app.concern),
-    '희망 소요: ' + or(app.speed),
+    '인터뷰·방문 의향: ' + or(app.speed),
     '',
     '받을 방법: ' + or(app.channel),
     '전화번호: ' + app.contact,
