@@ -10,5 +10,5 @@ function Intro({ otherRegion }: { otherRegion: boolean }) {
 }
 export default async function Page({ searchParams }: { searchParams: Promise<{ source?: string | string[] }> }) {
   const { source } = await searchParams
-  return <div className={s.page}><HomeHeader/><main><Intro otherRegion={source === 'other-region'}/><aside className={s.notice}><strong>전국 어디서든 의견을 남길 수 있어요.</strong><p>시범 방문은 포항부터 해요. 의견을 남겨도 비용이 들지 않고, 신청·결제·계약·방문 예약이 되지 않아요.</p></aside><InterestForm/><a href="tel:01074282624">입력이 어려우면 전화로 물어보기 · 010-7428-2624</a></main></div>
+  return <div className={s.page}><HomeHeader/><main><Intro otherRegion={source === 'other-region'}/><aside className={s.notice}><strong>전국 어디서든 의견을 남길 수 있어요.</strong><p>시범 방문은 포항·경주부터 해요. 의견을 남겨도 비용이 들지 않고, 신청·결제·계약·방문 예약이 되지 않아요.</p></aside><InterestForm/><a href="tel:01074282624">입력이 어려우면 전화로 물어보기 · 010-7428-2624</a></main></div>
 }
