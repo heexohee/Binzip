@@ -4,11 +4,11 @@ export const CARE_CONSENT_VERSION = '2026-11-02-v6'
 export const OTHER_REGION_RESIDENCE = '다른 시·군'
 export const RESIDENCES = ['빈집과 같은 시·군', '다른 시·군', '해외', '답변하지 않음'] as const
 export const INTENTS = ['보유하며 관리', '수리 후 사용', '매각 검토', '철거 검토', '아직 미정'] as const
-export const BUDGETS = ['월 3만 원 이하', '월 5만 원 이하', '월 10만 원 이하', '월 10만 원 초과도 검토', '유료 이용 의사 없음', '아직 모르겠어요'] as const
+export const BUDGETS = ['월 3만 원 이하', '월 3만 원 초과~5만 원 이하', '월 5만 원 초과~10만 원 이하', '월 10만 원 초과도 검토', '유료 이용 의사 없음', '아직 모르겠어요'] as const
 export const SERVICES = ['정기 방문·외관 사진', '집 안 환기·곰팡이·누수 확인', '잡초·마당 정리', '비·태풍 뒤 상태 확인', '수리업체 문의·일정 확인'] as const
 export const INHERITANCE = ['상속 정리가 끝났어요', '정리하고 있어요', '아직 시작하지 않았어요', '상속받은 집이 아니에요', '잘 모르겠어요'] as const
 export const LAST_VISITS = ['한 달 안', '1~6개월 전', '6개월~1년 전', '1년 넘었어요', '기억나지 않아요'] as const
-export const CURRENT_SPENDS = ['거의 들지 않아요', '월 3만 원 이하', '월 3~10만 원', '월 10만 원 넘게', '잘 모르겠어요'] as const
+export const CURRENT_SPENDS = ['지출 없음', '월 0원 초과~3만 원 이하', '월 3만 원 초과~10만 원 이하', '월 10만 원 넘게', '잘 모르겠어요'] as const
 export const SOURCES = ['instagram', 'website', 'example-report', 'unknown-address', 'family-share', 'other-region'] as const
 export type InterestState = { ok: boolean; message: string; errors: Record<string, string> }
 export function validateInterest(data: FormData) {
@@ -35,6 +35,7 @@ export function validateInterest(data: FormData) {
   if (!/^[0-9a-f-]{36}$/i.test(text('requestId'))) errors.form = '화면을 새로고침한 뒤 다시 신청해 주세요.'
   const source = (SOURCES as readonly string[]).includes(text('source')) ? text('source') : 'website'
   const answers = {
+    survey_version: '2026-11-02-exterior-v1', price_basis: '월 1회 외관 확인·사진·메모; 실내 관리 및 작업비 제외',
     owner_region: ownerRegion,
     inheritance: pick('inheritance', INHERITANCE), last_visit: pick('lastVisit', LAST_VISITS), current_spend: pick('currentSpend', CURRENT_SPENDS),
   }
