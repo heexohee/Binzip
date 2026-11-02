@@ -9,7 +9,7 @@ import s from '../landing.module.css'
 export const metadata = { title: '빈집 관리 | 빈집진단서' }
 
 const PLANS: Item[] = [
-  { title: '정기 방문', text: '한 달에 한 번 집 안팎을 둘러봐요. 창문을 열어 환기하고, 곰팡이나 물이 새는 곳이 없는지도 확인해요.' },
+  { title: '정기 방문', text: '한 달에 한 번 집 바깥 상태를 살펴보는 관리를 준비하고 있어요. 설문에서도 이 범위의 희망 요금을 여쭤봐요.' },
   { title: '사진과 메모', text: '다녀온 뒤 사진과 메모로 집 상태를 알려드려요.' },
   { title: '필요한 작업 확인', text: '제초나 수리가 필요하면 범위와 비용을 알려드려요. (작업비는 따로 발생해요.)' },
 ]
@@ -17,7 +17,7 @@ const PLANS: Item[] = [
 const REPORT_SKETCH: Item[] = [
   { title: '다녀온 날', text: '방문 날짜와 머문 시간' },
   { title: '바깥 상태 사진', text: '지붕·담장·마당·대문을 같은 자리에서 찍어 지난번과 비교' },
-  { title: '집 안 상태', text: '“환기했어요 · 곰팡이·누수는 보이지 않았어요” 같은 확인 결과' },
+  { title: '확인하지 못한 곳', text: '집 안이나 접근하기 어려운 곳은 확인하지 못했다고 따로 적어요.' },
   { title: '눈에 띈 점', text: '“마당 풀이 무릎 높이까지 자랐어요” 같은 짧은 메모' },
   { title: '필요해 보이는 일', text: '제초·배수로 정리처럼 맡길지 고를 수 있는 작업과 예상 범위' },
 ]
@@ -47,7 +47,7 @@ export default function Management() {
       <div className={s.block}>
         <h2 className={s.blockTitle}><span className={s.blockMark} aria-hidden="true">🛠️</span>준비 중인 관리</h2>
         <Gets items={PLANS} planned />
-        <p className={s.notice}>위 내용은 검토 중인 관리 예시예요. 지금은 정기 관리를 제공하지 않고, 방문 범위·요금·지역도 정해지지 않았어요. 시범 방문은 포항·경주부터 해요.</p>
+        <p className={s.notice}>실내 환기·곰팡이·누수 확인은 추가로 필요한지 의견을 듣는 항목이며, 이번 가격 질문에는 포함하지 않아요. 위 내용은 검토 중인 관리 예시예요. 지금은 정기 관리를 제공하지 않고, 방문 범위·요금·지역도 정해지지 않았어요. 시범 방문은 포항·경주부터 해요.</p>
       </div>
 
       <div className={s.block}>

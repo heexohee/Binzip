@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict'
 import { validateInterest, CARE_CONSENT_VERSION } from '../src/care-interest'
 import { submitInterest } from '../app/interest/actions'
-function valid() {const f = new FormData(); for (const [k,v] of Object.entries({requestId:'00000000-0000-4000-8000-000000000001',region:'경북 포항시',residence:'다른 시·군',intent:'보유하며 관리',budget:'유료 이용 의사 없음',contact:'010-0000-0000',agree:'on',source:'instagram'})) f.set(k,v);return f}
+function valid() {const f = new FormData(); for (const [k,v] of Object.entries({requestId:'00000000-0000-4000-8000-000000000001',regionProvince:'경북',regionDistrict:'포항시',ownerProvince:'서울',ownerDistrict:'강남구',overseasAgree:'on',residence:'다른 시·군',intent:'보유하며 관리',budget:'유료 이용 의사 없음',contact:'010-0000-0000',agree:'on',source:'instagram'})) f.set(k,v);return f}
 assert.deepEqual(validateInterest(valid()).errors,{})
 assert.equal(validateInterest(valid()).row.email,null)
 assert.equal(validateInterest(valid()).row.consent_version,CARE_CONSENT_VERSION)
-for (const [k,v] of [['agree',''],['contact','bad'],['budget','무료'],['intent','hacked'],['region',''],['email','invalid'],['website','spam']] as const) { const f=valid();f.set(k,v);assert.ok(Object.keys(validateInterest(f).errors).length,k) }
+for (const [k,v] of [['agree',''],['contact','bad'],['budget','무료'],['intent','hacked'],['regionProvince',''],['email','invalid'],['website','spam']] as const) { const f=valid();f.set(k,v);assert.ok(Object.keys(validateInterest(f).errors).length,k) }
+for (const budget of ['월 3만 원 초과~5만 원 이하','월 5만 원 초과~10만 원 이하']) { const f=valid();f.set('budget',budget);assert.deepEqual(validateInterest(f).errors,{});assert.equal(validateInterest(f).row.answers.survey_version,'2026-11-02-exterior-v1') }
 const bad=valid();bad.append('services','<script>');assert.ok(validateInterest(bad).errors.services)
 const unknown=valid();unknown.set('source','https://private-url');assert.equal(validateInterest(unknown).row.source,'website')
 const prev={ok:false,errors:{},message:''}
