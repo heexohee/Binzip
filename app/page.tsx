@@ -44,7 +44,7 @@ export default function Home() {
               <p className={s.pathDesc}>필요한 관리와 적당한 금액을 들려주세요.</p>
             </Link></li>
           </ul>
-          <p className={s.pathsNote}>어느 쪽이든 남겨 주신 내용은 담당자가 직접 읽고 연락드려요. 일부 분께는 전화 인터뷰를, 포항·경주에 빈집이 있는 분께는 방문을 따로 여쭤봐요.</p>
+          <p className={s.pathsNote}>어느 쪽이든 남겨 주신 내용은 담당자가 직접 읽고 연락드려요. 일부 분께는 전화 인터뷰를 요청드리고, 포항·경주에 빈집이 있는 분 중 몇 분께는 방문을 요청드린 뒤 직접 찾아가요.</p>
         </section>
 
         <section className={s.reference} aria-labelledby="reference-title">
