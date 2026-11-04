@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 const sections = ['수집하는 개인정보와 이용 목적', '개인정보의 보관 및 파기', '개인정보의 제3자 제공', '개인정보 처리업무 위탁 및 외부 서비스', '개인정보의 국외 처리', '쿠키와 브라우저 저장 정보', '이용자의 권리와 행사 방법', '개인정보 보호 조치', '개인정보 보호 문의', '처리방침의 변경']
 export default function PrivacyPage() {
  return <div className={styles.sheet}><HomeHeader/><main className={styles.main}><HomeLink/>
- <header className={styles.intro}><h1>개인정보 처리방침</h1><p>빈집진단서는 서비스 제공에 필요한 개인정보를 수집하고, 안내한 목적에 따라 이용합니다. 이 처리방침에서 수집 항목과 이용 목적, 보관 기간, 개인정보에 관한 권리와 문의 방법을 확인할 수 있습니다.</p><p className={styles.date}>시행일: 2026년 11월 1일</p></header>
+ <header className={styles.intro}><h1>개인정보 처리방침</h1><p>빈집진단서는 서비스 제공에 필요한 개인정보를 수집하고, 안내한 목적에 따라 이용합니다. 이 처리방침에서 수집 항목과 이용 목적, 보관 기간, 개인정보에 관한 권리와 문의 방법을 확인할 수 있습니다.</p><p className={styles.date}>시행일: 2026년 11월 4일</p></header>
  <section className={styles.summary} aria-label="주요 내용"><h2>주요 내용</h2><ul><li>진단 신청과 관리 서비스 관심 등록에는 전화번호가 필요합니다. 이메일과 사진은 선택사항입니다.</li><li>신청 정보는 접수일부터 최대 6개월 보관합니다. 그 전에도 삭제를 요청할 수 있습니다.</li><li>신청·관심 등록 정보를 중개·관리업체가 영업에 쓰도록 넘기지 않고, 광고 연락에도 쓰지 않습니다. 저장·사이트 운영·감사 선물 발송은 아래 위탁 업체에 맡깁니다.</li><li>인터뷰는 참여 의향을 밝히신 분 중 담당자가 연락해 동의하신 분과만 진행하며, 녹음은 따로 동의하신 경우에만 합니다.</li></ul></section>
  <nav className={styles.contents} aria-label="개인정보 처리방침 목차"><h2>목차</h2><ol>{sections.map((title,i)=><li key={title}><a href={`#privacy-${i+1}`}>{title}</a></li>)}</ol></nav>
  <Section n={1}>
@@ -62,10 +62,11 @@ export default function PrivacyPage() {
  ]}/><p>이전받는 자의 연락처는 아래 공식 안내 페이지에서 확인할 수 있습니다: <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer">Supabase 개인정보 안내</a> · <a href="https://vercel.com/legal/privacy-notice" target="_blank" rel="noopener noreferrer">Vercel 개인정보 안내</a> · <a href="https://resend.com/legal/dpa" target="_blank" rel="noopener noreferrer">Resend 데이터 처리계약</a></p></Section>
  <Section n={6}><Rows rows={[
  ['유입 경로 구분','인스타그램 또는 가족이 공유한 링크로 방문했는지 구분하는 값만 현재 탭의 임시 저장소(sessionStorage)에 저장하고 관심 등록 시 함께 기록합니다. 전체 광고 URL이나 폼 입력 내용을 이 저장소에 저장하지 않습니다. 브라우저에서 탭을 닫거나 사이트 데이터를 삭제하여 제거할 수 있습니다.'],
- ['방문 통계','Vercel Web Analytics로 페이지별 방문 수, 들어온 경로(이전 사이트), 국가, 기기·브라우저 종류를 집계합니다. 쿠키를 사용하지 않으며, Vercel 안내에 따르면 방문자는 하루 단위로만 구분되는 값으로 처리되고 개인을 식별하는 정보는 저장하지 않습니다. 입력한 신청·설문 내용은 이 통계에 포함되지 않습니다.'],
+ ['방문 통계(선택)','분석에 동의한 경우에만 Google Analytics 4를 불러옵니다. 공개 페이지 경로, 제한된 광고 캠페인 구분값, 기기·브라우저 정보, 쿠키 식별자, 작성 시작·접수 성공 이벤트를 처리합니다. 주소·전화번호·이메일·답변·사진은 보내지 않으며 관리자·개인 진단서 화면은 측정하지 않습니다. Google이 통신 과정에서 IP 주소를 처리할 수 있습니다. 분석을 거절해도 서비스 이용에 제한이 없습니다.'],
+ ['분석 정보의 국외 처리','제공자: Google LLC(미국 등 Google 처리 시설 소재 국가). 목적: 방문 경로와 신청 전환 분석. 시기·방법: 선택 동의 후 웹 이용 시 HTTPS 전송. 개별 사용자·이벤트 보관은 2개월로 설정하고, 집계 보고서는 별도로 남을 수 있습니다. 분석 쿠키는 최대 2개월로 설정합니다. 사이트 하단의 방문 통계 동의 변경으로 거절하거나 브라우저 쿠키를 삭제할 수 있습니다. Google 개인정보 안내: https://policies.google.com/privacy'],
  ['관리자 로그인','관리자 인증을 유지하기 위한 쿠키를 사용합니다. 일반 방문자에게 관리자 인증정보를 요청하지 않습니다.'],
  ['시연 화면','일부 상담 시연 화면은 입력 내용을 해당 브라우저의 저장소(localStorage)에 보관합니다. 서버로 실제 상담을 접수하는 기능이 아닙니다. 시연 화면에는 개인정보를 입력하지 마세요. 브라우저의 사이트 데이터 삭제 기능으로 기록을 지울 수 있습니다.'],
- ]}/><p>호스팅·지도 등 외부 서비스는 요청 처리와 보안을 위해 접속 정보를 처리할 수 있습니다. 현재 코드에는 맞춤형 광고용 픽셀을 설치하지 않았습니다. 추후 분석·광고 도구를 도입할 때에는 수집 항목과 이용 목적, 필요한 동의 절차를 먼저 확인하고 안내합니다.</p></Section>
+ ]}/><p>호스팅·지도 등 외부 서비스는 요청 처리와 보안을 위해 접속 정보를 처리할 수 있습니다. 현재 코드에는 맞춤형 광고용 픽셀을 설치하지 않았습니다. 광고 개인화와 Google Signals는 사용하지 않습니다. 방문 통계 동의 여부는 이 브라우저에 저장됩니다.</p></Section>
  <Section n={7}><p>이용자는 자신의 개인정보에 대한 열람·정정·삭제·처리정지 또는 동의 철회를 요청할 수 있습니다. 아래 연락처로 요청하면 필요한 범위에서 본인 여부를 확인한 후 처리 결과를 안내합니다.</p><p>필수 개인정보 수집·이용에 동의하지 않으면 진단 신청이나 관심 등록을 접수할 수 없습니다. 이메일·사진 등 선택항목 제공을 거부해도 신청할 수 있습니다. 자료가 삭제되면 해당 자료를 이용한 진단서 재발송이나 후속 안내가 제한될 수 있습니다.</p><p>권리 행사가 법령에 따라 제한되는 경우에는 그 사유를 안내합니다.</p></Section>
  <Section n={8}><ul><li>신청 정보와 사진은 인증된 관리자만 조회하도록 접근을 제한합니다.</li><li>데이터베이스의 일반 공개 접근을 차단하고 서버에서만 접근 키를 사용합니다.</li><li>공개 진단서에는 신청자의 전화번호·이메일과 첨부 사진을 표시하지 않습니다.</li></ul><p>진단서 링크를 전달받은 사람은 링크에 담긴 집 정보와 진단 내용을 볼 수 있으므로 링크를 다른 사람에게 공유할 때 주의해 주세요.</p></Section>
  <Section n={9}><p>개인정보 처리에 관한 문의와 권리 행사 요청은 아래로 연락해 주세요.</p><Rows rows={[
@@ -73,7 +74,7 @@ export default function PrivacyPage() {
  ['전화','010-7428-2624 (평일 09:00–18:00)'],
  ['이메일','rsoy2918@gmail.com'],
  ]}/><p><a href="tel:01074282624">전화로 문의하기</a> · <a href="mailto:rsoy2918@gmail.com">이메일로 문의하기</a></p><p>외부 상담이 필요한 경우 <a href="https://privacy.kisa.or.kr" target="_blank" rel="noopener noreferrer">개인정보 침해신고센터</a> 또는 <a href="https://www.kopico.go.kr" target="_blank" rel="noopener noreferrer">개인정보 분쟁조정위원회</a>를 이용할 수 있습니다.</p></Section>
- <Section n={10}><p>수집 항목이나 이용 목적 등 개인정보 처리 방식이 바뀌면 변경 내용과 적용 시점을 이 페이지에 안내합니다. 별도 동의가 필요한 변경은 동의 절차를 거쳐 적용합니다.</p><p>이 처리방침은 2026년 11월 1일부터 시행합니다.</p></Section>
+ <Section n={10}><p>수집 항목이나 이용 목적 등 개인정보 처리 방식이 바뀌면 변경 내용과 적용 시점을 이 페이지에 안내합니다. 별도 동의가 필요한 변경은 동의 절차를 거쳐 적용합니다.</p><p>이 처리방침은 2026년 11월 4일부터 시행합니다.</p></Section>
  </main></div>
 }
 function Section({n,children}:{n:number;children:React.ReactNode}) {return <section id={`privacy-${n}`} className={styles.section}><h2>{n}. {sections[n-1]}</h2>{children}</section>}

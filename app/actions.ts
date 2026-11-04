@@ -93,7 +93,7 @@ export async function submitApplication(
     await createDraftReport(applicationId, address)
   }
 
-  return { ok: true, errors: {}, message: null }
+  return { ok: true, newReceipt: Boolean(applicationId), errors: {}, message: null }
 }
 
 /** 화면에서 온 값은 신뢰하지 않는다. 정해진 셋 중 하나가 아니면 버린다. */
