@@ -21,7 +21,7 @@ export default async function MetricsPage() {
   return <AdminFrame navigation={<LogoutButton />}>
     <Link href="/admin">← 진단 신청 관리</Link>
     <h1>수요 지표</h1>
-    <p className={m.note}>현재 보관 중인(접수 6개월 이내) 응답만 집계해요. 오래된 응답은 자동으로 삭제되니, 사업계획서에 쓸 숫자는 아래 버튼으로 주기적으로 내려받아 두세요. 내려받는 파일에는 연락처가 들어 있지 않아요. 방문자 수는 Vercel 대시보드의 Analytics에서 확인해요.</p>
+    <p className={m.note}>현재 보관 중인(접수 6개월 이내) 응답만 집계해요. 오래된 응답은 자동으로 삭제되니, 사업계획서에 쓸 숫자는 아래 버튼으로 주기적으로 내려받아 두세요. 내려받는 파일에는 연락처가 들어 있지 않아요. 방문 통계와 광고 유입은 <a href="https://analytics.google.com/analytics/web/#/a406338925p562345726/reports/intelligenthome" target="_blank" rel="noopener noreferrer">Google Analytics에서 확인해요</a>. 분석에 동의한 방문만 측정하므로 실제 접수 건수와 차이가 있을 수 있어요.</p>
     {!summary ? <section className={styles.panel}><h2>지표를 확인할 수 없어요</h2><p className={styles.description}>{error}</p></section> : <div className={m.sections}>
       <section className={m.section} aria-labelledby="diagnosis-metrics">
         <div className={m.sectionHead}>
