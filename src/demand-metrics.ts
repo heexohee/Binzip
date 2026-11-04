@@ -16,7 +16,18 @@ export type InterestMetricRow = {
   answers?: Record<string, string | number | null> | null
 }
 
-export type ApplicationMetricRow = { address: string; resolved_address: string | null; pnu: string | null; created_at: string }
+/** Answer columns are optional so the page still loads before photo_count exists; condition is parsed, never exported. */
+export type ApplicationMetricRow = {
+  address: string
+  resolved_address: string | null
+  pnu: string | null
+  created_at: string
+  condition?: string | null
+  concern?: string | null
+  ownership?: string | null
+  speed?: string | null
+  photo_count?: number | null
+}
 
 export type Count = { key: string; count: number }
 export type Share = { key: string; count: number; percent: number }
@@ -43,8 +54,21 @@ export type DemandSummary = {
     prices: PriceStat[]
     byWeek: Count[]
   }
-  applications: { total: number; byProvince: Count[]; byWeek: Count[] }
+  applications: {
+    total: number
+    interviewOk: number
+    withPhotos: number
+    hasAnswers: boolean
+    byProvince: Count[]
+    byWeek: Count[]
+    byConcern: Count[]
+    byOwnership: Count[]
+    byAgreement: Count[]
+    byHouseCondition: Count[]
+  }
 }
+
+export type MetricsKind = 'diagnosis' | 'care'
 
 const UNKNOWN = '미확인'
 
@@ -107,7 +131,11 @@ function quantile(sorted: number[], q: number): number | null {
 }
 
 /** Top of each max-budget bucket in 만 원; "아직 모르겠어요" is left out of the base. */
-const BUDGET_CEILING: Record<string, number> = { '월 3만 원 이하': 3, '월 5만 원 이하': 5, '월 10만 원 이하': 10, '월 10만 원 초과도 검토': Infinity, '유료 이용 의사 없음': 0 }
+// Older answers used open-ended "이하" labels; current ones are ranges. Both map to the range top.
+const BUDGET_CEILING: Record<string, number> = {
+  '월 3만 원 이하': 3, '월 3만 원 초과~5만 원 이하': 5, '월 5만 원 이하': 5, '월 5만 원 초과~10만 원 이하': 10, '월 10만 원 이하': 10,
+  '월 10만 원 초과도 검토': Infinity, '유료 이용 의사 없음': 0,
+}
 const WILLINGNESS_PRICES = [{ key: '월 3만 원', manwon: 3 }, { key: '월 5만 원', manwon: 5 }, { key: '월 10만 원', manwon: 10 }, { key: '월 10만 원 넘게', manwon: Infinity }]
 
 /** Share of answers whose max budget reaches each price: a cumulative read of the single max-budget question. */
@@ -126,6 +154,12 @@ export const PRICE_KEYS = [
   { key: 'price_expensive', label: '비싸지만 고려할 가격' },
   { key: 'price_too_expensive', label: '너무 비싸서 맡기지 않을 가격' },
 ] as const
+
+/** The apply form folds each screen's answers into `condition` as "label: value" lines. */
+export function conditionAnswer(condition: string | null | undefined, label: string): string | null {
+  const line = condition?.split('\n').find(l => l.startsWith(label + ': '))
+  return line ? line.slice(label.length + 2).trim() || null : null
+}
 
 export function summarizeDemand(interests: InterestMetricRow[], applications: ApplicationMetricRow[]): DemandSummary {
   const answer = (row: InterestMetricRow, key: string) => row.answers?.[key] ?? null
@@ -158,26 +192,40 @@ export function summarizeDemand(interests: InterestMetricRow[], applications: Ap
     },
     applications: {
       total: applications.length,
+      interviewOk: applications.filter(row => row.speed).length,
+      withPhotos: applications.filter(row => (row.photo_count ?? 0) > 0).length,
+      // PostgREST returns null (not a missing key) for empty columns, so undefined means the answer columns were not selected.
+      hasAnswers: !applications.length || applications.some(row => row.concern !== undefined),
       byProvince: tally(applications.map(provinceFromApplication)),
       byWeek: tally(applications.map(row => isoWeek(row.created_at)), 'key'),
+      byConcern: tally(applications.flatMap(row => row.concern?.split(', ') ?? [])),
+      byOwnership: tally(applications.map(row => row.ownership)),
+      // Only asked when the house is co-owned or mid-inheritance, so the base is those answers.
+      byAgreement: tally(applications.map(row => conditionAnswer(row.condition, '가족·공동 소유자 협의')).filter((v): v is string => v !== null)),
+      byHouseCondition: tally(applications.map(row => conditionAnswer(row.condition, '최근 집 상태'))),
     },
   }
 }
 
 const csvCell = (v: string | number | null) => { const s = v === null ? '' : String(v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s }
 
-/** One long table: section, item, value — easy to pivot in a spreadsheet. BOM keeps Korean readable in Excel. */
-export function demandCsv(summary: DemandSummary, generatedAt: string): string {
+/** One long table per service: section, item, value — easy to pivot in a spreadsheet. BOM keeps Korean readable in Excel. */
+export function demandCsv(summary: DemandSummary, generatedAt: string, kind: MetricsKind): string {
   const { interests: i, applications: a } = summary
-  const rows: (string | number | null)[][] = [['구분', '항목', '값'], ['기준 시각', generatedAt, ''],
-    ['진단 신청', '합계', a.total], ['관리 설문', '합계', i.total], ['관리 설문', '인터뷰·시범 방문 연락 수락', i.interviewOk], ['관리 설문', '전화 설명 요청', i.phoneExplanation]]
+  const rows: (string | number | null)[][] = [['구분', '항목', '값'], ['기준 시각', generatedAt, '']]
   const add = (section: string, counts: Count[]) => counts.forEach(c => rows.push([section, c.key, c.count]))
-  add('진단 신청 · 시도', a.byProvince); add('진단 신청 · 주차', a.byWeek)
-  add('설문 · 유입 경로', i.bySource); add('설문 · 시도', i.byProvince); add('설문 · 시군', i.byRegion); add('설문 · 소유자 거주', i.byResidence); add('설문 · 소유자 사는 시도(다른 시·군)', i.byOwnerProvince)
-  add('설문 · 고민 방향', i.byIntent); add('설문 · 월 최대 금액', i.byBudget); add('설문 · 필요한 관리', i.byService)
-  add('설문 · 상속 정리', i.byInheritance); add('설문 · 마지막 방문', i.byLastVisit); add('설문 · 현재 관리 비용', i.byCurrentSpend)
-  add('설문 · 주차', i.byWeek)
-  for (const w of i.willingness.rows) rows.push([`금액별 이용 의향 (응답 ${i.willingness.base})`, w.key, `${w.count} (${w.percent}%)`])
-  for (const p of i.prices) rows.push([`이전 방식 가격(만 원) · ${p.label}`, `응답 ${p.n} · 25%/중앙/75%`, [p.p25, p.median, p.p75].map(v => v ?? '-').join(' / ')])
-  return '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\n')
+  if (kind === 'diagnosis') {
+    rows.push(['진단 신청', '합계', a.total], ['진단 신청', '인터뷰·방문 연락 동의', a.interviewOk], ['진단 신청', '사진 첨부', a.withPhotos])
+    add('진단 · 시도', a.byProvince); add('진단 · 주차', a.byWeek); add('진단 · 궁금한 내용', a.byConcern)
+    add('진단 · 소유관계', a.byOwnership); add('진단 · 가족·공동 소유자 협의', a.byAgreement); add('진단 · 최근 집 상태', a.byHouseCondition)
+  } else {
+    rows.push(['관리 설문', '합계', i.total], ['관리 설문', '인터뷰·시범 방문 연락 수락', i.interviewOk], ['관리 설문', '전화 설명 요청', i.phoneExplanation])
+    add('설문 · 유입 경로', i.bySource); add('설문 · 시도', i.byProvince); add('설문 · 시군', i.byRegion); add('설문 · 소유자 거주', i.byResidence); add('설문 · 소유자 사는 시도(다른 시·군)', i.byOwnerProvince)
+    add('설문 · 고민 방향', i.byIntent); add('설문 · 월 최대 금액', i.byBudget); add('설문 · 필요한 관리', i.byService)
+    add('설문 · 상속 정리', i.byInheritance); add('설문 · 마지막 방문', i.byLastVisit); add('설문 · 현재 관리 비용', i.byCurrentSpend)
+    add('설문 · 주차', i.byWeek)
+    for (const w of i.willingness.rows) rows.push([`금액별 이용 의향 (응답 ${i.willingness.base})`, w.key, `${w.count} (${w.percent}%)`])
+    for (const p of i.prices) rows.push([`이전 방식 가격(만 원) · ${p.label}`, `응답 ${p.n} · 25%/중앙/75%`, [p.p25, p.median, p.p75].map(v => v ?? '-').join(' / ')])
+  }
+  return '\ufeff' + rows.map(r => r.map(csvCell).join(',')).join('\n')
 }

@@ -1,4 +1,7 @@
-.grid { display: grid; gap: 16px; margin-top: 24px; }
+.sections { display: grid; gap: 48px; margin-top: 24px; }
+.section { display: grid; gap: 16px; padding-top: 24px; border-top: 1px solid var(--border-subtle); }
+.sectionHead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px; }
+.sectionHead h2 { margin: 0; }
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
 .kpi { padding: 16px; border: 1px solid var(--border-subtle); border-radius: var(--radius-card); background: var(--surface-raised); }
 .kpi strong { display: block; font-size: 1.75rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
