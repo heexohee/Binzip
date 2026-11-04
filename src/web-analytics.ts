@@ -10,6 +10,14 @@ export function safeCampaign(search: string) {
  for (const [key, pattern] of Object.entries(allowed)) { const value=q.get(key); if(value && pattern.test(value)) result[key]=value }
  return result
 }
+/** Cookieless Vercel page counts: same public paths as GA, plus only the allowed campaign labels. */
+export function vercelSafeUrl(raw: string): string | null {
+ let url: URL
+ try { url = new URL(raw) } catch { return null }
+ if (!PUBLIC_PATHS.includes(url.pathname)) return null
+ const campaign = new URLSearchParams(safeCampaign(url.search)).toString()
+ return url.origin + url.pathname + (campaign ? '?' + campaign : '')
+}
 declare global { interface Window { dataLayer?: unknown[]; gtag?: (...args: unknown[])=>void } }
 export function trackForm(event: 'form_start'|'generate_lead', kind: 'diagnosis'|'care') {
  if(typeof window==='undefined' || !safePage(location.pathname)) return

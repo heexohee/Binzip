@@ -19,8 +19,10 @@ export function AddressStartForm() {
   const input = useRef<HTMLInputElement>(null)
   const confirmation = useRef<HTMLElement>(null)
   useEffect(() => () => { controller.current?.abort(); controller.current = null }, [])
+  // A remembered address restores the confirmation card on load; only jump to it after a fresh lookup.
+  const restored = useRef(candidate)
   useEffect(() => {
-    if (candidate) {
+    if (candidate && candidate !== restored.current) {
       confirmation.current?.focus({ preventScroll: true })
       confirmation.current?.scrollIntoView({ block: 'start' })
     }

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import {safePage,safeCampaign,trackForm,CONSENT_KEY} from '../src/web-analytics'
+import {safePage,safeCampaign,trackForm,vercelSafeUrl,CONSENT_KEY} from '../src/web-analytics'
 assert.equal(safePage('/admin/123'),null)
 assert.equal(safePage('/report/private-id'),null)
 assert.equal(safePage('/decision-report'),null)
@@ -13,4 +13,11 @@ Object.assign(globalThis,{localStorage:{getItem:()=> 'granted'}})
 trackForm('generate_lead','diagnosis');assert.equal(sent.length,1)
 Object.assign(globalThis,{location:{pathname:'/admin/123'}})
 trackForm('generate_lead','diagnosis');assert.equal(sent.length,1)
+// Vercel counts every visit without cookies, so it must drop personal pages and unknown query strings itself.
+const base='https://www.binzipcare.kr'
+assert.equal(vercelSafeUrl(base+'/diagnosis'),base+'/diagnosis')
+assert.equal(vercelSafeUrl(base+'/diagnosis?utm_source=instagram&phone=01012345678'),base+'/diagnosis?utm_source=instagram')
+assert.equal(vercelSafeUrl(base+'/?utm_source=evil'),base+'/')
+for (const personal of ['/admin','/admin/metrics','/report/abc','/status/123','/experts/1']) assert.equal(vercelSafeUrl(base+personal),null,personal)
+assert.equal(vercelSafeUrl('not a url'),null)
 console.log('analytics privacy and consent checks passed')
