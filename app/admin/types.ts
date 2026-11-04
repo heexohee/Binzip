@@ -17,6 +17,8 @@ export type ApplicationRow = {
   expires_at: string
   /** Absent on records predating the optional photo migration. */
   photo_count?: number
+  /** Absent until the 20261104 source migration is applied. */
+  source?: string | null
   /** Optional until the admin workflow migration is applied. Never included in customer reports. */
   review_status?: 'received' | 'reviewing' | 'waiting' | 'completed'
   internal_note?: string | null

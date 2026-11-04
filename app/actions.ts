@@ -1,6 +1,6 @@
 'use server'
 
-import { checkRecentApplications, expiryFrom, saveApplication, type ApplyState } from '../src/application'
+import { checkRecentApplications, expiryFrom, saveApplication, type ApplyState, applicationSource } from '../src/application'
 import { createDraftReport } from '../src/report'
 import { preparePhotos, type PreparedPhoto } from '../src/photos'
 import { MAX_PHOTOS } from '../src/photo-limits'
@@ -78,6 +78,7 @@ export async function submitApplication(
       pnu: text('pnu') || null,
       resolvedAddress: text('resolvedAddress') || null,
       matchQuality: parseQuality(text('matchQuality')),
+      source: applicationSource(text('source')),
     }, photos)
     applicationId = saved.applicationId
   } catch {

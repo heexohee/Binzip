@@ -39,6 +39,12 @@ const TITLES: Record<string, string> = {
   ownership: '집의 소유관계를 알려주세요', contact: '진단서를 받을 연락처를 남겨주세요',
 }
 
+/** utm_source on this page wins; otherwise the campaign remembered when the visitor first landed in this tab. */
+function campaignSource(): string {
+  try { return new URLSearchParams(location.search).get('utm_source') ?? sessionStorage.getItem('binzip-campaign') ?? 'website' }
+  catch { return 'website' }
+}
+
 export function IntakePreview({ initialAddress = '' }: { initialAddress?: string }) {
   const { draft, confirmedAddress } = useInstantFlow()
   const [answers, setAnswers] = useState<Record<string, string>>({ address: initialAddress || confirmedAddress?.address || draft?.address || '' })
@@ -115,6 +121,7 @@ export function IntakePreview({ initialAddress = '' }: { initialAddress?: string
     data.set('agree', 'on'); if (overseasAgreed) data.set('overseasAgree', 'on'); if (photoAgreed) data.set('photoAgree', 'on')
     photos.forEach(photo => data.append('photos', photo))
     data.set('website', honeypot.current?.value ?? '')
+    data.set('source', campaignSource())
     try {
       const result = await submitApplication({ ok: false, errors: {}, message: null }, data)
       if (result.ok) { didNavigate.current = true; setDone(true); return }
