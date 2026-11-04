@@ -65,6 +65,7 @@ export async function checkRecentApplications(contact: string, address: string, 
 
 /** Server Action 반환 상태. 필드 오류는 필드명 → 문구. */
 export type ApplyState = {
+  newReceipt?: boolean
   ok: boolean
   errors: Record<string, string>
   message: string | null

@@ -1,4 +1,5 @@
 'use client'
+import { trackForm } from '../src/web-analytics'
 
 import { startTransition, useActionState, useEffect, useRef, useState } from 'react'
 import { submitApplication } from './actions'
@@ -101,6 +102,10 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
     try { return await submitApplication(previous, data) }
     catch { return { ok: false, errors: {}, message: '접수 결과를 확인하지 못했어요. 잠시 후 다시 시도하거나 전화로 문의해 주세요.' } }
   }, INITIAL)
+  const analyticsStarted = useRef(false)
+  const analyticsCompleted = useRef(false)
+  useEffect(() => { if (state.ok && !analyticsCompleted.current && state.newReceipt) { analyticsCompleted.current = true; trackForm('generate_lead', 'diagnosis') } }, [state])
+  const trackStart = () => { if (!analyticsStarted.current) { analyticsStarted.current = true; trackForm('form_start', 'diagnosis') } }
   const [addr, setAddr] = useState<AddrStatus>(() => selected ? (selected.quality === 'fuzzy'
     ? { kind: 'unsure', addr: selected.address, pnu: selected.pnu, x: selected.x, y: selected.y }
     : { kind: 'found', addr: selected.address, pnu: selected.pnu, quality: selected.quality, x: selected.x, y: selected.y }) : { kind: 'idle' })
@@ -158,7 +163,7 @@ export function ApplyForm({ initialAddress = '' }: { initialAddress?: string }) 
     ) : null
 
   return (
-    <form onSubmit={e => {
+    <form onChangeCapture={trackStart} onSubmit={e => {
       e.preventDefault()
       if (photoBusy || pending) return
       // Dispatch explicitly so failed submissions do not reset text or consent fields.

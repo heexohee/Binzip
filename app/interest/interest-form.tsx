@@ -1,4 +1,5 @@
 'use client'
+import { trackForm } from '../../src/web-analytics'
 import { startTransition, useActionState, useEffect, useRef, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { submitInterest } from './actions'
@@ -18,6 +19,10 @@ const without = (errors: Record<string, string>, key: string) => Object.fromEntr
 
 export default function InterestForm() {
   const [state, action, pending] = useActionState(submitInterest, { ok: false, message: '', errors: {} })
+  const analyticsStarted = useRef(false)
+  const analyticsCompleted = useRef(false)
+  useEffect(() => { if (state.ok && !analyticsCompleted.current) { analyticsCompleted.current = true; trackForm('generate_lead', 'care') } }, [state])
+  const trackStart = () => { if (!analyticsStarted.current) { analyticsStarted.current = true; trackForm('form_start', 'care') } }
   const [requestId, setRequestId] = useState('')
   const [source, setSource] = useState('website')
   const [values, setValues] = useState<Record<string,string>>({})
@@ -65,7 +70,7 @@ export default function InterestForm() {
   const optionalGroup = (name: string, label: string, choices: readonly string[]) => <fieldset><legend>{label} (선택)</legend>{choices.map(choice => <label key={choice} className={s.option}><input type="radio" name={name} value={choice} checked={values[name] === choice} onChange={() => setValues(v => ({...v,[name]:choice}))}/>{choice}</label>)}</fieldset>
   if (state.ok) return <div ref={feedback} tabIndex={-1} role="status" className={s.success}><h2>의견이 잘 전달됐어요</h2><p>{state.message}</p><p>서비스는 포항·경주부터 준비하고 있어요. 다른 지역은 의견을 모으는 단계이며 제공 일정은 정해지지 않았어요.</p><Link href="/">홈으로 돌아가기</Link></div>
   const last = step === STEPS.length - 1
-  return <form ref={form} noValidate onSubmit={event => {
+  return <form onChangeCapture={trackStart} ref={form} noValidate onSubmit={event => {
     event.preventDefault(); if (pending || !check()) return
     if (!last) { moved.current = true; setStep(current => current + 1); return }
     const data = new FormData(event.currentTarget); startTransition(() => action(data))
