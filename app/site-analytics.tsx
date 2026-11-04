@@ -38,6 +38,9 @@ export function SiteAnalytics() {
  function choose(value:string){try{localStorage.setItem(CONSENT_KEY,value)}catch{} setConsent(value)}
  function reset(){
   try{localStorage.removeItem(CONSENT_KEY)}catch{}
+  // Stop GA first; otherwise it rewrites its session cookie between the delete and the reload.
+  ;(window as unknown as Record<string,unknown>)[`ga-disable-${MEASUREMENT_ID}`]=true
+  window.gtag?.('consent','update',{analytics_storage:'denied'})
   for(const item of document.cookie.split(';')) {const name=item.split('=')[0]?.trim(); if(!name?.startsWith('_ga'))continue; for(const domain of ['',`; domain=${location.hostname}`,'; domain=.binzipcare.kr'])document.cookie=`${name}=; Max-Age=0; path=/${domain}`}
   location.reload()
  }

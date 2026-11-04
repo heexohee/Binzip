@@ -23,6 +23,14 @@ export type Application = {
   pnu: string | null
   resolvedAddress: string | null
   matchQuality: 'exact' | 'road' | 'fuzzy' | null
+  /** 유입 경로. 링크의 utm_source 중 허용된 값만 저장한다. */
+  source: ApplicationSource
+}
+
+export const APPLICATION_SOURCES = ['instagram', 'facebook', 'meta', 'moast', 'family-share', 'website'] as const
+export type ApplicationSource = typeof APPLICATION_SOURCES[number]
+export function applicationSource(value: string): ApplicationSource {
+  return (APPLICATION_SOURCES as readonly string[]).includes(value) ? value as ApplicationSource : 'website'
 }
 
 /**
@@ -98,8 +106,16 @@ export async function saveApplication(
 
 /** 생성된 신청 id 를 돌려준다. 진단서를 여기에 붙여야 한다. */
 async function saveToSupabase(app: Application): Promise<string | null> {
-  const row = await sbInsert<{ id: string }>('applications', toRow(app))
-  return row?.id ?? null
+  try {
+    const row = await sbInsert<{ id: string }>('applications', toRow(app))
+    return row?.id ?? null
+  } catch (e) {
+    // Until the source migration runs, PostgREST rejects the unknown column (PGRST204). Keep taking applications.
+    if (!describe(e).includes('PGRST204')) throw e
+    const { source: _source, ...withoutSource } = toRow(app)
+    const row = await sbInsert<{ id: string }>('applications', withoutSource)
+    return row?.id ?? null
+  }
 }
 
 async function notifyByEmail(app: Application): Promise<string | null> {
@@ -167,6 +183,7 @@ function toRow(app: Application) {
     email: app.email,
     created_at: app.createdAt,
     expires_at: app.expiresAt,
+    source: app.source,
   }
 }
 

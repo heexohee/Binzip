@@ -27,6 +27,7 @@ export type ApplicationMetricRow = {
   ownership?: string | null
   speed?: string | null
   photo_count?: number | null
+  source?: string | null
 }
 
 export type Count = { key: string; count: number }
@@ -61,6 +62,7 @@ export type DemandSummary = {
     hasAnswers: boolean
     byProvince: Count[]
     byWeek: Count[]
+    bySource: Count[]
     byConcern: Count[]
     byOwnership: Count[]
     byAgreement: Count[]
@@ -198,6 +200,8 @@ export function summarizeDemand(interests: InterestMetricRow[], applications: Ap
       hasAnswers: !applications.length || applications.some(row => row.concern !== undefined),
       byProvince: tally(applications.map(provinceFromApplication)),
       byWeek: tally(applications.map(row => isoWeek(row.created_at)), 'key'),
+      // Rows saved before the source column existed count as unknown.
+      bySource: tally(applications.filter(row => row.source !== undefined).map(row => row.source)),
       byConcern: tally(applications.flatMap(row => row.concern?.split(', ') ?? [])),
       byOwnership: tally(applications.map(row => row.ownership)),
       // Only asked when the house is co-owned or mid-inheritance, so the base is those answers.
@@ -216,7 +220,7 @@ export function demandCsv(summary: DemandSummary, generatedAt: string, kind: Met
   const add = (section: string, counts: Count[]) => counts.forEach(c => rows.push([section, c.key, c.count]))
   if (kind === 'diagnosis') {
     rows.push(['진단 신청', '합계', a.total], ['진단 신청', '인터뷰·방문 연락 동의', a.interviewOk], ['진단 신청', '사진 첨부', a.withPhotos])
-    add('진단 · 시도', a.byProvince); add('진단 · 주차', a.byWeek); add('진단 · 궁금한 내용', a.byConcern)
+    add('진단 · 시도', a.byProvince); add('진단 · 주차', a.byWeek); add('진단 · 유입 경로', a.bySource); add('진단 · 궁금한 내용', a.byConcern)
     add('진단 · 소유관계', a.byOwnership); add('진단 · 가족·공동 소유자 협의', a.byAgreement); add('진단 · 최근 집 상태', a.byHouseCondition)
   } else {
     rows.push(['관리 설문', '합계', i.total], ['관리 설문', '인터뷰·시범 방문 연락 수락', i.interviewOk], ['관리 설문', '전화 설명 요청', i.phoneExplanation])

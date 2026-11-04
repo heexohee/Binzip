@@ -7,6 +7,7 @@ const INTEREST_EXTENDED = INTEREST_BASE + ',interview_ok,answers'
 const APPLICATION_BASE = 'address,resolved_address,pnu,created_at'
 // condition is free text that may hold a tax note; it is only parsed for fixed-choice answers, never shown or exported.
 const APPLICATION_EXTENDED = APPLICATION_BASE + ',condition,concern,ownership,speed,photo_count'
+const APPLICATION_WITH_SOURCE = APPLICATION_EXTENDED + ',source'
 const ROW_LIMIT = 10000
 
 export type MetricsResult = { summary: DemandSummary; error: '' } | { summary: null; error: string }
@@ -22,8 +23,10 @@ async function loadInterests(): Promise<InterestMetricRow[]> {
 
 /** photo_count arrives with the photo migration; until it runs, count applications without answers. */
 async function loadApplications(): Promise<ApplicationMetricRow[]> {
-  try { return await sbSelect<ApplicationMetricRow>(live('applications', APPLICATION_EXTENDED)) }
-  catch { return await sbSelect<ApplicationMetricRow>(live('applications', APPLICATION_BASE)) }
+  for (const columns of [APPLICATION_WITH_SOURCE, APPLICATION_EXTENDED]) {
+    try { return await sbSelect<ApplicationMetricRow>(live('applications', columns)) } catch { /* try fewer columns */ }
+  }
+  return await sbSelect<ApplicationMetricRow>(live('applications', APPLICATION_BASE))
 }
 
 export async function loadDemandMetrics(): Promise<MetricsResult> {

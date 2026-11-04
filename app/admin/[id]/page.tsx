@@ -77,6 +77,7 @@ export default async function Review({ params }: { params: Promise<{ id: string 
         <div className="mt-4 border-t border-line">
           <Field label="입력 주소" value={app.address} />
           <Field label="확인된 주소" value={app.resolved_address} />
+          <Field label="유입 경로" value={app.source ?? null} />
           <Field label="PNU" value={app.pnu ? app.pnu + ' (' + (app.match_quality ?? '') + ')' : null} />
           <Field label="집 상태" value={app.condition} />
           <Field label="취득 경위" value={app.acquisition} />

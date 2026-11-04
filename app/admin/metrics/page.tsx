@@ -38,6 +38,7 @@ export default async function MetricsPage() {
         <div className={m.tables}>
           <Table title="시도" rows={summary.applications.byProvince} />
           <Table title="주차" rows={summary.applications.byWeek} />
+          <Table title="유입 경로" rows={summary.applications.bySource} empty="유입 경로가 저장된 신청이 아직 없어요." />
           <Table title="궁금한 내용 (여러 개 선택)" rows={summary.applications.byConcern} />
           <Table title="소유관계" rows={summary.applications.byOwnership} />
           <Table title="가족·공동 소유자 협의 (공동 소유·상속 정리 중만)" rows={summary.applications.byAgreement} />

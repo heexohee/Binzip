@@ -85,7 +85,7 @@ test('a photo transaction failure cannot be reported as an email-only success', 
   const app: Application = {
     address: '테스트 주소', condition: null, channel: null, contact: '01000000000', email: 'test@example.invalid',
     acquisition: null, ownership: null, concern: null, speed: null, createdAt: date.toISOString(),
-    expiresAt: '2027-03-11T00:00:00Z', pnu: null, resolvedAddress: null, matchQuality: null,
+    expiresAt: '2027-03-11T00:00:00Z', pnu: null, resolvedAddress: null, matchQuality: null, source: 'website',
   }
   try {
     await assert.rejects(saveApplication(app, [{ content: '/9j/AA==', width: 1, height: 1, size: 4 }]), /rpc/)
