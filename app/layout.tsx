@@ -4,6 +4,7 @@ import { InstantFlowProvider } from './instant-flow'
 import { CampaignSource } from './campaign-source'
 import { HomeFooter } from './home-ui'
 import { SiteAnalytics } from './site-analytics'
+import { VercelAnalytics } from './vercel-analytics'
 
 export const metadata: Metadata = {
   title: '빈집진단서',
@@ -22,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
       </head>
-      <body><CampaignSource/><InstantFlowProvider><div className="site-content">{children}</div></InstantFlowProvider><HomeFooter /><SiteAnalytics /></body>
+      <body><CampaignSource/><InstantFlowProvider><div className="site-content">{children}</div></InstantFlowProvider><HomeFooter /><SiteAnalytics /><VercelAnalytics /></body>
     </html>
   )
 }

@@ -13,4 +13,5 @@
 .card td { padding: 4px 0; border-top: 1px solid var(--border-subtle); vertical-align: top; }
 .card td:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: 12px; }
 .bar { display: block; height: 4px; margin-top: 4px; border-radius: 2px; background: var(--brand-primary); opacity: .55; }
+.lead { margin: 12px 0 0; font-size: var(--type-body, 1rem); line-height: 1.6; }
 .note { margin: 8px 0 0; color: var(--text-secondary); font-size: var(--type-help); line-height: 1.6; }
