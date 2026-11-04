@@ -11,7 +11,7 @@ import { WorkflowEditor } from '../workflow-editor'
 import { LogoutButton } from '../logout-button'
 import styles from '../admin.module.css'
 import ui from '../../ui.module.css'
-import { approveReport, revertReport, rerunJudgment, saveNote, saveRegistry } from '../actions'
+import { approveReport, deleteApplication, revertReport, rerunJudgment, saveNote, saveRegistry } from '../actions'
 import {
   AXIS_LABEL, VERDICT_DOTS, VERDICT_LABEL,
   type ApplicationRow, type ReportRow,
@@ -367,6 +367,21 @@ export default async function Review({ params }: { params: Promise<{ id: string 
             )}
           </div>
         )}
+      </section>
+
+      {/* ── 삭제: 신청자의 삭제 요청이나 테스트 정리용 ── */}
+      <section className="mt-12 border-t border-line pt-6" aria-labelledby="delete-application">
+        <h2 id="delete-application" className="text-[length:var(--type-card)]">신청 삭제</h2>
+        <p className="mt-2 text-[length:var(--type-help)] leading-[1.6] text-muted">
+          신청 내용, 사진, 진단서가 데이터베이스에서 바로 지워지고 되돌릴 수 없어요. 신청자가 삭제를 요청했거나 테스트 신청을 정리할 때 써요.
+        </p>
+        <form action={deleteApplication} className="mt-4 grid gap-3">
+          <input type="hidden" name="applicationId" value={app.id} />
+          <label className="flex items-center gap-2 text-[length:var(--type-help)]">
+            <input type="checkbox" name="confirmDelete" required /> 이 신청을 영구 삭제하는 것을 확인했어요
+          </label>
+          <button type="submit" className={`${ui.button} ${ui.secondary}`}>신청 영구 삭제</button>
+        </form>
       </section>
     </div></AdminFrame>
   )

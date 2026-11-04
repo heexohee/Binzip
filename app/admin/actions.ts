@@ -1,7 +1,8 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { sbSelect, sbUpdate } from '../../src/supabase'
+import { redirect } from 'next/navigation'
+import { sbDelete, sbSelect, sbUpdate } from '../../src/supabase'
 import { createDraftReport, VERDICT } from '../../src/report'
 import { evaluate, type Context, type Finding } from '../../src/rules/engine'
 import { combine } from '../../src/verdict'
@@ -147,4 +148,20 @@ export async function rerunJudgment(applicationId: string) {
   await createDraftReport(applicationId, app.resolved_address || app.address)
   revalidatePath('/admin/' + applicationId)
   revalidatePath('/admin')
+}
+
+/**
+ * 신청을 영구 삭제한다. 정보주체의 삭제 요구(개인정보보호법 제36조)와 테스트 정리에 쓴다.
+ * 사진과 진단서는 on delete cascade 로 함께 지워진다. 되돌릴 수 없으므로 확인 체크를 서버에서도 다시 본다.
+ */
+export async function deleteApplication(formData: FormData) {
+  await requireAdmin()
+  const applicationId = String(formData.get('applicationId') ?? '')
+  if (!supabaseConfigured() || !UUID_PATTERN.test(applicationId)) throw new Error('ADMIN_APPLICATION_UNAVAILABLE')
+  if (formData.get('confirmDelete') !== 'on') throw new Error('ADMIN_DELETE_UNCONFIRMED')
+  const deleted = await sbDelete('applications', 'id=eq.' + applicationId)
+  if (!deleted) throw new Error('ADMIN_APPLICATION_UNAVAILABLE')
+  revalidatePath('/admin')
+  revalidatePath('/admin/metrics')
+  redirect('/admin')
 }

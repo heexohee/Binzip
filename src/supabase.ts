@@ -112,3 +112,18 @@ export async function sbUpdate<T = Record<string, unknown>>(
   const rows = (await res.json()) as T[]
   return rows[0] ?? null
 }
+
+/** filter 예: "id=eq.<uuid>". 지운 행 수를 돌려준다. 연결된 사진·진단서는 DB의 on delete cascade 가 함께 지운다. */
+export async function sbDelete(table: string, filter: string): Promise<number> {
+  const c = conn()
+  if (!c) return 0
+  const res = await fetch(c.base + '/rest/v1/' + table + '?' + filter + '&select=id', {
+    method: 'DELETE',
+    headers: { apikey: c.key, Authorization: 'Bearer ' + c.key, Prefer: 'return=representation' },
+    cache: 'no-store',
+  })
+  if (!res.ok) {
+    throw await failure(table + ' delete', res)
+  }
+  return ((await res.json()) as unknown[]).length
+}
