@@ -4,6 +4,8 @@ import { HomeHeader } from '../home-ui'
 import { calculateDisposal, EXAMPLE_DISPOSAL, formatWon } from '../../src/disposal'
 import { EXAMPLE_CASE } from '../../src/example-report-data'
 import { EXAMPLE_TRANSACTIONS } from '../../src/example-demolition'
+import { resourceById } from '../../src/official-resources'
+import { buildSupports } from '../../src/supports'
 import styles from './decision-example.module.css'
 
 type Line = { label: string; manwon: number }
@@ -60,6 +62,35 @@ const COMPARE_ROWS: { key: keyof Choice['compare']; label: string }[] = [
   { key: 'money', label: '돈' }, { key: 'time', label: '걸리는 시간' }, { key: 'house', label: '집은' }, { key: 'burden', label: '내가 할 일' },
 ]
 
+type SupportExample = { id: string; fits: string; title: string; summary: string; checks: string[]; link?: { href: string; text: string } }
+
+const demolitionNotice = buildSupports({})[0]!.source
+/** Kinds of public programs to look into. Names, amounts and periods differ by city and year. */
+const SUPPORT_EXAMPLES: SupportExample[] = [
+  {
+    id: 'demolition', fits: '철거', title: '빈집 철거 지원 (빈집정비사업)',
+    summary: '시·군·구에서 빈집 철거비 일부를 지원하는 사업이에요. 지원 한도와 본인 부담은 지역과 해마다 달라요.',
+    checks: ['지금 접수 중인지, 예산이 남았는지', '내가 낼 금액과 지원에서 빠지는 비용 (짐 정리 등)', '철거 후 땅을 일정 기간 주차장·텃밭 같은 공공 용도로 쓰는 조건이 있는지', '공동 소유라면 다른 소유자의 동의가 필요한지', '공사 계약 전에 먼저 신청해야 하는지'],
+    link: { href: demolitionNotice.url, text: '예: 포항시 2026년 빈집정비사업 공고' },
+  },
+  {
+    id: 'slate', fits: '철거 · 고치기', title: '슬레이트 지붕 철거·개량 지원',
+    summary: '지붕이 슬레이트라면 철거비와 별도로 슬레이트 처리비를 지원받을 수 있는지 알아볼 수 있어요.',
+    checks: ['슬레이트인지는 사진만으로 확정하지 않아요. 지붕에 직접 올라가지 마세요', '집 전체 철거와 함께 신청할 수 있는지', '새 지붕 공사도 지원 범위에 들어가는지'],
+  },
+  {
+    id: 'repair', fits: '고치기', title: '빈집 수리·활용 지원',
+    summary: '일부 지역에서는 빈집을 고쳐 일정 기간 빌려주는 조건으로 수리비를 지원해요.',
+    checks: ['우리 지역에 이런 사업이 있는지', '빌려줘야 하는 기간과 임대료 조건'],
+  },
+  {
+    id: 'listing', fits: '팔기', title: '공공 빈집 매물 창구',
+    summary: '농촌 빈집은행처럼 빈집 매물을 알리는 공공 창구가 있어요.',
+    checks: ['우리 지역이 참여하는지', '등록 절차와 필요한 서류'],
+    link: { href: resourceById('greendaero').href, text: '그린대로 · 농촌 빈집은행' },
+  },
+]
+
 const signed = (value: number) => (value < 0 ? '−' : '') + won(Math.abs(value))
 
 /** What a real report covers; must stay in line with the apply page and the actual service. */
@@ -110,6 +141,19 @@ export function DecisionExampleReport() {
         {c.link && <Link className={styles.choiceLink} href={c.link.href}>{c.link.text}</Link>}
       </article>)}</div>
       <p className={styles.note}>지원사업은 사업마다 대상과 본인 부담이 달라서 위 계산에 넣지 않았어요. <Link href="/resources">공식 지원·정보 보기 →</Link></p>
+    </section>
+
+    <section className={styles.section} aria-labelledby="supports-title">
+      <h2 id="supports-title">알아볼 만한 지원사업 · 예시</h2>
+      <p>사업 이름과 대상, 금액, 신청 기간은 시·군마다, 해마다 달라요. 실제 진단서에서는 집이 있는 지역의 최신 공고를 찾아 확인할 것과 문의처를 적어 드려요. 지원을 받을 수 있는지는 담당 부서가 정해요.</p>
+      <div className={styles.supportList}>{SUPPORT_EXAMPLES.map(item => <article key={item.id}>
+        <p className={styles.supportFits}>{item.fits}</p>
+        <h3>{item.title}</h3>
+        <p>{item.summary}</p>
+        <ul>{item.checks.map(check => <li key={check}>{check}</li>)}</ul>
+        {item.link && <a href={item.link.href} target="_blank" rel="noopener noreferrer">{item.link.text} ↗<span className={styles.srOnly}> (새 창)</span></a>}
+      </article>)}</div>
+      <p className={styles.note}>철거 지원은 보통 공사 전에 신청해야 해요. 철거업체와 계약하기 전에 시·군청이나 읍·면·동 행정복지센터에 먼저 물어보세요.</p>
     </section>
 
     <section className={styles.section}><h2>담당자 의견 · 가상 상황에 대한 작성 예시</h2><p>다른 지역에 사셔서 자주 가 보기 어렵고, 다시 사실 계획은 없다고 하셨어요. 그러면 돌보기는 해마다 비용과 방문 부담이 이어지고, 고치기는 쓰실 계획이 없어 맞지 않아요.</p><p>그래서 <strong>팔기를 포함해 비교해 보실 만해요.</strong> 다만 매도가·세금·권리관계·철거비는 확인되지 않았으니 이 결과만으로 정하지 마세요.</p><p>이 예시에서는 가정한 두 금액의 차이가 {won(netOf(demolishFirst) - netOf(keepAsIs))}이에요. 실제로는 매도가와 철거비 등에 따라 결과가 달라질 수 있어요. 철거 여부를 정하기 전에 등록된 중개사무소와 철거업체에 각각 확인해 보세요. 세금은 세무사에게 확인해 주세요.</p></section>
