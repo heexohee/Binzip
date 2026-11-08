@@ -45,5 +45,5 @@ export function SiteAnalytics() {
   location.reload()
  }
  if(!eligible)return null
- return <>{consent===null && <aside className={s.banner} aria-label="방문 통계 선택"><strong>방문 통계 수집에 동의하시나요?</strong><p>동의하면 Google Analytics가 쿠키로 방문·신청 완료를 측정해요. 주소·연락처·답변·사진은 보내지 않아요. 거절해도 신청할 수 있어요. <a href="/privacy#privacy-6">수집 항목·국외 처리 안내</a></p><div><button onClick={()=>choose('denied')}>동의하지 않음</button><button onClick={()=>choose('granted')}>분석에 동의</button></div></aside>}{consent!==null && <div className={s.settings}><button onClick={reset}>방문 통계 동의 변경</button></div>}</>
+ return <>{consent===null && <aside className={s.banner} aria-label="방문 통계 선택"><strong>방문 통계 수집에 동의하시나요?</strong><p><span className={s.detail}>동의하면 Google Analytics가 쿠키로 방문·신청 완료를 측정해요. 주소·연락처·답변·사진은 보내지 않아요. </span>거절해도 신청할 수 있어요. <a href="/privacy#privacy-6">수집 항목·국외 처리 안내</a></p><div><button onClick={()=>choose('denied')}>동의하지 않음</button><button onClick={()=>choose('granted')}>분석에 동의</button></div></aside>}{consent!==null && <div className={s.settings}><button onClick={reset}>방문 통계 동의 변경</button></div>}</>
 }
