@@ -1,23 +1,37 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Arrow, HomeHeader } from '../home-ui'
+import { HomeHeader } from '../home-ui'
 import { AddressStartForm } from '../address-start-form'
 import { ShareButton } from '../share-button'
-import { Facts, Gets, type Item, kakaoChannel, PHONE, Steps } from '../landing-parts'
+import { Facts, type Item, kakaoChannel, PHONE, Steps } from '../landing-parts'
 import home from '../home.module.css'
 import s from '../landing.module.css'
+import d from './diagnosis.module.css'
+import { StickyApply } from './sticky-apply'
 
 export const metadata = { title: '빈집 진단 | 빈집진단서' }
 
-const GETS: Item[] = [
-  { title: '집 정보', text: '건축물·토지 자료로 확인한 내용과, 아직 확인하지 못한 내용을 나눠 적어요.' },
-  { title: '선택지별 비용과 조건', text: '계속 갖고 있을 때, 고칠 때, 팔거나 철거할 때 드는 비용과 조건을 비교해요.' },
-  { title: '다음 할 일', text: '먼저 챙길 서류와 전문가에게 물어볼 내용을 정리해요.' },
+const WORRIES = [
+  '철거하면 비용이 얼마나 들지 모르겠어요.',
+  '고쳐서 쓸 수 있는 집인지 궁금해요.',
+  '팔고 싶은데 어디부터 알아봐야 할지 모르겠어요.',
+  '받을 수 있는 지원사업이 있는지 알고 싶어요.',
 ]
 
+const OPTIONS = [
+  { icon: '⚖️', title: '선택지 비교', text: '팔기·고치기·철거·그대로 두기의 비용과 할 일을 한눈에 비교해요' },
+  { icon: '🏛️', title: '지역 지원사업', text: '집이 있는 지역에서 알아볼 만한 사업과 문의처를 정리해요' },
+  { icon: '✍️', title: '담당자 의견', text: '보내 주신 사진과 자료를 담당자가 직접 보고 적어요' },
+]
+
+// 예시 카드의 상대 비교(3칸 중 몇 칸). 실제 금액은 예시 진단서 페이지에서 보여 준다.
+const SAMPLE: [string, number, number][] = [['팔기', 2, 3], ['고치기', 3, 2], ['철거', 2, 1]]
+const LEVEL = ['', '적음', '보통', '많음']
+const dots = (n: number) => '●'.repeat(n) + '○'.repeat(3 - n)
+
 const STEPS: Item[] = [
-  { title: '주소 조회 후 신청해 주세요', text: '이 페이지 아래에서 주소로 집을 찾은 뒤, 집 상태와 고민, 연락처를 남겨 주세요.' },
-  { title: '진행 여부를 알려드려요', text: '신청 내용을 살펴본 뒤, 진단을 진행할 수 있는지와 예상 시기를 7일 안에 문자나 메일로 알려드려요.' },
+  { title: '주소 확인 뒤 신청서 4단계', text: '집 상태 · 궁금한 내용 · 연락처를 남기고 확인한 뒤 제출해요.' },
+  { title: '7일 안에 진행 여부를 알려드려요', text: '신청 내용을 살펴본 뒤, 진단을 진행할 수 있는지와 예상 시기를 문자나 메일로 알려드려요.' },
   { title: '일부 분과는 인터뷰하고 집에 가 봐요', text: '인터뷰·방문 연락에 동의하신 분 중 일부께 20분 전화 인터뷰를 요청하고, 마친 분께 모바일 상품권을 드려요. 포항·경주에서는 그중 몇 분께 따로 연락드려 집을 직접 방문해 무료로 진단해 드려요. 신청만으로 인터뷰·방문이 정해지지는 않아요.' },
   { title: '진단서를 받아요', text: '담당자가 직접 검토한 결과를 보내드려요. 받아보신 뒤 소감을 들려주세요.' },
 ]
@@ -30,30 +44,64 @@ const FACTS: Item[] = [
   { title: '진단서로 할 수 있는 것과 없는 것', text: '진단서는 공공자료와 보내주신 사진으로 선택지를 비교하고, 누구에게 무엇을 물어볼지 정리해 드려요. 법률·세금·건물 안전을 판단하거나 실제 팔릴 가격과 공사비를 확정해 드리지는 않아요. 진단서에 적힌 예상 금액을 바탕으로 전문가에게 확인해 주세요.' },
 ]
 
+const BINI = '/mascot/binzip-rabbit-report-transparent-v4.png'
+
 export default function Diagnosis() {
   const kakao = kakaoChannel()
   return <div className={home.site}><div className={home.sheet}><HomeHeader />
     <main className={`${s.service} ${s.diagnosis}`}>
-      <Link className={s.back} href="/">← 처음으로</Link>
-      <div className={s.chips}><span className={s.chip}>빈집 진단</span><span className={s.status}>무료 시범 진단 · 전국 신청</span></div>
-      <div className={s.serviceHead}>
-        <div><p className={s.quote}>“계속 갖고 있을지, 고칠지, 팔거나 철거할지 모르겠어요.”</p>
-        <h1>우리 집 상황과 선택지를<br />한 번에 정리해 드려요</h1></div>
-        <Image className={s.serviceRabbit} src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={160} height={160} sizes="(max-width: 600px) 96px, 160px" priority />
-      </div>
-      <p className={s.lead}>팔지, 고칠지, 계속 갖고 있을지 진단서로 정리해 드려요. 지금은 무료 시범 진단이에요. 신청하시면 7일 안에 진행 여부를 문자나 메일로 알려드려요.</p>
-      <div className={s.heroActions}>
-        <a className={s.button} href="#apply">참여 신청하기<Arrow /></a>
-        <Link className={s.textLink} href="/example-report">진단서 예시 먼저 보기 →</Link>
+      <div className={d.hero}>
+        <Image className={d.photo} src="/diagnosis/rural-house.jpg" alt="오래 비어 있는 시골 기와집" width={752} height={480} sizes="(max-width: 760px) 100vw, 720px" priority />
+        <span className={d.bubble} aria-hidden="true">같이 정리해 봐요!</span>
+        <Image className={d.bini} src={BINI} alt="" width={120} height={120} priority />
       </div>
 
-      <div className={s.block}>
-        <h2 className={s.blockTitle}><span className={s.blockMark} aria-hidden="true">📋</span>진단서에 담기는 내용</h2>
-        <Gets items={GETS} />
-      </div>
+      <h1 className={d.title}>상속받은 시골집,<br />계속 비워 두고 계신가요?</h1>
+      <p className={d.lead}>팔지, 고칠지, 철거할지. <strong>우리 집에 맞는 선택지를 진단서로 정리해 드려요.</strong> 지금은 무료 시범 진단이에요.</p>
+      <a id="hero-cta" className={`${s.button} ${d.cta}`} href="#apply">무료 진단 신청하기 ↓</a>
+      <p className={d.who}>부모님 집을 대신 알아보는 자녀분도 신청할 수 있어요</p>
+
+      <section className={d.section} aria-labelledby="worries-title">
+        <p className={d.kicker}>① 이런 고민</p>
+        <h2 id="worries-title">이런 고민이 있으신가요?</h2>
+        <ul className={d.worries}>{WORRIES.map(text => <li key={text}><span className={d.check} aria-hidden="true">✓</span>{text}</li>)}</ul>
+      </section>
+
+      <section className={d.section} aria-labelledby="options-title">
+        <p className={d.kicker}>② 해결 방법</p>
+        <h2 id="options-title">진단서에 이렇게 정리돼요</h2>
+        <ul className={d.options}>{OPTIONS.map(item => <li key={item.title}><span className={d.icon} aria-hidden="true">{item.icon}</span><div><strong>{item.title}</strong><span>{item.text}</span></div></li>)}</ul>
+      </section>
+
+      <section className={d.section} aria-labelledby="sample-title">
+        <p className={d.kicker}>③ 진단 예시</p>
+        <h2 id="sample-title">예시 진단서를 미리 볼 수 있어요</h2>
+        <div className={d.sample}>
+          <span className={d.sampleTag}>예시 진단서</span>
+          <h3>경북 ○○군 단독주택</h3>
+          <table>
+            <thead><tr><td /><th scope="col">드는 돈</th><th scope="col">걸리는 시간</th></tr></thead>
+            <tbody>{SAMPLE.map(([name, cost, time]) => <tr key={name}><th scope="row">{name}</th><td aria-label={LEVEL[cost]}>{dots(cost)}</td><td aria-label={LEVEL[time]}>{dots(time)}</td></tr>)}</tbody>
+          </table>
+          <p className={d.memo}>✍️ 담당자 의견: “지붕 상태를 먼저 확인해 보시고, 군청 빈집 정비 사업도 알아볼 만해요.”</p>
+          <Image className={d.sampleBini} src={BINI} alt="" width={84} height={84} />
+        </div>
+        <Link className={d.more} href="/example-report">예시 진단서 전체 보기 →</Link>
+      </section>
+
+      <section className={`${s.apply} ${d.section}`} id="apply" aria-labelledby="apply-title">
+        <p className={d.kicker}>④ 무료 진단 신청</p>
+        <h2 id="apply-title">집 주소로 시작해요</h2>
+        <p>지번이나 도로명 주소, 아는 만큼만 넣어 주세요.</p>
+        <AddressStartForm />
+        <div className={s.contact}>
+          <a href={`tel:${PHONE.replaceAll('-', '')}`}>주소를 모르면 전화로 물어보기 · <span className={s.nowrap}>{PHONE}</span></a>
+          {kakao && <a href={kakao} target="_blank" rel="noopener noreferrer">카카오톡 채널로 문의하기</a>}
+        </div>
+      </section>
 
       <div className={s.block}>
-        <h2 className={s.blockTitle}><span className={s.blockMark} aria-hidden="true">🧭</span>참여는 이렇게 진행돼요</h2>
+        <h2 className={s.blockTitle}><span className={s.blockMark} aria-hidden="true">🧭</span>신청하면 이렇게 진행돼요</h2>
         <Steps items={STEPS} />
       </div>
 
@@ -62,20 +110,12 @@ export default function Diagnosis() {
         <Facts items={FACTS} />
       </div>
 
-      <section className={s.apply} id="apply" aria-labelledby="apply-title">
-        <h2 id="apply-title">참여 신청하기</h2>
-        <p className={s.applyNow}><b>1</b>주소로 집 찾기<span>· 주소를 확인하면 신청서 4단계가 이어져요</span></p>
-        <AddressStartForm />
-        <div className={s.contact}>
-          <a href={`tel:${PHONE.replaceAll('-', '')}`}>주소를 모르면 전화로 물어보기 · <span className={s.nowrap}>{PHONE}</span></a>
-          {kakao && <a href={kakao} target="_blank" rel="noopener noreferrer">카카오톡 채널로 문의하기</a>}
-        </div>
-      </section>
-
       <aside className={s.closing} aria-label="다른 서비스와 공유">
         <Link className={s.tile} href="/management"><span className={s.tileIcon} aria-hidden="true">🏡</span><small>팔 생각은 없고 관리가 고민이라면</small><strong>빈집 관리 알아보기 →</strong></Link>
         <ShareButton lead="가족과 같이 정하고 있다면" />
       </aside>
+      <div className={d.spacer} aria-hidden="true" />
     </main>
+    <StickyApply />
   </div></div>
 }
