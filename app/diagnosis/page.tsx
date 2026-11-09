@@ -64,7 +64,7 @@ export default function Diagnosis() {
 
       <section className={s.apply} id="apply" aria-labelledby="apply-title">
         <h2 id="apply-title">참여 신청하기</h2>
-        <p className={s.applyNow}><b>1</b>주소로 집 찾기<span>· 3단계 중 첫 단계</span></p>
+        <p className={s.applyNow}><b>1</b>주소로 집 찾기<span>· 주소를 확인하면 신청서 4단계가 이어져요</span></p>
         <AddressStartForm />
         <div className={s.contact}>
           <a href={`tel:${PHONE.replaceAll('-', '')}`}>주소를 모르면 전화로 물어보기 · <span className={s.nowrap}>{PHONE}</span></a>
