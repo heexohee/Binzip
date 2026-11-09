@@ -1,6 +1,6 @@
 /* 광고로 들어온 휴대폰 방문자(주로 50~60대)가 첫 화면에서 무엇인지 알고 바로 신청하도록: 공감 → 해결 → 예시 → 신청 순서. */
 .hero { position: relative; margin-top: 8px; }
-.photo { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; max-height: 360px; object-fit: cover; border-radius: var(--radius-sheet); }
+.photo { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; max-height: 360px; object-fit: cover; object-position: 50% 88%; border-radius: var(--radius-sheet); }
 .bini { position: absolute; right: -6px; bottom: -36px; width: 120px; height: auto; filter: drop-shadow(0 6px 10px #0003); }
 .bubble { position: absolute; right: 108px; bottom: 10px; padding: 8px 12px; border-radius: 14px 14px 4px 14px; background: var(--surface-raised); font-size: 15px; font-weight: 700; box-shadow: 0 4px 14px #0002; }
 
