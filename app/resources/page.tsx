@@ -4,8 +4,13 @@ import { HomeHeader, HomeLink, Arrow } from '../home-ui'
 import { OFFICIAL_RESOURCES, RESOURCE_CHECKED_AT, RESOURCE_GROUPS } from '../../src/official-resources'
 import home from '../home.module.css'
 import styles from './resources.module.css'
+import { pageMetadata } from '../../src/seo'
 
-export const metadata: Metadata = { title: '빈집 지원·정보 모음 — 빈집진단서', description: '빈집애, 그린대로, 포항시 지원 공고와 서류·법령을 필요한 일에 맞춰 찾아보세요.' }
+export const metadata: Metadata = pageMetadata({
+  path: '/resources',
+  title: '빈집 정비 지원사업·공식 정보 모음 | 빈집진단서',
+  description: '빈집정비·철거 지원 공고를 어디서 찾는지, 빈집애·그린대로 같은 공식 사이트와 포항시 공고, 서류·법령을 필요한 일에 맞춰 찾아보세요. 신청 자격과 접수 상태는 해당 기관에서 확인해 주세요.',
+})
 
 export default function ResourcesPage() {
   return <div className={home.site}><div className={home.sheet}><HomeHeader /><main className={styles.main}>

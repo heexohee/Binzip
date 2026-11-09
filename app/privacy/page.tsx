@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
 import { HomeHeader, HomeLink } from '../home-ui'
 import styles from './privacy.module.css'
+import { pageMetadata } from '../../src/seo'
 
-export const metadata: Metadata = {
-  title: '개인정보 처리방침 — 빈집진단서',
+export const metadata: Metadata = pageMetadata({
+  path: '/privacy',
+  title: '개인정보 처리방침 | 빈집진단서',
   description: '빈집진단서의 개인정보 수집·이용, 보관 및 파기, 이용자의 권리와 문의 방법을 안내합니다.',
-}
+})
 const sections = ['수집하는 개인정보와 이용 목적', '개인정보의 보관 및 파기', '개인정보의 제3자 제공', '개인정보 처리업무 위탁 및 외부 서비스', '개인정보의 국외 처리', '쿠키와 브라우저 저장 정보', '이용자의 권리와 행사 방법', '개인정보 보호 조치', '개인정보 보호 문의', '처리방침의 변경']
 export default function PrivacyPage() {
  return <div className={styles.sheet}><HomeHeader/><main className={styles.main}><HomeLink/>
