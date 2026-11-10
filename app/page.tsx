@@ -5,6 +5,13 @@ import type { Item } from './landing-parts'
 import { ShareButton } from './share-button'
 import home from './home.module.css'
 import s from './landing.module.css'
+import { pageMetadata, SITE_DESCRIPTION } from '../src/seo'
+
+export const metadata = pageMetadata({
+  path: '/',
+  title: '빈집진단서 — 상속받은 시골 빈집, 팔지·고칠지·돌볼지 정리',
+  description: SITE_DESCRIPTION,
+})
 
 export const maxDuration = 60
 

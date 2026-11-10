@@ -8,8 +8,13 @@ import home from '../home.module.css'
 import s from '../landing.module.css'
 import d from './diagnosis.module.css'
 import { StickyApply } from './sticky-apply'
+import { jsonLd, pageMetadata, SITE_URL } from '../../src/seo'
 
-export const metadata = { title: '빈집 진단 | 빈집진단서' }
+export const metadata = pageMetadata({
+  path: '/diagnosis',
+  title: '상속 빈집 무료 진단 — 매매·수리·철거 비교 | 빈집진단서',
+  description: '상속받은 시골집을 팔지, 고칠지, 철거할지 고민이라면. 선택지별 드는 돈과 할 일, 알아볼 만한 지역 빈집 정비 지원사업과 문의처를 진단서로 정리해 드려요. 지금은 전국 무료 시범 진단이에요.',
+})
 
 const WORRIES = [
   '철거하면 비용이 얼마나 들지 모르겠어요.',
@@ -36,19 +41,47 @@ const STEPS: Item[] = [
   { title: '진단서를 받아요', text: '담당자가 직접 검토한 결과를 보내드려요. 받아보신 뒤 소감을 들려주세요.' },
 ]
 
-const FACTS: Item[] = [
-  { title: '누가 참여할 수 있나요', text: '빈집이 있는 소유자와 가족이라면 전국 어디든 신청할 수 있어요. 지금 사는 곳도 상관없어요.' },
-  { title: '담당자가 살펴보고 보내드려요', text: '건물·땅 자료와 주변 거래는 시스템으로 바로 찾아요. 그다음 담당자가 보내주신 사진과 함께 살펴보고 진단서를 써요. 그래서 며칠 걸릴 수 있어요.' },
-  { title: '비용', text: '진단서와 시범 방문 모두 무료예요. 방문은 인원이 정해져 있어 연락드린 분과만 진행해요.' },
-  { title: '지역에 따라 다른 점', text: '건축물·토지 정보와 선택지 비교는 어느 지역이든 같아요. 지원사업은 포항부터 정리하고 있어서 다른 지역은 확인할 곳을 안내해 드려요.' },
-  { title: '진단서로 할 수 있는 것과 없는 것', text: '진단서는 공공자료와 보내주신 사진으로 선택지를 비교하고, 누구에게 무엇을 물어볼지 정리해 드려요. 법률·세금·건물 안전을 판단하거나 실제 팔릴 가격과 공사비를 확정해 드리지는 않아요. 진단서에 적힌 예상 금액을 바탕으로 전문가에게 확인해 주세요.' },
+// `question` is the same fact phrased as a question, used only for the FAQPage structured data below.
+const FACTS: (Item & { question: string })[] = [
+  { question: '누가 빈집 진단을 신청할 수 있나요?', title: '누가 참여할 수 있나요', text: '빈집이 있는 소유자와 가족이라면 전국 어디든 신청할 수 있어요. 지금 사는 곳도 상관없어요. 부모님 집을 자녀가 대신 알아보셔도 돼요.' },
+  { question: '상속받은 시골집, 어떻게 해야 하나요?', title: '상속받은 시골집, 무엇부터 할까요', text: '집과 땅의 주인이나 상속 정리 상태에 따라 팔기·고치기·철거 전에 확인할 일이 달라져요. 진단서에서 팔기·고치기·철거·그대로 두기의 드는 돈과 할 일을 비교해 드려요.' },
+  { question: '빈집 철거 비용을 지원받을 수 있나요?', title: '철거·수리 지원사업', text: '수리·철거 지원금은 본인 부담금과 지켜야 할 조건이 있어요. 진단서에 집이 있는 지역에서 알아볼 만한 사업과 문의처를 정리해 드려요. 신청 자격과 접수 상태는 해당 기관 공고에서 확인해 주세요.' },
+  { question: '시골집을 팔면 세금이 나오나요?', title: '세금', text: '팔면 양도소득세, 철거하면 재산세가 달라질 수 있어요. 정하기 전에 세무사나 소재지 세무 부서에 확인해 주세요. 진단서는 세금을 판단하지 않아요.' },
+  { question: '진단서는 누가 어떻게 만드나요?', title: '담당자가 살펴보고 보내드려요', text: '건물·땅 자료와 주변 거래는 시스템으로 바로 찾아요. 그다음 담당자가 보내주신 사진과 함께 살펴보고 진단서를 써요. 그래서 며칠 걸릴 수 있어요.' },
+  { question: '빈집 진단 비용이 드나요?', title: '비용', text: '진단서와 시범 방문 모두 무료예요. 방문은 인원이 정해져 있어 연락드린 분과만 진행해요.' },
+  { question: '지역에 따라 진단 내용이 다른가요?', title: '지역에 따라 다른 점', text: '건축물·토지 정보와 선택지 비교는 어느 지역이든 같아요. 지원사업은 포항부터 정리하고 있어서 다른 지역은 확인할 곳을 안내해 드려요.' },
+  { question: '진단서로 할 수 있는 것과 없는 것은 무엇인가요?', title: '진단서로 할 수 있는 것과 없는 것', text: '진단서는 공공자료와 보내주신 사진으로 선택지를 비교하고, 누구에게 무엇을 물어볼지 정리해 드려요. 법률·세금·건물 안전을 판단하거나 실제 팔릴 가격과 공사비를 확정해 드리지는 않아요. 진단서에 적힌 예상 금액을 바탕으로 전문가에게 확인해 주세요.' },
 ]
 
 const BINI = '/mascot/binzip-rabbit-report-transparent-v4.png'
 
+// Only facts already shown on this page: free pilot, nationwide, what the report does and does not do.
+const DIAGNOSIS_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${SITE_URL}/diagnosis#service`,
+      name: '빈집 무료 시범 진단',
+      serviceType: '상속 빈집 선택지 진단서',
+      description: '상속받은 시골 빈집을 팔기·고치기·철거·그대로 두기 중 어떻게 할지, 선택지별 드는 돈과 할 일, 지역 지원사업과 문의처를 담당자가 검토해 진단서로 정리해 드려요. 법률·세금·건물 안전을 판단하거나 실제 팔릴 가격과 공사비를 확정하지는 않아요.',
+      url: `${SITE_URL}/diagnosis`,
+      provider: { '@id': `${SITE_URL}/#organization` },
+      areaServed: { '@type': 'Country', name: '대한민국' },
+      audience: { '@type': 'Audience', audienceType: '빈집이 있는 소유자와 가족' },
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW', description: '시범 기간 무료' },
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${SITE_URL}/diagnosis#faq`,
+      mainEntity: FACTS.map(item => ({ '@type': 'Question', name: item.question, acceptedAnswer: { '@type': 'Answer', text: item.text } })),
+    },
+  ],
+}
+
 export default function Diagnosis() {
   const kakao = kakaoChannel()
-  return <div className={home.site}><div className={home.sheet}><HomeHeader />
+  return <div className={home.site}><script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(DIAGNOSIS_JSON_LD)} /><div className={home.sheet}><HomeHeader />
     <main className={`${s.service} ${s.diagnosis}`}>
       <div className={d.hero}>
         <Image className={d.photo} src="/diagnosis/rural-house.jpg" alt="오래 비어 있는 시골 기와집" width={752} height={480} sizes="(max-width: 760px) 100vw, 720px" priority />

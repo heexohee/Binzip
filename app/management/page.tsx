@@ -5,8 +5,13 @@ import { ShareButton } from '../share-button'
 import { Gets, type Item, PHONE, Steps } from '../landing-parts'
 import home from '../home.module.css'
 import s from '../landing.module.css'
+import { pageMetadata } from '../../src/seo'
 
-export const metadata = { title: '빈집 관리 | 빈집진단서' }
+export const metadata = pageMetadata({
+  path: '/management',
+  title: '시골 빈집 관리 서비스 준비 중 — 의견을 들려주세요 | 빈집진단서',
+  description: '팔 생각은 없지만 멀리 있는 시골 빈집을 누가 돌볼지 고민이라면. 한 달에 한 번 집 바깥 상태를 살펴보고 사진과 메모로 알려드리는 관리를 준비하고 있어요. 필요한 관리와 희망 요금을 들려주세요.',
+})
 
 const PLANS: Item[] = [
   { title: '정기 방문', text: '한 달에 한 번 집 바깥 상태를 살펴보는 관리를 준비하고 있어요. 설문에서도 이 범위의 희망 요금을 여쭤봐요.' },
