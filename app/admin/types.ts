@@ -19,6 +19,11 @@ export type ApplicationRow = {
   photo_count?: number
   /** Absent until the 20261104 source migration is applied. */
   source?: string | null
+  /** Absent until the 20261112 intake migration is applied. */
+  region?: string | null
+  vacancy_period?: string | null
+  applicant?: string | null
+  utm_content?: string | null
   /** Optional until the admin workflow migration is applied. Never included in customer reports. */
   review_status?: 'received' | 'reviewing' | 'waiting' | 'completed'
   internal_note?: string | null

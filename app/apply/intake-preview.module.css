@@ -52,3 +52,10 @@
 .fieldHint { display: block; margin-top: 4px; color: var(--text-secondary); font-size: var(--type-help); font-weight: 400; line-height: 1.6; }
 .input::placeholder { color: var(--border-control); }
 .form .input:focus-visible { outline: none; border-color: var(--brand-primary); box-shadow: 0 0 0 1px var(--brand-primary); }
+/* Region picker: many short labels, so three per row on phones. */
+.chips { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+.chip { composes: choice from '../ui.module.css'; position: relative; min-height: 48px; padding: 8px 10px; font-weight: 400; justify-content: center; text-align: center; }
+.chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chip:has(input:checked) { border-color: var(--brand-primary); background: var(--surface-soft); color: var(--brand-primary); font-weight: 700; }
+.chip:has(input:focus-visible) { outline: 2px solid var(--brand-primary); outline-offset: 2px; }
+.skip { align-self: flex-start; min-height: 44px; color: var(--brand-primary); font-size: var(--type-help); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }

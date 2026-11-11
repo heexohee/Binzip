@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { REVIEW_STATES, adminDate, filterApplications, type ApplicationSummary, type ReviewStatus } from '../../src/admin-workflow'
+import { ADDRESS_PENDING_LABEL, REVIEW_STATES, adminDate, filterApplications, type ApplicationSummary, type ReviewStatus } from '../../src/admin-workflow'
 import styles from './admin.module.css'
 
 export function StatusBadge({ status }: { status: ReviewStatus }) {
@@ -25,7 +25,7 @@ export function ApplicationList({ rows, demo = false, onSelect }: { rows: Applic
       </div>
       <div className={styles.meta}><span role="status">{filtered.length}건 표시 · {demo ? '가상 신청' : '최근 접수 최대 100건'} 기준</span>{(query || status !== 'all' || photosOnly) && <button onClick={reset}>필터 초기화</button>}</div>
       {filtered.length ? <ul className={styles.list}>{filtered.map(row => {
-        const content = <><StatusBadge status={row.reviewStatus} /><div><strong className={styles.address}>{row.resolved_address || row.address}</strong><div className={styles.subline}><span>{row.concern || '고민 미입력'}</span><span>{row.photo_count === undefined ? '사진 수 미확인' : `사진 ${row.photo_count}장`}</span><span>{row.reportStatus === 'issued' ? '진단서 공개 승인됨' : row.reportStatus === 'failed' ? '초안 생성 실패' : row.reportStatus === 'draft' ? '진단서 초안 있음' : '진단서 초안 없음'}</span></div></div><div className={styles.itemEnd}><strong>{row.nextCheck}</strong><time dateTime={row.created_at}>{adminDate(row.created_at)}</time></div><span className={styles.chevron} aria-hidden="true">→</span></>
+        const content = <><StatusBadge status={row.reviewStatus} /><div><strong className={styles.address}>{row.resolved_address || row.address}</strong><div className={styles.subline}>{row.addressPending && <span className={styles.pendingAddress}>{ADDRESS_PENDING_LABEL}</span>}<span>{row.concern || '고민 미입력'}</span><span>{row.photo_count === undefined ? '사진 수 미확인' : `사진 ${row.photo_count}장`}</span><span>{row.reportStatus === 'issued' ? '진단서 공개 승인됨' : row.reportStatus === 'failed' ? '초안 생성 실패' : row.reportStatus === 'draft' ? '진단서 초안 있음' : '진단서 초안 없음'}</span></div></div><div className={styles.itemEnd}><strong>{row.nextCheck}</strong><time dateTime={row.created_at}>{adminDate(row.created_at)}</time></div><span className={styles.chevron} aria-hidden="true">→</span></>
         return <li key={row.id} className={styles.item}>{demo ? <button className={styles.itemLink} onClick={() => onSelect?.(row.id)}>{content}</button> : <Link className={styles.itemLink} href={'/admin/' + row.id}>{content}</Link>}</li>
       })}</ul> : <div className={styles.empty}><strong>{rows.length ? '조건에 맞는 신청이 없어요.' : '아직 추가 확인 신청이 없어요.'}</strong><p>{rows.length ? '검색어나 필터를 바꿔보세요.' : '고객이 사진·연락처와 함께 추가 확인을 신청하면 여기에 표시됩니다.'}</p></div>}
     </section>

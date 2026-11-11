@@ -1,4 +1,5 @@
 import type { ApplicationRow, ReportRow } from '../app/admin/types'
+import { parseRegion } from './regions'
 
 export const REVIEW_STATES = [
   { id: 'received', label: '새 접수' },
@@ -13,6 +14,15 @@ export type ApplicationSummary = Pick<ApplicationRow, 'id' | 'address' | 'resolv
   reviewStatus: ReviewStatus
   reportStatus: ReportRow['status'] | null
   nextCheck: string
+  /** The owner skipped the exact address; only the 시·군 was saved. Ask for it during the consultation. */
+  addressPending: boolean
+}
+
+export const ADDRESS_PENDING_LABEL = '주소 상담 때 확인'
+
+/** Region-only applications: the saved address is just "경북 의성군" and nothing was resolved. */
+export function isAddressPending(app: Pick<ApplicationRow, 'address' | 'resolved_address' | 'pnu'>): boolean {
+  return !app.resolved_address && !app.pnu && parseRegion(app.address) !== null
 }
 
 export function isReviewStatus(value: unknown): value is ReviewStatus {
@@ -27,7 +37,9 @@ export function latestReport(reports: ReportRow[]): ReportRow | undefined {
 export function summarizeApplication(app: AdminApplication): ApplicationSummary {
   const report = latestReport(app.reports ?? [])
   const reviewStatus = isReviewStatus(app.review_status) ? app.review_status : 'received'
+  const addressPending = isAddressPending(app)
   const nextCheck = reviewStatus === 'completed' ? '처리 기록 확인'
+    : addressPending && !report ? ADDRESS_PENDING_LABEL
     : reviewStatus === 'waiting' ? '고객에게 요청한 정보 확인'
     : report?.status === 'failed' ? '자료 조회 실패 확인'
     : !report ? '진단서 초안 생성 필요'
@@ -37,7 +49,7 @@ export function summarizeApplication(app: AdminApplication): ApplicationSummary 
   return {
     id: app.id, address: app.address, resolved_address: app.resolved_address,
     concern: app.concern, created_at: app.created_at, photo_count: app.photo_count,
-    reviewStatus, reportStatus: report?.status ?? null, nextCheck,
+    reviewStatus, reportStatus: report?.status ?? null, nextCheck, addressPending,
   }
 }
 
