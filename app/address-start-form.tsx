@@ -14,6 +14,8 @@ export function AddressStartForm() {
   const [address, setAddress] = useState(flow.confirmedAddress?.query ?? flow.draft?.address ?? '')
   const [candidate, setCandidate] = useState<AddressCandidate | null>(flow.confirmedAddress)
   const [pending, setPending] = useState(false)
+  // After the first search, visitors who don't know the exact lot number can still continue.
+  const [tried, setTried] = useState(false)
   const [error, setError] = useState('')
   const controller = useRef<AbortController | null>(null)
   const input = useRef<HTMLInputElement>(null)
@@ -41,7 +43,10 @@ export function AddressStartForm() {
     const query = address.trim()
     clearLookup()
     if (!query) { setError('찾을 주소를 적어 주세요.'); input.current?.focus(); return }
-    if (query.length < 3 || query.length > 300) { setError('시·군·구와 도로명 또는 지번을 3자 이상 적어 주세요.'); input.current?.focus(); return }
+    setTried(true)
+    if (query.length < 3 || query.length > 300) { setError('시·군·구와 읍·면·리를 적어 주세요. 정확한 주소를 몰라도 아래 버튼으로 신청할 수 있어요.'); input.current?.focus(); return }
+    // Without a lot or building number the lookup picks an arbitrary house in the area, so don't show one as "this house".
+    if (!/[0-9]/.test(query)) { setError('번지나 건물번호까지 적으면 정확한 집을 찾을 수 있어요. 몰라도 아래 버튼으로 신청할 수 있어요.'); return }
     flow.setDraft({ address: query, decision: flow.draft?.decision ?? 'undecided' })
     const request = new AbortController()
     controller.current = request
@@ -51,9 +56,9 @@ export function AddressStartForm() {
       const response = await fetch('/api/address?q=' + encodeURIComponent(query), { signal: request.signal, cache: 'no-store' })
       const data: unknown = await response.json()
       if (controller.current !== request) return
-      if (!response.ok) { setError('주소 조회에 연결하지 못했어요. 잠시 후 다시 확인해 주세요.'); return }
+      if (!response.ok) { setError('주소를 확인하지 못했어요. 다시 검색하거나 아래 버튼으로 바로 신청할 수 있어요.'); return }
       const found = parseAddressCandidate(data, query)
-      if (!found) { setError('주소를 찾지 못했어요. 시·군·구와 도로명·건물번호 또는 지번을 확인해 주세요.'); return }
+      if (!found) { setError('주소를 찾지 못했어요. 시·군·구와 번지를 확인하거나, 몰라도 아래 버튼으로 신청할 수 있어요.'); return }
       setCandidate(found)
     } catch {
       if (controller.current === request) setError('주소 조회가 지연되거나 연결이 끊겼어요. 다시 확인해 주세요.')
@@ -70,6 +75,15 @@ export function AddressStartForm() {
     router.push('/apply')
   }
 
+  const continueWithoutMatch = () => {
+    const query = address.trim()
+    if (!query) return
+    flow.setConfirmedAddress(null)
+    flow.setDraft({ address: query, decision: flow.draft?.decision ?? 'undecided' })
+    flow.setResult(null)
+    router.push('/apply')
+  }
+
   return <div className={styles.addressForm}>
     <form noValidate onSubmit={event => { event.preventDefault(); void lookup() }}>
       <div className={styles.addressInput}><Icon name="pin" /><input ref={input} id="home-address" aria-label="빈집 주소" name="address" type="text" required minLength={3} maxLength={300} autoComplete="street-address" enterKeyHint="search" placeholder="도로명주소 또는 지번주소" value={address} onChange={event => { clearLookup(); setAddress(event.target.value) }} aria-invalid={error ? true : undefined} aria-describedby={error ? 'address-error' : undefined} /></div>
@@ -77,6 +91,7 @@ export function AddressStartForm() {
     </form>
     {pending && <p className={styles.lookupMessage} role="status">입력한 주소와 지도 위치를 찾고 있어요.</p>}
     {error && <p id="address-error" className={styles.lookupError} role="alert">{error}</p>}
+    {tried && !pending && !candidate && address.trim() && <button className={styles.skipAddress} type="button" onClick={continueWithoutMatch}>정확한 주소를 몰라도 신청하기<Arrow /></button>}
     {candidate && <section ref={confirmation} tabIndex={-1} className={styles.addressConfirmation} aria-labelledby="address-confirm-title">
       <h3 id="address-confirm-title">이 집이 맞나요?</h3>
       <p className={styles.candidateAddress}>{candidate.address}</p>

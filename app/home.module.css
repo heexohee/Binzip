@@ -74,6 +74,7 @@
 .candidateAddress { font-weight: 650; overflow-wrap: anywhere; }
 .candidateRoad, .confirmHelp { color: var(--text-secondary); font-size: var(--type-help); overflow-wrap: anywhere; }
 .changeAddress { composes: secondary from "./ui.module.css"; width: 100%; }
+.skipAddress { composes: secondary from "./ui.module.css"; width: 100%; margin-top: var(--space-4); }
 .lookupMessage, .lookupError { margin-top: var(--space-4); font-size: var(--type-help); }
 .lookupMessage { color: var(--text-secondary); }
 .lookupError { color: var(--status-error-text); }
