@@ -12,19 +12,19 @@ export const GOALS: { value: IntakeGoal; title: string; text: string; stored: st
 export const VACANCY_OPTIONS = ['1년이 안 됐어요', '1~3년', '3~5년', '5년이 넘었어요', '잘 모르겠어요'] as const
 export const APPLICANT_OPTIONS = ['소유자 본인', '자녀·가족', '기타'] as const
 
-/** Screen order: tap-only questions first, the exact address later (skippable), contact last. */
+/** Screen order: tap-only questions first, location asked once (시·군 required, exact address skippable), contact last. */
 export function intakeScreens(goal: IntakeGoal | null): string[] {
   const includes = (value: IntakeGoal) => goal === 'all' || goal === value
-  return ['region', 'basics', 'owner',
+  return ['basics', 'owner',
     ...(includes('repair') ? ['repair'] : []),
     ...(includes('demolish') ? ['demolition'] : []),
-    'house', 'address', 'contact']
+    'house', 'location', 'contact']
 }
 
-/** Progress bar group for each screen: 0 간단한 질문, 1 집 상황, 2 주소·연락처. */
+/** Progress bar group for each screen: 0 간단한 질문, 1 집 상황, 2 위치·연락처. */
 export function intakePhase(screen: string): number {
-  if (screen === 'region' || screen === 'basics') return 0
-  if (screen === 'address' || screen === 'contact') return 2
+  if (screen === 'basics') return 0
+  if (screen === 'location' || screen === 'contact') return 2
   return 1
 }
 

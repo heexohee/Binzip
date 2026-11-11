@@ -2,17 +2,19 @@ import assert from 'node:assert/strict'
 import { applicationAddress, intakePhase, intakeScreens } from '../src/intake-flow'
 import { parseRegion } from '../src/regions'
 
-// Tap-only questions come first, the address after them, contact last.
-assert.deepEqual(intakeScreens(null), ['region', 'basics', 'owner', 'house', 'address', 'contact'])
-assert.deepEqual(intakeScreens('manage'), ['region', 'basics', 'owner', 'house', 'address', 'contact'])
-assert.deepEqual(intakeScreens('repair'), ['region', 'basics', 'owner', 'repair', 'house', 'address', 'contact'])
-assert.deepEqual(intakeScreens('all'), ['region', 'basics', 'owner', 'repair', 'demolition', 'house', 'address', 'contact'])
+// Tap-only questions come first; location is asked once, right before contact.
+assert.deepEqual(intakeScreens(null), ['basics', 'owner', 'house', 'location', 'contact'])
+assert.deepEqual(intakeScreens('manage'), ['basics', 'owner', 'house', 'location', 'contact'])
+assert.deepEqual(intakeScreens('repair'), ['basics', 'owner', 'repair', 'house', 'location', 'contact'])
+assert.deepEqual(intakeScreens('all'), ['basics', 'owner', 'repair', 'demolition', 'house', 'location', 'contact'])
 for (const goal of ['sell', 'repair', 'demolish', 'manage', 'all', null] as const) {
   const screens = intakeScreens(goal)
-  assert.equal(screens.at(-1), 'contact')
-  assert.ok(screens.indexOf('address') > screens.indexOf('basics'))
+  assert.equal(screens[0], 'basics')
+  assert.deepEqual(screens.slice(-2), ['location', 'contact'])
+  assert.equal(screens.filter(screen => screen === 'location').length, 1)
+  assert.ok(!screens.includes('region') && !screens.includes('address'))
 }
-assert.deepEqual(['region', 'basics', 'owner', 'house', 'address', 'contact'].map(intakePhase), [0, 0, 1, 1, 2, 2])
+assert.deepEqual(['basics', 'owner', 'house', 'location', 'contact'].map(intakePhase), [0, 1, 1, 2, 2])
 
 // Skipping the address still leaves the region to save; a typed address wins.
 assert.deepEqual(applicationAddress('  ', '경북 의성군'), { address: '경북 의성군', hasDetail: false })
