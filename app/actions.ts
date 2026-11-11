@@ -1,19 +1,25 @@
 'use server'
 
-import { checkRecentApplications, expiryFrom, saveApplication, type ApplyState, applicationSource } from '../src/application'
+import { checkRecentApplications, expiryFrom, saveApplication, type ApplyState, applicationSource, applicantRole, applicationUtmContent } from '../src/application'
+import { applicationAddress, VACANCY_OPTIONS } from '../src/intake-flow'
+import { parseRegion } from '../src/regions'
 import { createDraftReport } from '../src/report'
 import { preparePhotos, type PreparedPhoto } from '../src/photos'
 import { MAX_PHOTOS } from '../src/photo-limits'
 import { supabaseConfigured } from '../src/supabase'
 
-/** 필수는 주소·연락처·동의 셋뿐. 오류 문구는 사과하지 않고 무엇을 하면 되는지만 쓴다. */
+/** 필수는 시·군(또는 주소)·연락처·동의뿐. 오류 문구는 사과하지 않고 무엇을 하면 되는지만 쓴다. */
 export async function submitApplication(
   _prev: ApplyState,
   formData: FormData,
 ): Promise<ApplyState> {
   const text = (name: string) => String(formData.get(name) ?? '').trim()
 
-  const address = text('address')
+  const detailAddress = text('address')
+  // 시·군은 정해진 목록의 값만 받는다. 정확한 주소를 건너뛰면 시·군을 신청 주소로 남기고 상담 때 받는다.
+  const region = parseRegion(text('region'))
+  const { address, hasDetail } = applicationAddress(detailAddress, region ?? '')
+  const vacancy = (VACANCY_OPTIONS as readonly string[]).includes(text('vacancy')) ? text('vacancy') : null
   const contact = text('contact')
   const channel = text('channel')
   const email = text('email')
@@ -23,7 +29,7 @@ export async function submitApplication(
 
 
   const errors: Record<string, string> = {}
-  if (!address) errors.address = '주소를 적어 주세요.'
+  if (!address) errors.region = '집이 있는 시·군을 골라 주세요.'
   // 전화번호는 항상 받는다. 진단서 발송이 실패해도 닿을 수단이 하나는 있어야 한다.
   if (!contact) {
     errors.contact = '연락받을 전화번호를 적어 주세요.'
@@ -36,7 +42,7 @@ export async function submitApplication(
   }
   if (!agreed) errors.agree = '동의에 체크해 주세요.'
   if (formData.get('overseasAgree') == null) errors.overseasAgree = '개인정보 국외 이전에 동의해 주세요.'
-  for (const [name, limit] of Object.entries({ address: 300, condition: 3000, taxNote: 2000, contact: 50, email: 254, acquisition: 100, ownership: 100, concern: 100, speed: 200, channel: 100 })) {
+  for (const [name, limit] of Object.entries({ address: 300, condition: 3000, taxNote: 2000, contact: 50, email: 254, region: 40, applicant: 20, utmContent: 40, acquisition: 100, ownership: 100, concern: 100, speed: 200, channel: 100 })) {
     if ((name === 'concern' ? concern : text(name)).length > limit) errors[name] = `입력 내용을 ${limit}자 이내로 줄여 주세요.`
   }
   if (photoEntries.length > MAX_PHOTOS) errors.photos = '사진은 최대 6장까지 첨부해 주세요.'
@@ -79,6 +85,10 @@ export async function submitApplication(
       resolvedAddress: text('resolvedAddress') || null,
       matchQuality: parseQuality(text('matchQuality')),
       source: applicationSource(text('source')),
+      region,
+      vacancy,
+      applicant: applicantRole(text('applicant')),
+      utmContent: applicationUtmContent(text('utmContent')),
     }, photos)
     applicationId = saved.applicationId
   } catch {
@@ -90,7 +100,8 @@ export async function submitApplication(
   }
 
   // 신청이 남은 뒤에만 판정을 돌린다. 판정이 실패해도 신청은 이미 안전하다.
-  if (applicationId) {
+  // 시·군만으로는 집을 특정할 수 없으니, 정확한 주소를 받은 신청만 판정을 돌린다.
+  if (applicationId && hasDetail) {
     await createDraftReport(applicationId, address)
   }
 

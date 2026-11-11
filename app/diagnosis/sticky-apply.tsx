@@ -23,7 +23,7 @@ export function StickyApply() {
   }, [])
 
   function goToApply(event: MouseEvent<HTMLAnchorElement>) {
-    const input = document.getElementById('home-address')
+    const input = document.getElementById('apply-start')
     if (!input) return
     event.preventDefault()
     document.getElementById('apply')?.scrollIntoView({ behavior: 'smooth', block: 'start' })

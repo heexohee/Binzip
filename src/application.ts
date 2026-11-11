@@ -1,5 +1,6 @@
 import { sbInsert, sbRpc, sbSelect } from './supabase'
 import type { PreparedPhoto } from './photos'
+import { safeUtmContent } from './web-analytics'
 
 /** 진단 신청 레코드. 개인정보는 주소와 연락처 둘뿐이다 — 이름·주민번호는 받지 않는다. */
 export type Application = {
@@ -25,12 +26,28 @@ export type Application = {
   matchQuality: 'exact' | 'road' | 'fuzzy' | null
   /** 유입 경로. 링크의 utm_source 중 허용된 값만 저장한다. */
   source: ApplicationSource
+  /** 집이 있는 시·군. "경북 의성군"처럼 정해진 목록의 값만 들어온다. */
+  region: string | null
+  /** 비워 둔 기간 */
+  vacancy: string | null
+  /** 누가 신청했는지: 소유자 본인 / 자녀·가족 / 기타 */
+  applicant: string | null
+  /** 광고 소재 구분. utm_content 중 허용 형식만 저장한다. */
+  utmContent: string | null
 }
 
 export const APPLICATION_SOURCES = ['instagram', 'facebook', 'meta', 'moast', 'family-share', 'website'] as const
 export type ApplicationSource = typeof APPLICATION_SOURCES[number]
 export function applicationSource(value: string): ApplicationSource {
   return (APPLICATION_SOURCES as readonly string[]).includes(value) ? value as ApplicationSource : 'website'
+}
+
+export const APPLICANT_ROLES = ['소유자 본인', '자녀·가족', '기타'] as const
+export function applicantRole(value: string): string | null {
+  return (APPLICANT_ROLES as readonly string[]).includes(value) ? value : null
+}
+export function applicationUtmContent(value: string): string | null {
+  return safeUtmContent(value.trim())
 }
 
 /**
@@ -106,16 +123,22 @@ export async function saveApplication(
 
 /** 생성된 신청 id 를 돌려준다. 진단서를 여기에 붙여야 한다. */
 async function saveToSupabase(app: Application): Promise<string | null> {
-  try {
-    const row = await sbInsert<{ id: string }>('applications', toRow(app))
-    return row?.id ?? null
-  } catch (e) {
-    // Until the source migration runs, PostgREST rejects the unknown column (PGRST204). Keep taking applications.
-    if (!describe(e).includes('PGRST204')) throw e
-    const { source: _source, ...withoutSource } = toRow(app)
-    const row = await sbInsert<{ id: string }>('applications', withoutSource)
-    return row?.id ?? null
+  // Until a migration runs, PostgREST rejects the unknown column (PGRST204). Keep taking applications:
+  // drop the newest columns first, then the source column too. The answers stay in `condition`.
+  const full = toRow(app)
+  const { region: _r, vacancy_period: _v, applicant: _a, utm_content: _u, ...beforeIntake } = full
+  const { source: _s, ...beforeSource } = beforeIntake
+  let lastError: unknown
+  for (const row of [full, beforeIntake, beforeSource]) {
+    try {
+      const saved = await sbInsert<{ id: string }>('applications', row)
+      return saved?.id ?? null
+    } catch (e) {
+      if (!describe(e).includes('PGRST204')) throw e
+      lastError = e
+    }
   }
+  throw lastError
 }
 
 async function notifyByEmail(app: Application): Promise<string | null> {
@@ -127,6 +150,7 @@ async function notifyByEmail(app: Application): Promise<string | null> {
   const or = (v: string | null) => v ?? '(적지 않음)'
   const lines = [
     '빈집 주소: ' + app.address,
+    '시·군: ' + or(app.region),
     '확인된 주소: ' + or(app.resolvedAddress) + (app.matchQuality ? ' [' + app.matchQuality + ']' : ''),
     'PNU: ' + or(app.pnu),
     '',
@@ -134,6 +158,8 @@ async function notifyByEmail(app: Application): Promise<string | null> {
     '취득 경위: ' + or(app.acquisition),
     '소유 관계: ' + or(app.ownership),
     '궁금한 내용: ' + or(app.concern),
+    '비워 둔 기간: ' + or(app.vacancy),
+    '신청한 사람: ' + or(app.applicant),
     '인터뷰·방문 의향: ' + or(app.speed),
     '',
     '받을 방법: ' + or(app.channel),
@@ -184,6 +210,10 @@ function toRow(app: Application) {
     created_at: app.createdAt,
     expires_at: app.expiresAt,
     source: app.source,
+    region: app.region,
+    vacancy_period: app.vacancy,
+    applicant: app.applicant,
+    utm_content: app.utmContent,
   }
 }
 

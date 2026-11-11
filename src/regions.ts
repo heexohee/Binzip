@@ -35,3 +35,9 @@ export function regionLabel(province: string, district: string): string | null {
   if (!isProvince(province)) return null
   return (REGIONS[province] as readonly string[]).includes(district) ? `${province} ${district}` : null
 }
+
+/** "경북 포항시" → the same label if the pair is on the list, else null. Values from the browser are not trusted. */
+export function parseRegion(value: string): string | null {
+  const [province = '', district = '', ...rest] = value.trim().split(' ')
+  return rest.length ? null : regionLabel(province, district)
+}

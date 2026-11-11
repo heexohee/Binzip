@@ -3,10 +3,13 @@ export const MEASUREMENT_ID = 'G-0Y04DMX5Y0'
 export const CONSENT_KEY = 'binzip-analytics-consent-v1'
 export const PUBLIC_PATHS = ['/', '/diagnosis', '/management', '/interest', '/apply', '/participate', '/resources', '/privacy', '/example-report', '/example-report/easy']
 export function safePage(path: string) { return PUBLIC_PATHS.includes(path) ? `https://www.binzipcare.kr${path}` : null }
+/** Ad creative label: `image_<name>` or a numeric Meta ad id. Shared by analytics and the application record. */
+export const UTM_CONTENT_PATTERN = /^(image_[a-z0-9_]{1,30}|[0-9]{5,30})$/
+export function safeUtmContent(value: string | null | undefined): string | null { return value && UTM_CONTENT_PATTERN.test(value) ? value : null }
 export function safeCampaign(search: string) {
  const q = new URLSearchParams(search)
  const result: Record<string,string> = {}
- const allowed: Record<string,RegExp> = { utm_source: /^(instagram|facebook|meta|moast)$/, utm_medium: /^(paid_social|social)$/, utm_campaign: /^binzip_(diagnosis|care)_202611$/, utm_content: /^(image_[a-z0-9_]{1,30}|[0-9]{5,30})$/ }
+ const allowed: Record<string,RegExp> = { utm_source: /^(instagram|facebook|meta|moast)$/, utm_medium: /^(paid_social|social)$/, utm_campaign: /^binzip_(diagnosis|care)_202611$/, utm_content: UTM_CONTENT_PATTERN }
  for (const [key, pattern] of Object.entries(allowed)) { const value=q.get(key); if(value && pattern.test(value)) result[key]=value }
  return result
 }

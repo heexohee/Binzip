@@ -1,13 +1,13 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { HomeHeader } from '../home-ui'
-import { AddressStartForm } from '../address-start-form'
 import { ShareButton } from '../share-button'
 import { Facts, type Item, kakaoChannel, PHONE, Steps } from '../landing-parts'
 import home from '../home.module.css'
 import s from '../landing.module.css'
 import d from './diagnosis.module.css'
 import { StickyApply } from './sticky-apply'
+import { RegionStart } from './region-start'
 import { jsonLd, pageMetadata, SITE_URL } from '../../src/seo'
 
 export const metadata = pageMetadata({
@@ -35,7 +35,7 @@ const LEVEL = ['', '적음', '보통', '많음']
 const dots = (n: number) => '●'.repeat(n) + '○'.repeat(3 - n)
 
 const STEPS: Item[] = [
-  { title: '주소 확인 뒤 신청서 4단계', text: '집 상태 · 궁금한 내용 · 연락처를 남기고 확인한 뒤 제출해요.' },
+  { title: '버튼으로 답하고 연락처 남기기', text: '시·군, 비워 둔 기간, 가장 큰 고민을 누르고 연락처를 남기면 끝나요. 정확한 주소는 몰라도 돼요.' },
   { title: '7일 안에 진행 여부를 알려드려요', text: '신청 내용을 살펴본 뒤, 진단을 진행할 수 있는지와 예상 시기를 문자나 메일로 알려드려요.' },
   { title: '일부 분과는 인터뷰하고 집에 가 봐요', text: '인터뷰·방문 연락에 동의하신 분 중 일부께 20분 전화 인터뷰를 요청하고, 마친 분께 모바일 상품권을 드려요. 포항·경주에서는 그중 몇 분께 따로 연락드려 집을 직접 방문해 무료로 진단해 드려요. 신청만으로 인터뷰·방문이 정해지지는 않아요.' },
   { title: '진단서를 받아요', text: '담당자가 직접 검토한 결과를 보내드려요. 받아보신 뒤 소감을 들려주세요.' },
@@ -124,11 +124,11 @@ export default function Diagnosis() {
 
       <section className={`${s.apply} ${d.section}`} id="apply" aria-labelledby="apply-title">
         <p className={d.kicker}>④ 무료 진단 신청</p>
-        <h2 id="apply-title">집 주소로 시작해요</h2>
-        <p>지번이나 도로명 주소, 아는 만큼만 넣어 주세요.</p>
-        <AddressStartForm />
+        <h2 id="apply-title">버튼 몇 번으로 시작해요</h2>
+        <p>시·군과 집 상황을 누르고, 연락처를 남기면 끝나요. 정확한 주소는 몰라도 상담할 때 함께 확인해요.</p>
+        <RegionStart />
         <div className={s.contact}>
-          <a href={`tel:${PHONE.replaceAll('-', '')}`}>주소를 모르면 전화로 물어보기 · <span className={s.nowrap}>{PHONE}</span></a>
+          <a href={`tel:${PHONE.replaceAll('-', '')}`}>전화로 신청하기 · <span className={s.nowrap}>{PHONE}</span></a>
           {kakao && <a href={kakao} target="_blank" rel="noopener noreferrer">카카오톡 채널로 문의하기</a>}
         </div>
       </section>
