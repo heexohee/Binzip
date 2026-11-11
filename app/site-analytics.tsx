@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { CONSENT_KEY, MEASUREMENT_ID, safeCampaign, safePage } from '../src/web-analytics'
+import { CONSENT_KEY, MEASUREMENT_ID, contactMethod, safeCampaign, safePage, trackEvent } from '../src/web-analytics'
 import s from './site-analytics.module.css'
 export function SiteAnalytics() {
  const path=usePathname()
@@ -35,6 +35,24 @@ export function SiteAnalytics() {
   window.gtag?.('set',{page_location:url,page_title:path,page_referrer:''})
   window.gtag?.('event','page_view',{send_to:MEASUREMENT_ID,page_location:url,page_title:path,page_referrer:''})
  },[loaded,consent,eligible,path])
+ // Delegated listeners: contact links live in server components, and only fixed labels are sent.
+ useEffect(()=>{
+  if(!loaded || consent!=='granted') return
+  let addressStarted=false
+  const onClick=(e:MouseEvent)=>{
+   const link=(e.target as Element|null)?.closest?.('a[href]')
+   const method=link ? contactMethod(link.getAttribute('href') ?? '') : null
+   if(method) trackEvent('contact_click',{method})
+  }
+  const onInput=(e:Event)=>{
+   if(addressStarted || (e.target as HTMLElement|null)?.id!=='home-address') return
+   addressStarted=true
+   trackEvent('address_start',{form_id:'diagnosis'})
+  }
+  document.addEventListener('click',onClick,true)
+  document.addEventListener('input',onInput,true)
+  return ()=>{document.removeEventListener('click',onClick,true);document.removeEventListener('input',onInput,true)}
+ },[loaded,consent])
  function choose(value:string){try{localStorage.setItem(CONSENT_KEY,value)}catch{} setConsent(value)}
  function reset(){
   try{localStorage.removeItem(CONSENT_KEY)}catch{}
