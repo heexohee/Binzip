@@ -44,10 +44,3 @@
 @media (min-width: 761px) { .sticky, .spacer { display: none; } }
 
 /* ④ 신청 시작: 시·도 한 번 누르면 신청서로 넘어간다. */
-.regionStart { margin-top: 16px; }
-.regionQuestion { margin: 0 0 10px; font-weight: 700; font-size: var(--type-body); }
-.regionGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; list-style: none; margin: 0; padding: 0; }
-.regionGrid a { display: grid; place-items: center; min-height: 48px; border: 1px solid var(--border-control); border-radius: var(--radius-control); background: var(--surface-raised); color: var(--text-primary); font-size: var(--type-body); text-decoration: none; }
-.regionGrid a:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
-.regionGrid a:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 2px; }
-@media (min-width: 601px) { .regionGrid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }

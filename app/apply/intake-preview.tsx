@@ -31,16 +31,15 @@ const objectParticle = (word: string) => { const code = word.charCodeAt(word.len
 /** Picking one of these clears the specific spots, and the reverse. */
 const DAMAGE_ONLY = ['없어요', '잘 모르겠어요']
 const TITLES: Record<string, string> = {
-  region: '집이 어디에 있나요?', basics: '집 상황을 간단히 알려주세요',
+  basics: '집 상황을 간단히 알려주세요',
   owner: '누가 신청하시나요?', demolition: '철거 전에 확인할 게 있어요', repair: '어디를 고쳐야 할까요?',
-  house: '집의 현재 상태를 알려주세요', address: '정확한 주소를 아시나요?', contact: '진단서를 받을 연락처를 남겨주세요',
+  house: '집의 현재 상태를 알려주세요', location: '집이 어디에 있나요?', contact: '진단서를 받을 연락처를 남겨주세요',
 }
 const HINTS: Record<string, string> = {
-  region: '시·도를 누르면 시·군을 고를 수 있어요. 정확한 주소는 나중에 여쭤봐요.',
   basics: '버튼만 눌러 주세요. 모르면 ‘잘 모르겠어요’도 괜찮아요.',
   owner: '부모님 집을 자녀분이 대신 알아보셔도 괜찮아요. 모르는 내용은 ‘잘 모르겠어요’를 골라 주세요.',
   house: '아는 만큼 답해 주세요. 사진은 없어도 돼요.',
-  address: '몰라도 신청할 수 있어요. 정확한 주소는 상담할 때 함께 확인해요.',
+  location: '시·도와 시·군만 골라 주시면 돼요. 정확한 주소는 몰라도 상담할 때 함께 확인해요.',
   contact: '진단서를 보내 드릴 곳이에요. 휴대폰 번호는 필수, 이메일은 선택이에요.',
 }
 
@@ -60,7 +59,7 @@ export function IntakePreview({ initialAddress = '', initialProvince = '' }: { i
   const [answers, setAnswers] = useState<Record<string, string>>({ address: initialAddress || confirmedAddress?.address || draft?.address || '', province: isProvince(initialProvince) ? initialProvince : '' })
   const [goal, setGoal] = useState<IntakeGoal | null>(null)
   const [damage, setDamage] = useState<string[]>([])
-  const [screen, setScreen] = useState('region')
+  const [screen, setScreen] = useState('basics')
   const [review, setReview] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const submittingRef = useRef(false)
@@ -92,12 +91,12 @@ export function IntakePreview({ initialAddress = '', initialProvince = '' }: { i
     didNavigate.current = true; setError(''); setScreen(next)
   }
   function next() {
-    if (screen === 'region' && !region) { setError(answers.province ? '시·군을 골라 주세요.' : '집이 있는 시·도를 골라 주세요.'); return }
     if (screen === 'basics' && !goal) { setError('가장 큰 고민을 골라 주세요. 아직 모르겠다는 답도 괜찮아요.'); return }
     const missing = (REQUIRED[screen] ?? []).filter(([key]) => key === 'damage' ? !damage.length : !answers[key])
       .filter(([key]) => key !== 'agreement' || answers.ownership === '공동 소유' || answers.ownership === '상속 정리 중')
       .filter(([key]) => key !== 'timing' || selected('sell'))
     if (missing[0]) { setError(`‘${missing[0][1]}’${objectParticle(missing[0][1])} 골라 주세요. 아직 모르거나 정하지 않았다는 답도 괜찮아요.`); return }
+    if (screen === 'location' && !region) { setError(answers.province ? '시·군을 골라 주세요.' : '집이 있는 시·도를 골라 주세요.'); return }
     if (screen === 'contact') {
       if (!/^0\d{8,10}$/.test((answers.phone || '').replace(/[\s-]/g, ''))) { setError('연락받을 휴대폰 번호를 확인해 주세요.'); return }
       if (answers.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(answers.email)) { setError('이메일 주소를 확인해 주세요.'); return }
@@ -109,6 +108,7 @@ export function IntakePreview({ initialAddress = '', initialProvince = '' }: { i
     move(screens[index + 1])
   }
   function skipAddress() {
+    if (!region) { setError(answers.province ? '시·군을 골라 주세요.' : '집이 있는 시·도를 골라 주세요.'); return }
     set('address', '')
     move('contact')
   }
@@ -190,7 +190,7 @@ export function IntakePreview({ initialAddress = '', initialProvince = '' }: { i
   }}>
     <div hidden aria-hidden="true"><label>웹사이트<input ref={honeypot} name="website" tabIndex={-1} autoComplete="off" /></label></div>
     <ol className={styles.steps} aria-label="진단 신청 단계">
-      {['간단한 질문', '집 상황', '주소·연락처', '확인·제출'].map((label, i) => <li key={label} aria-current={phase === i ? 'step' : undefined} data-complete={phase > i}><span>{phase > i ? '✓' : i + 1}</span>{label}</li>)}
+      {['간단한 질문', '집 상황', '위치·연락처', '확인·제출'].map((label, i) => <li key={label} aria-current={phase === i ? 'step' : undefined} data-complete={phase > i}><span>{phase > i ? '✓' : i + 1}</span>{label}</li>)}
     </ol>
     <div className={styles.card}>
       <header className={styles.heading}>
@@ -202,7 +202,7 @@ export function IntakePreview({ initialAddress = '', initialProvince = '' }: { i
 
       {review ? <>
         <dl className={styles.summary}>{rows.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}<div><dt>첨부 사진</dt><dd>{photos.length}장</dd></div></dl>
-        <button className={styles.edit} type="button" disabled={submitting} onClick={() => { setReview(false); move('region') }}>입력 내용 수정하기</button>
+        <button className={styles.edit} type="button" disabled={submitting} onClick={() => { setReview(false); move(screens[0]) }}>입력 내용 수정하기</button>
         <p className={styles.nextHint}>제출하면 신청이 접수돼요. 담당자가 살펴보고 7일 안에 문자나 메일로 진행 여부를 알려드려요.</p>
         {submitting && <p role="status">신청을 보내고 있어요.</p>}
         {error && <p ref={errorRef} className={styles.error} role="alert">{error}</p>}
@@ -211,7 +211,7 @@ export function IntakePreview({ initialAddress = '', initialProvince = '' }: { i
           <button className={styles.primary} type="submit" disabled={submitting}>{submitting ? '접수 중…' : '신청 접수하기'}<span aria-hidden="true"> →</span></button>
         </div>
       </> : <>
-      {screen === 'region' && <>
+      {screen === 'location' && <>
         <fieldset className={styles.question}><legend>시·도 <span className={styles.optional}>필수</span></legend><div className={styles.chips}>
           {PROVINCES.map(province => <label className={styles.chip} key={province}>
             <input type="radio" name="province" checked={answers.province === province} onChange={() => setAnswers(current => ({ ...current, province, district: '' }))} />{province}
@@ -222,6 +222,8 @@ export function IntakePreview({ initialAddress = '', initialProvince = '' }: { i
             <input type="radio" name="district" checked={answers.district === district} onChange={() => set('district', district)} />{district}
           </label>)}
         </div></fieldset>}
+        <label className={styles.question}>정확한 주소 <span className={styles.optional}>선택</span><span id="address-hint" className={styles.fieldHint}>{region ? `${region} 뒤의` : '시·군 뒤의'} 읍·면·리와 번지를 아는 만큼 적어 주세요.</span><input className={styles.input} aria-describedby="address-hint" maxLength={300} value={answers.address || ''} onChange={e => set('address', e.target.value)} placeholder="예: ○○면 ○○리 123" autoComplete="street-address" /></label>
+        <button className={styles.skip} type="button" onClick={skipAddress}>주소를 모르면 건너뛰기<span aria-hidden="true"> →</span></button>
       </>}
       {screen === 'basics' && <>
         {choices('vacancy', '집을 비워 둔 지 얼마나 됐나요?', VACANCY_OPTIONS)}
@@ -247,10 +249,6 @@ export function IntakePreview({ initialAddress = '', initialProvince = '' }: { i
         {choices('condition', '최근에 본 집 상태는 어떤가요?', ['큰 이상은 없어 보여요', '수리가 필요한 곳이 있어요', '최근 상태를 몰라요'])}
         <PhotoPicker initial={photos} onChange={setPhotos} onBusyChange={setPhotoBusy} disabled={submitting} />
         <p className={styles.fieldHint}>사람 얼굴, 차량번호, 우편물·서류, 다른 사람의 연락처가 보이지 않게 찍어 주세요. 보이면 진단에 필요 없는 부분은 가리거나 사진을 지울 수 있어요.</p>
-      </>}
-      {screen === 'address' && <>
-        <label className={styles.question}>빈집 주소 <span className={styles.optional}>선택</span><span id="address-hint" className={styles.fieldHint}>{region} 뒤의 읍·면·리와 번지를 아는 만큼 적어 주세요.</span><input className={styles.input} aria-describedby="address-hint" maxLength={300} value={answers.address || ''} onChange={e => set('address', e.target.value)} placeholder="예: ○○면 ○○리 123" autoComplete="street-address" /></label>
-        <button className={styles.skip} type="button" onClick={skipAddress}>모르면 건너뛰기<span aria-hidden="true"> →</span></button>
       </>}
       {screen === 'contact' && <>
         <label className={styles.question}>연락받을 휴대폰 번호 <span className={styles.optional}>필수</span><span id="phone-hint" className={styles.fieldHint}>진단서와 진행 안내를 보내 드릴 곳이에요. 숫자만 적어도 돼요.</span><input className={styles.input} type="tel" inputMode="tel" autoComplete="tel" maxLength={20} aria-describedby="phone-hint" value={answers.phone || ''} onChange={e => set('phone', e.target.value)} placeholder="예: 010-1234-5678" /></label>
