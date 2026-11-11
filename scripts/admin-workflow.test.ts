@@ -56,3 +56,14 @@ test('date labels are stable across runtimes and cross the day boundary in KST',
   assert.equal(adminDate('2026-09-12T09:40:00+09:00'), '9. 12. 09:40')
   assert.equal(adminDate('invalid'), '일시 미확인')
 })
+
+test('region-only applications are marked to collect the address during the consultation', async () => {
+  const { ADDRESS_PENDING_LABEL, isAddressPending } = await import('../src/admin-workflow')
+  const app = { ...DEMO_APPLICATIONS[0]!, address: '경북 의성군', resolved_address: null, pnu: null, reports: [] }
+  const summary = summarizeApplication(app)
+  assert.equal(summary.addressPending, true)
+  assert.equal(summary.nextCheck, ADDRESS_PENDING_LABEL)
+  assert.equal(isAddressPending({ address: '경북 의성군 의성읍 123', resolved_address: null, pnu: null }), false)
+  assert.equal(isAddressPending({ address: '경북 의성군', resolved_address: '경상북도 의성군 의성읍 1', pnu: '4773025021100010000' }), false)
+  assert.equal(summarizeApplication({ ...app, review_status: 'completed' }).nextCheck, '처리 기록 확인')
+})

@@ -10,6 +10,7 @@ import type { ApplicationRow } from './types'
 import { requireAdmin } from '../../src/admin-auth'
 import { UUID_PATTERN } from '../../src/photo-limits'
 import { supabaseConfigured } from '../../src/supabase'
+import { isAddressPending } from '../../src/admin-workflow'
 
 async function requireApplication(applicationId: string) {
   await requireAdmin()
@@ -145,6 +146,8 @@ export async function saveRegistry(reportId: string, applicationId: string, form
 
 export async function rerunJudgment(applicationId: string) {
   const app = await requireApplication(applicationId)
+  // 시·군만으로는 집을 특정할 수 없다. 엉뚱한 집으로 초안을 만들지 않는다.
+  if (isAddressPending(app)) throw new Error('ADMIN_ADDRESS_PENDING')
   await createDraftReport(applicationId, app.resolved_address || app.address)
   revalidatePath('/admin/' + applicationId)
   revalidatePath('/admin')

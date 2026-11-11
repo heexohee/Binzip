@@ -84,3 +84,7 @@
  .workflow, .detailGrid { grid-template-columns: 1fr; }.tools { gap: 12px; }.tools select { min-width: 150px; }
  .detailField { grid-template-columns: 1fr; gap: var(--space-1); }
 }
+/* 정확한 주소 없이 시·군만 남긴 신청: 목록과 상세에서 바로 보이게 */
+.pendingAddress { font-weight: 700; color: var(--color-earth); }
+.pendingNotice { margin-top: 16px; padding: 12px 14px; border: 1px dashed var(--color-earth); border-radius: var(--radius-badge); font-size: var(--type-help); line-height: 1.6; }
+.pendingNotice strong { margin-right: 8px; color: var(--color-earth); }

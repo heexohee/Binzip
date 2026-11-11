@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import { sbSelect } from '../../../src/supabase'
 import { listPhotos } from '../../../src/photos'
 import { requireAdmin } from '../../../src/admin-auth'
-import { isReviewStatus } from '../../../src/admin-workflow'
+import { ADDRESS_PENDING_LABEL, isAddressPending, isReviewStatus } from '../../../src/admin-workflow'
 import { UUID_PATTERN } from '../../../src/photo-limits'
 import { AdminFrame } from '../admin-frame'
 import { WorkflowEditor } from '../workflow-editor'
@@ -59,6 +59,7 @@ export default async function Review({ params }: { params: Promise<{ id: string 
   const publicUrl = report ? origin + '/report/' + report.id : null
   const axes = report?.axes ?? null
   const d = axes?.diagnosis
+  const addressPending = isAddressPending(app)
 
   return (
     <AdminFrame navigation={<LogoutButton />}><div className={styles.review}>
@@ -68,6 +69,7 @@ export default async function Review({ params }: { params: Promise<{ id: string 
         신청 {new Date(app.created_at).toLocaleString('ko-KR')} · 파기 예정{' '}
         {new Date(app.expires_at).toLocaleDateString('ko-KR')}
       </p>
+      {addressPending && <p className={styles.pendingNotice}><strong>{ADDRESS_PENDING_LABEL}</strong> 신청자가 정확한 주소를 건너뛰고 시·군만 남겼어요. 상담할 때 주소를 받아 주세요. 시·군만으로는 집을 특정할 수 없어 자동 진단서 초안을 만들지 않았고, 판정 버튼도 숨겨 두었어요.</p>}
 
       <div className="mt-7"><WorkflowEditor key={app.id} id={app.id} status={isReviewStatus(app.review_status) ? app.review_status : 'received'} note={app.internal_note ?? ''} updatedAt={app.review_updated_at} available={app.review_status !== undefined} /></div>
 
@@ -78,6 +80,10 @@ export default async function Review({ params }: { params: Promise<{ id: string 
           <Field label="입력 주소" value={app.address} />
           <Field label="확인된 주소" value={app.resolved_address} />
           <Field label="유입 경로" value={app.source ?? null} />
+          <Field label="광고 소재" value={app.utm_content ?? null} />
+          <Field label="집이 있는 시·군" value={app.region ?? null} />
+          <Field label="비워 둔 기간" value={app.vacancy_period ?? null} />
+          <Field label="신청한 사람" value={app.applicant ?? null} />
           <Field label="PNU" value={app.pnu ? app.pnu + ' (' + (app.match_quality ?? '') + ')' : null} />
           <Field label="집 상태" value={app.condition} />
           <Field label="취득 경위" value={app.acquisition} />
@@ -299,19 +305,19 @@ export default async function Review({ params }: { params: Promise<{ id: string 
                   </button>
                 </form>
               ) : <p className="text-[14px] text-earth">실패한 초안은 공개할 수 없습니다. 재판정 후 검토해 주세요.</p>}
-              <form action={rerunJudgment.bind(null, app.id)}>
+              {!addressPending && <form action={rerunJudgment.bind(null, app.id)}>
                 <button
                   type="submit"
                   className={ui.compact}
                 >
                   재판정 (새 버전)
                 </button>
-              </form>
+              </form>}
             </div>
           </>
         )}
 
-        {!report && (
+        {!report && !addressPending && (
           <form action={rerunJudgment.bind(null, app.id)} className="mt-5">
             <button
               type="submit"
