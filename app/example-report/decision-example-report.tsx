@@ -105,7 +105,7 @@ export function DecisionExampleReport() {
   return <main className={styles.report} data-report><HomeHeader />
     <section className={`${styles.section} ${styles.hero}`}>
       <div className={styles.heroText}>
-        <p className={styles.case}>진단서 예시 · 가상 사례예요. <Link href="/diagnosis#apply">참여 신청하기 →</Link></p>
+        <p className={styles.case}>진단서 예시 · 가상 사례예요. <Link href="/apply">참여 신청하기 →</Link></p>
         <h1>팔지, 고칠지, 돌볼지<br />한눈에 비교해요</h1>
         <p className={styles.lead}>가상의 시골집 A · {EXAMPLE_CASE.building.structure} {EXAMPLE_CASE.building.purpose} {EXAMPLE_CASE.building.area}㎡ · {EXAMPLE_CASE.owner.vacantSince}부터 빈집</p>
       </div>
@@ -157,6 +157,6 @@ export function DecisionExampleReport() {
     </section>
 
     <section className={styles.section}><h2>담당자 의견 · 가상 상황에 대한 작성 예시</h2><p>다른 지역에 사셔서 자주 가 보기 어렵고, 다시 사실 계획은 없다고 하셨어요. 그러면 돌보기는 해마다 비용과 방문 부담이 이어지고, 고치기는 쓰실 계획이 없어 맞지 않아요.</p><p>그래서 <strong>팔기를 포함해 비교해 보실 만해요.</strong> 다만 매도가·세금·권리관계·철거비는 확인되지 않았으니 이 결과만으로 정하지 마세요.</p><p>이 예시에서는 가정한 두 금액의 차이가 {won(netOf(demolishFirst) - netOf(keepAsIs))}이에요. 실제로는 매도가와 철거비 등에 따라 결과가 달라질 수 있어요. 철거 여부를 정하기 전에 등록된 중개사무소와 철거업체에 각각 확인해 보세요. 세금은 세무사에게 확인해 주세요.</p></section>
-    <section id="consultation" className={styles.section}><h2>우리 집도 확인해 보고 싶으신가요?</h2><p>실제 진단은 참여 신청 후 담당자가 자료를 확인해 진행해요.</p><p className={styles.note}>실제 진단서에서는 확인하지 못한 항목에 ‘미확인’을 표시하고, 근거 자료와 확인 날짜를 함께 적어요. 이 집의 매도가나 실수령액을 정하거나 세액을 계산하지는 않아요.</p><Link href="/diagnosis#apply">빈집 진단 참여 신청하기 →</Link></section>
+    <section id="consultation" className={styles.section}><h2>우리 집도 확인해 보고 싶으신가요?</h2><p>실제 진단은 참여 신청 후 담당자가 자료를 확인해 진행해요.</p><p className={styles.note}>실제 진단서에서는 확인하지 못한 항목에 ‘미확인’을 표시하고, 근거 자료와 확인 날짜를 함께 적어요. 이 집의 매도가나 실수령액을 정하거나 세액을 계산하지는 않아요.</p><Link href="/apply">빈집 진단 참여 신청하기 →</Link></section>
   </main>
 }

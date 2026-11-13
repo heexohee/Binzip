@@ -44,9 +44,9 @@ export function HomeFooter() {
         <div><Link href="/" className={footer.brand}>빈집진단서</Link><p className={footer.tagline}>우리 집의 다음 선택을 함께해요.</p></div>
         <nav className={footer.links} aria-label="하단 서비스 메뉴">
           <Link href="/">홈</Link>
-          <Link href="/diagnosis">빈집 진단</Link>
+          <Link href="/management">빈집 관리</Link>
           <Link href="/example-report">진단서 예시</Link>
-          <Link href="/management">빈집 관리</Link><Link href="/resources">빈집 지원·정보 모음</Link>
+          <Link href="/apply">무료 진단 신청</Link><Link href="/resources">빈집 지원·정보 모음</Link>
           <Link href="/privacy">개인정보 처리방침</Link>
         </nav>
       </div>
