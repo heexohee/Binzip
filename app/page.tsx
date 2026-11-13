@@ -9,7 +9,7 @@ import { pageMetadata, SITE_DESCRIPTION } from '../src/seo'
 
 export const metadata = pageMetadata({
   path: '/',
-  title: '빈집진단서 — 상속받은 시골 빈집, 팔지·고칠지·돌볼지 정리',
+  title: '빈집진단서 — 시골 빈집 관리 대행, 방문 점검·사진 보고',
   description: SITE_DESCRIPTION,
 })
 
@@ -30,28 +30,28 @@ export default function Home() {
         <section className={s.hero} aria-labelledby="hero-title">
           <div className={s.heroTop}>
             <div>
-              <p className={s.eyebrow}>상속받은 시골 빈집</p>
-              <h1 id="hero-title">팔지, 고칠지, 돌볼지.<br />우리 집에 맞는 방법을 찾아보세요.</h1>
+              <p className={s.eyebrow}>빈집 관리 대행</p>
+              <h1 id="hero-title">멀리 있는 시골집,<br />대신 가서 보고 알려 드려요.</h1>
             </div>
             <Image src="/mascot/binzip-rabbit-v1.png" alt="" width={256} height={256} className={s.heroRabbit} priority />
           </div>
-          <p className={s.heroAudience}>빈집을 물려받았거나 가족의 빈집을 챙기고 있다면, 전국 어디든 함께 정리해 드려요.</p>
+          <p className={s.heroAudience}>열쇠를 맡기면 집 안팎을 점검하고 사진 보고서를 보내 드려요. 계절과 날씨에 맞춰 살펴볼 곳도 미리 알려 드려요.</p>
           <h2 className={s.chooseTitle} id="choose-title">지금 어떤 고민이세요?</h2>
           <ul className={s.paths} aria-labelledby="choose-title">
-            <li><Link className={s.path} href="/diagnosis">
-              <span className={s.status}>무료 시범 진단 · 전국</span>
-              <p className={s.pathQuote}>“이 집을 어떻게 해야 할지 모르겠어요.”</p>
-              <span className={s.pathName}>빈집 진단 알아보기<Arrow /></span>
-              <p className={s.pathDesc}>선택지별 비용과 조건을 진단서로 정리해 드려요.</p>
-            </Link></li>
             <li><Link className={s.path} href="/management">
-              <span className={`${s.status} ${s.statusPending}`}>준비 중 · 의견 받는 중</span>
-              <p className={s.pathQuote}>“계속 갖고 있을 건데, 누가 돌봐주죠?”</p>
-              <span className={s.pathName}>빈집 관리 알아보기<Arrow /></span>
-              <p className={s.pathDesc}>필요한 관리와 적당한 금액을 들려주세요.</p>
+              <span className={s.status}>포항·경주 시범 · 월 1회 55,000원</span>
+              <p className={s.pathQuote}>“멀어서 자주 못 가요. 누가 대신 봐 주면 좋겠어요.”</p>
+              <span className={s.pathName}>빈집 관리 서비스·요금 보기<Arrow /></span>
+              <p className={s.pathDesc}>집 안팎 점검, 환기, 누수 확인, 우편물 수거, 사진 보고서.</p>
+            </Link></li>
+            <li><Link className={s.path} href="/apply">
+              <span className={`${s.status} ${s.statusPending}`}>무료 · 전국</span>
+              <p className={s.pathQuote}>“이 집을 어떻게 해야 할지 모르겠어요.”</p>
+              <span className={s.pathName}>무료 진단 신청하기<Arrow /></span>
+              <p className={s.pathDesc}>팔기·고치기·그대로 두기의 비용과 조건을 진단서로 정리해 드려요.</p>
             </Link></li>
           </ul>
-          <p className={s.pathsNote}>어느 쪽이든 남겨 주신 내용은 담당자가 직접 읽고 연락드려요. 일부 분께는 전화 인터뷰를 요청드리고, 포항·경주에 빈집이 있는 분 중 몇 분께는 방문을 요청드린 뒤 직접 찾아가요.</p>
+          <p className={s.pathsNote}>어느 쪽이든 남겨 주신 내용은 담당자가 직접 읽고 전화로 연락드려요. 신청만으로 결제되지 않아요.</p>
         </section>
 
         <section className={s.reference} aria-labelledby="reference-title">
