@@ -8,7 +8,12 @@ import { ApplyForm } from './apply-form'
 import { ManagementTabs } from './management-tabs'
 import m from './management.module.css'
 
-const FLOW = ['신청', '전화 상담', '계약 확정', '열쇠 인계', '관리비 입금', '관리 진행', '관리 보고']
+const FLOW = [
+  { step: '신청', note: '1분이면 돼요' },
+  { step: '전화 상담', note: '상품을 같이 골라요' },
+  { step: '계약·열쇠', note: '계약서 작성 후 열쇠 인계' },
+  { step: '관리·보고', note: '다녀온 날 사진 보고' },
+]
 
 const ITEMS = [
   { title: '집 안팎 점검', text: '지붕·담장·대문·마당·방·부엌·화장실을 눈으로 살펴봐요.', image: '/management/house-gate.jpg' },
@@ -93,9 +98,6 @@ function ServicePanel() {
       <p className={m.specialNote}>알림은 모든 상품에 들어가요. 알림을 보고 방문을 요청하시면 옵션 요금으로 다녀와요.</p>
     </div>
 
-    <h3>진행 순서</h3>
-    <ol className={m.flow}>{FLOW.map((step, i) => <li key={step}><span>{i + 1}</span>{step}</li>)}</ol>
-
     <h3>관리 내역</h3>
     <ul className={m.items}>{ITEMS.map(item => <li key={item.title}>
       {item.image ? <Image src={item.image} alt="" width={184} height={144} sizes="92px" /> : <span className={m.itemIcon} aria-hidden="true">{item.icon}</span>}
@@ -144,17 +146,11 @@ function ReportPanel() {
 function ApplyPanel() {
   return <>
     <h2>신청하기</h2>
-    <p className={m.sub}>신청만으로 결제되지 않아요. 전화 상담 후 계약을 확정해요.</p>
+    <p className={m.sub}>신청만으로 결제되지 않아요. 전화로 확인한 뒤 계약서를 작성해요. 그다음부터는 다시 신청하지 않아도 담당자와 문자·전화로 바로 이야기할 수 있어요.</p>
+    <ol className={m.flow}>{FLOW.map((f, i) => <li key={f.step}><span>{i + 1}</span><strong>{f.step}</strong><small>{f.note}</small></li>)}</ol>
     <div className={m.formBox}><ApplyForm /></div>
     <a className={m.call} href={`tel:${PHONE.replaceAll('-', '')}`}>전화로 신청하기 · {PHONE}</a>
     <p className={m.other}>포항·경주가 아닌가요? <Link href="/interest?source=other-region">우리 지역이 열리면 알림 받기 →</Link></p>
-    <h3>신청 후 진행</h3>
-    <ol className={m.steps}>
-      <li><span>1</span><div><strong>전화 상담</strong>집 위치와 크기, 바라는 점을 여쭤보고 상품을 같이 골라요.</div></li>
-      <li><span>2</span><div><strong>계약 확정 · 열쇠 인계</strong>계약서를 보내 드리고, 열쇠는 직접 받거나 등기로 받아요.</div></li>
-      <li><span>3</span><div><strong>관리비 입금</strong>입금이 확인되면 첫 방문 날짜를 알려 드려요.</div></li>
-      <li><span>4</span><div><strong>관리 진행 · 보고</strong>정해진 날 다녀와서 사진 보고서를 보내요. 첫 방문 때는 무료 진단서도 함께 드려요.</div></li>
-    </ol>
     <p className={m.partner}>🏡 <strong>동네 관리인을 찾고 있어요.</strong> 이장님처럼 마을 집을 잘 아는 분이라면 <a href={`tel:${PHONE.replaceAll('-', '')}`}>{PHONE}</a>로 연락 주세요.</p>
   </>
 }
