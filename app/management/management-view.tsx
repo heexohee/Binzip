@@ -20,7 +20,7 @@ const ITEMS = [
   { title: '실내 환기', text: '창문과 방문을 열어 30분 정도 바람을 통하게 해요.', image: '/management/ventilation.jpg' },
   { title: '누수·누전 점검', text: '천장·보일러·수도·가스 주변 물 샌 자국과 차단기 상태를 눈으로 확인해요.', image: '/management/ceiling-leak.jpg' },
   { title: '우편물 수거', text: '우편물을 모아 사진으로 알려 드리고, 원하시면 보내 드려요(우편비 별도).', image: '/management/mailbox.jpg' },
-  { title: '사진 보고서', text: '다녀온 날 문자로 보내요. 가족 여러 명이 같이 받을 수 있어요.', image: '/management/phone-report.jpg' },
+  { title: '우리 집 전용 톡방', text: '다녀온 날 사진 보고서와 날씨에 맞춘 미리 알림을 한 방에서 받아요. 본사·담당 관리인·가족이 함께 보고 바로 상의해요.', image: '/management/phone-report.jpg' },
 ]
 
 const SEASONS = [
@@ -65,7 +65,7 @@ export const MANAGEMENT_JSON_LD = {
       '@id': `${SITE_URL}/management#service`,
       name: '빈집 관리 대행',
       serviceType: '비어 있는 주택 방문 점검과 사진 보고',
-      description: '열쇠를 맡기면 집 안팎 점검, 실내 환기, 누수·누전 눈 점검, 우편물 수거를 하고 사진 보고서를 문자로 보내요. 계절과 날씨에 맞춰 살펴볼 곳을 미리 알려 드려요. 수리 공사와 긴급 출동은 하지 않아요.',
+      description: '열쇠를 맡기면 집 안팎 점검, 실내 환기, 누수·누전 눈 점검, 우편물 수거를 하고 사진 보고서를 우리 집 전용 톡방으로 보내요. 계절과 날씨에 맞춰 살펴볼 곳도 미리 알려 드려요. 수리 공사와 긴급 출동은 하지 않아요.',
       url: `${SITE_URL}/management`,
       provider: { '@id': `${SITE_URL}/#organization` },
       areaServed: [{ '@type': 'City', name: '포항시' }, { '@type': 'City', name: '경주시' }],
@@ -88,7 +88,7 @@ function ServicePanel() {
     <div className={m.special}>
       <p className={m.specialTag}>빈집진단서만의 서비스</p>
       <h3>계절·날씨 맞춤 점검 알림</h3>
-      <p className={m.specialLead}>방문하는 날만 보는 게 아니에요. 계절과 날씨에 맞춰 <strong>그때 살펴봐야 할 곳</strong>을 미리 문자로 알려 드려요.</p>
+      <p className={m.specialLead}>방문하는 날만 보는 게 아니에요. 계절과 날씨에 맞춰 <strong>그때 살펴봐야 할 곳</strong>을 전용 톡방으로 미리 알려 드려요.</p>
       <div className={m.alert} aria-label="알림 예시">
         <div className={m.alertTop}><span>📲 빈집진단서</span><small>알림 예시</small></div>
         <p><strong>송라면 집, 이번 주 금요일 영하 9도 예보예요.</strong><br />수도관이 얼지 않게 물빼기를 확인해 볼까요?</p>
@@ -128,7 +128,7 @@ function ServicePanel() {
 function ReportPanel() {
   return <>
     <h2>관리보고</h2>
-    <p className={m.sub}>다녀온 날마다 이런 보고를 문자로 받아요.</p>
+    <p className={m.sub}>다녀온 날마다 이런 보고를 우리 집 전용 톡방으로 받아요.</p>
     <div className={m.report}>
       <div className={m.reportHead}><span>보고 예시</span><strong>경북 ○○군 단독주택</strong><small>11월 방문 · 머문 시간 30분</small></div>
       <div className={m.shots}>
@@ -146,7 +146,7 @@ function ReportPanel() {
 function ApplyPanel() {
   return <>
     <h2>신청하기</h2>
-    <p className={m.sub}>신청만으로 결제되지 않아요. 전화로 확인한 뒤 계약서를 작성해요. 그다음부터는 다시 신청하지 않아도 담당자와 문자·전화로 바로 이야기할 수 있어요.</p>
+    <p className={m.sub}>신청만으로 결제되지 않아요. 전화로 확인한 뒤 계약서를 작성해요. 그다음부터는 다시 신청하지 않아도 우리 집 전용 톡방에서 담당자와 바로 이야기할 수 있어요.</p>
     <ol className={m.flow}>{FLOW.map((f, i) => <li key={f.step}><span>{i + 1}</span><strong>{f.step}</strong><small>{f.note}</small></li>)}</ol>
     <div className={m.formBox}><ApplyForm /></div>
     <a className={m.call} href={`tel:${PHONE.replaceAll('-', '')}`}>전화로 신청하기 · {PHONE}</a>
