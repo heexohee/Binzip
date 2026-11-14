@@ -91,7 +91,7 @@ function ServicePanel() {
       <p className={m.specialLead}>방문하는 날만 보는 게 아니에요. 계절과 날씨에 맞춰 <strong>그때 살펴봐야 할 곳</strong>을 전용 톡방으로 미리 알려 드려요.</p>
       <div className={m.alert} aria-label="알림 예시">
         <div className={m.alertTop}><span>📲 빈집진단서</span><small>알림 예시</small></div>
-        <p><strong>송라면 집, 이번 주 금요일 영하 9도 예보예요.</strong><br />수도관이 얼지 않게 물빼기를 확인해 볼까요?</p>
+        <p><strong>송라면 집, 이번 주 금요일 영하 9도 예보예요.</strong><br />수도관이 얼지 않게 확인을 요청해 볼까요?</p>
         <div className={m.alertButtons} aria-hidden="true"><span>방문 요청하기</span><span>괜찮아요</span></div>
       </div>
       <ul className={m.seasons}>{SEASONS.map(s => <li key={s.season}><strong>{s.season}</strong>{s.text}</li>)}</ul>
