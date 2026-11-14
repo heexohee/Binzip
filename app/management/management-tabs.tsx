@@ -33,9 +33,9 @@ export function ManagementTabs({ panels }: { panels: Record<TabId, ReactNode> })
     </nav>
     {TABS.map(t => <section key={t.id} id={`panel-${t.id}`} role="tabpanel" aria-labelledby={`tab-${t.id}`} hidden={tab !== t.id} className={m.panel}>
       {panels[t.id]}
-      {t.id !== 'apply' && <div className={m.panelActions}>
-        <button type="button" className={m.primary} onClick={() => open('apply')}>관리 신청하기</button>
-        {t.id === 'service' && <button type="button" className={m.secondary} onClick={() => open('report')}>관리보고 예시 보기</button>}
+      {/* The sticky bar already carries the apply button on these tabs; only add the cross-link here. */}
+      {t.id === 'service' && <div className={m.panelActions}>
+        <button type="button" className={m.secondary} onClick={() => open('report')}>관리보고 예시 보기</button>
       </div>}
     </section>)}
     {tab !== 'apply' && <div className={m.sticky}><button type="button" className={m.primary} onClick={() => open('apply')}>관리 신청하기</button></div>}
