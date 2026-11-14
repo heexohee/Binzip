@@ -20,7 +20,7 @@ const ITEMS = [
   { title: '실내 환기', text: '창문과 방문을 열어 30분 정도 바람을 통하게 해요.', image: '/management/ventilation.jpg' },
   { title: '누수·누전 점검', text: '천장·보일러·수도·가스 주변 물 샌 자국과 차단기 상태를 눈으로 확인해요.', image: '/management/ceiling-leak.jpg' },
   { title: '우편물 수거', text: '우편물을 모아 사진으로 알려 드리고, 원하시면 보내 드려요(우편비 별도).', image: '/management/mailbox.jpg' },
-  { title: '우리 집 전용 톡방', text: '다녀온 날 사진 보고서와 날씨에 맞춘 미리 알림을 한 방에서 받아요. 본사·담당 관리인·가족이 함께 보고 바로 상의해요.', image: '/management/phone-report.jpg' },
+  { title: '우리 집 전용 톡방', text: '다녀온 날 사진 보고서와 날씨에 맞춘 미리 알림을 받아요. 본사·담당 관리인·가족이 함께 보고 바로 상의해요.', image: '/management/phone-report.jpg' },
 ]
 
 const SEASONS = [
