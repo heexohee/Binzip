@@ -48,8 +48,7 @@
 
 .items { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
 .items li { display: flex; gap: 14px; align-items: center; }
-.items img, .itemIcon { flex: none; width: 92px; height: 72px; border-radius: 14px; object-fit: cover; }
-.itemIcon { display: grid; place-items: center; background: var(--surface-soft); font-size: 30px; }
+.items img { flex: none; width: 92px; height: 72px; border-radius: 14px; object-fit: cover; }
 .items strong { display: block; font-size: 1.125rem; }
 .items strong::before { content: ""; display: inline-block; width: 8px; height: 8px; margin: 0 6px 3px 0; background: var(--brand-primary); }
 .items span { display: block; margin-top: 3px; font-size: .9375rem; color: var(--text-secondary); line-height: 1.45; }

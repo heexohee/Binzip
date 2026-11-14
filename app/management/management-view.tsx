@@ -17,15 +17,15 @@ const FLOW = [
 
 const ITEMS = [
   { title: '집 안팎 점검', text: '지붕·담장·대문·마당·방·부엌·화장실을 눈으로 살펴봐요.', image: '/management/house-gate.jpg' },
-  { title: '실내 환기', text: '창문과 방문을 열어 30분 정도 바람을 통하게 해요.', icon: '🪟' },
+  { title: '실내 환기', text: '창문과 방문을 열어 30분 정도 바람을 통하게 해요.', image: '/management/ventilation.jpg' },
   { title: '누수·누전 점검', text: '천장·보일러·수도·가스 주변 물 샌 자국과 차단기 상태를 눈으로 확인해요.', image: '/management/ceiling-leak.jpg' },
-  { title: '우편물 수거', text: '우편물을 모아 사진으로 알려 드리고, 원하시면 보내 드려요(우편비 별도).', icon: '📮' },
-  { title: '사진 보고서', text: '다녀온 날 문자로 보내요. 가족 여러 명이 같이 받을 수 있어요.', icon: '📲' },
+  { title: '우편물 수거', text: '우편물을 모아 사진으로 알려 드리고, 원하시면 보내 드려요(우편비 별도).', image: '/management/mailbox.jpg' },
+  { title: '사진 보고서', text: '다녀온 날 문자로 보내요. 가족 여러 명이 같이 받을 수 있어요.', image: '/management/phone-report.jpg' },
 ]
 
 const SEASONS = [
-  { season: '봄', text: '얼었다 녹은 담장·축대 금' },
-  { season: '여름', text: '장마 전 배수로·곰팡이' },
+  { season: '봄', text: '얼었다 녹은 담장·축대 금, 올라오는 마당 잡초' },
+  { season: '여름', text: '장마 전 배수로·곰팡이, 처마 밑 말벌집' },
   { season: '가을', text: '태풍 전 지붕·낙엽 막힘' },
   { season: '겨울', text: '한파 전 수도 동파' },
 ]
@@ -95,12 +95,12 @@ function ServicePanel() {
         <div className={m.alertButtons} aria-hidden="true"><span>방문 요청하기</span><span>괜찮아요</span></div>
       </div>
       <ul className={m.seasons}>{SEASONS.map(s => <li key={s.season}><strong>{s.season}</strong>{s.text}</li>)}</ul>
-      <p className={m.specialNote}>알림은 모든 상품에 들어가요. 알림을 보고 방문을 요청하시면 옵션 요금으로 다녀와요.</p>
+      <p className={m.specialNote}>알림은 모든 상품에 들어가요. 알림을 보고 방문을 요청하시면 옵션 요금으로 다녀와요. 말벌집 제거와 풀베기는 직접 하지 않고 업체를 알려 드려요.</p>
     </div>
 
     <h3>관리 내역</h3>
     <ul className={m.items}>{ITEMS.map(item => <li key={item.title}>
-      {item.image ? <Image src={item.image} alt="" width={184} height={144} sizes="92px" /> : <span className={m.itemIcon} aria-hidden="true">{item.icon}</span>}
+      <Image src={item.image} alt="" width={184} height={144} sizes="92px" />
       <div><strong>{item.title}</strong><span>{item.text}</span></div>
     </li>)}</ul>
 
