@@ -104,13 +104,13 @@ function ServicePanel() {
     <div className={m.get}>
       <div className={m.getHead}>
         <Image src="/management/phone-report.jpg" alt="" width={144} height={112} sizes="72px" />
-        <div><strong>우리 집 전용 톡방</strong><span>다녀온 날 사진 보고서를 받아요. 본사·담당 관리인·가족이 함께 봐요.</span></div>
+        <div><strong>우리 집 전용 톡방</strong><span>다녀온 날 사진 보고서를 받아요. 바퀴벌레·하수구 막힘처럼 손볼 일이 생기면 톡방에 말씀만 하세요. 동네 업체를 찾아 연결하고, 문을 열어 드린 뒤 작업 전후 사진으로 알려 드려요.</span></div>
       </div>
     </div>
     <div className={m.get}>
       <div className={m.getHead}>
         <span className={m.getIcon} aria-hidden="true">🌦️</span>
-        <div><em className={m.specialTag}>빈집진단서만의 서비스</em><strong>계절·날씨 맞춤 알림</strong><span>그때 살펴봐야 할 곳을 톡방으로 미리 알려 드려요.</span></div>
+        <div><em className={m.specialTag}>빈집진단서만의 서비스</em><strong>계절·날씨 맞춤 알림</strong><span>그때 살펴봐야 할 곳을 빈집진단서만의 예방 알림으로 미리 알려 드려요!</span></div>
       </div>
       <div className={m.alert} aria-label="알림 예시">
         <div className={m.alertTop}><span>📲 빈집진단서</span><small>알림 예시</small></div>
