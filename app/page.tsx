@@ -35,7 +35,7 @@ export default function Home() {
             </div>
             <Image src="/mascot/binzip-rabbit-v1.png" alt="" width={256} height={256} className={s.heroRabbit} priority />
           </div>
-          <p className={s.heroAudience}>열쇠를 맡기면 집 안팎을 점검하고 사진 보고서를 보내 드려요. 계절과 날씨에 맞춰 살펴볼 곳도 미리 알려 드려요.</p>
+          <p className={s.heroAudience}>집 안팎을 점검하고 사진 보고서를 보내 드려요. 계절과 날씨에 맞춰 살펴볼 곳도 미리 알려 드려요.</p>
           <h2 className={s.chooseTitle} id="choose-title">지금 어떤 고민이세요?</h2>
           <ul className={s.paths} aria-labelledby="choose-title">
             <li><Link className={s.path} href="/management">

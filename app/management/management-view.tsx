@@ -74,7 +74,7 @@ export const MANAGEMENT_JSON_LD = {
       '@id': `${SITE_URL}/management#service`,
       name: '빈집 관리 대행',
       serviceType: '비어 있는 주택 방문 점검과 사진 보고',
-      description: '열쇠를 맡기면 집 안팎 점검, 실내 환기, 누수·누전 눈 점검, 우편물 수거를 하고 사진 보고서를 우리 집 전용 톡방으로 보내요. 계절과 날씨에 맞춰 살펴볼 곳도 미리 알려 드려요. 수리 공사와 긴급 출동은 하지 않아요.',
+      description: '집 안팎 점검, 실내 환기, 누수·누전 눈 점검, 우편물 수거를 하고 사진 보고서를 우리 집 전용 톡방으로 보내요. 계절과 날씨에 맞춰 살펴볼 곳도 미리 알려 드려요. 수리 공사와 긴급 출동은 하지 않아요.',
       url: `${SITE_URL}/management`,
       provider: { '@id': `${SITE_URL}/#organization` },
       areaServed: [{ '@type': 'City', name: '포항시' }, { '@type': 'City', name: '경주시' }],
@@ -92,7 +92,7 @@ export const MANAGEMENT_JSON_LD = {
 function ServicePanel() {
   return <>
     <h2>서비스 및 요금안내</h2>
-    <p className={m.sub}>열쇠를 맡겨 주시면 대신 가서 보고 알려 드려요. 한 번만 맡기셔도, 정기로 맡기셔도 돼요.</p>
+    <p className={m.sub}>멀리 있는 집, 대신 가서 보고 사진으로 알려 드려요. 한 번만 맡기셔도, 정기로 맡기셔도 돼요.</p>
 
     <h3><span className={m.num}>1</span>방문하면 해 드리는 일</h3>
     <ul className={m.visit}>{VISIT.map(item => <li key={item.title}>
