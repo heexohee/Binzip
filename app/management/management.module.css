@@ -148,3 +148,32 @@
 @media (min-width: 760px) {
   .titleRow h1 { font-size: 2.25rem; }
 }
+
+/* 서비스 탭: ① 방문하면 해 드리는 일 ② 받아 보시는 것 ③ 요금 */
+.num { display: inline-grid; place-items: center; width: 28px; height: 28px; margin-right: 8px; border-radius: 50%; background: var(--brand-primary); color: #fff; font-size: .9375rem; vertical-align: 2px; }
+.lead3 { margin: 4px 0 0; font-size: .9375rem; color: var(--text-secondary); }
+.visit { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+.visit li { overflow: hidden; border-radius: 16px; border: 1px solid var(--border-subtle); background: var(--surface-raised); }
+.visit img { display: block; width: 100%; height: 96px; object-fit: cover; }
+.visit div { padding: 10px 12px 12px; }
+.visit strong { display: block; font-size: 1.0625rem; }
+.visit span { display: block; margin-top: 3px; font-size: .875rem; color: var(--text-secondary); line-height: 1.4; }
+.get { margin-top: 12px; padding: 16px; border-radius: 18px; background: var(--surface-soft); }
+.get + .get { margin-top: 10px; }
+.getHead { display: flex; gap: 12px; align-items: center; }
+.getHead img, .getIcon { flex: none; width: 72px; height: 56px; border-radius: 12px; object-fit: cover; }
+.getHead .getIcon { display: grid; place-items: center; margin: 0; background: var(--surface-raised); font-size: 28px; }
+.getHead strong { display: block; font-size: 1.125rem; }
+.getHead span { display: block; margin-top: 2px; font-size: .9375rem; color: var(--text-secondary); line-height: 1.45; }
+.getHead em.specialTag { display: inline-block; margin-bottom: 4px; padding: 2px 8px; font-size: .75rem; font-style: normal; }
+.get .alert { margin-top: 12px; padding: 12px 14px; }
+.get .alert p { font-size: .9375rem; }
+.get .seasons { gap: 6px; margin-top: 10px; }
+.get .seasons li { padding: 8px 10px; border: 0; font-size: .875rem; }
+.get .seasons strong { display: inline; margin-right: 4px; }
+.included { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; }
+.included span { padding: 6px 10px; border-radius: 999px; background: var(--surface-soft); color: var(--brand-primary); font-size: .875rem; font-weight: 700; }
+.nots { margin: 10px 0 0; padding: 0; list-style: none; }
+.nots li { display: flex; gap: 10px; padding: 12px 4px; border-bottom: 1px solid var(--border-subtle); font-size: 1rem; line-height: 1.45; }
+.nots li::before { content: "✕"; flex: none; color: #a3452d; font-weight: 900; }
+.nots small { display: block; font-size: .875rem; color: var(--text-secondary); }

@@ -16,30 +16,32 @@ const FLOW = [
   { step: '관리·보고', note: '다녀온 날 사진 보고' },
 ]
 
-const ITEMS = [
-  { title: '집 안팎 점검', text: '지붕·담장·대문·마당·방·부엌·화장실을 눈으로 살펴봐요.', image: '/management/house-gate.jpg' },
-  { title: '실내 환기', text: '창문과 방문을 열어 30분 정도 바람을 통하게 해요.', image: '/management/ventilation.jpg' },
-  { title: '누수·누전 점검', text: '천장·보일러·수도·가스 주변 물 샌 자국과 차단기 상태를 눈으로 확인해요.', image: '/management/ceiling-leak.jpg' },
-  { title: '우편물 수거', text: '우편물을 모아 사진으로 알려 드리고, 원하시면 보내 드려요(우편비 별도).', image: '/management/mailbox.jpg' },
-  { title: '우리 집 전용 톡방', text: '다녀온 날 사진 보고서와 날씨에 맞춘 미리 알림을 받아요. 본사·담당 관리인·가족이 함께 보고 바로 상의해요.', image: '/management/phone-report.jpg' },
+const VISIT = [
+  { title: '집 안팎 점검', text: '지붕·담장·마당·방·부엌·화장실', image: '/management/house-gate.jpg' },
+  { title: '실내 환기', text: '창문과 방문을 열어 30분', image: '/management/ventilation.jpg' },
+  { title: '누수·누전 점검', text: '천장·보일러·수도·가스·차단기', image: '/management/ceiling-leak.jpg' },
+  { title: '우편물 수거', text: '사진으로 알리고, 원하시면 발송', image: '/management/mailbox.jpg' },
 ]
 
 const SEASONS = [
-  { season: '봄', text: '얼었다 녹은 담장·축대 금, 올라오는 마당 잡초' },
-  { season: '여름', text: '장마 전 배수로·곰팡이, 처마 밑 말벌집' },
-  { season: '가을', text: '태풍 전 지붕·낙엽 막힘' },
+  { season: '봄', text: '담장·축대 금, 마당 잡초' },
+  { season: '여름', text: '배수로·곰팡이, 말벌집' },
+  { season: '가을', text: '태풍 전 지붕·낙엽' },
   { season: '겨울', text: '한파 전 수도 동파' },
 ]
 
-const REMARKS = [
-  <>계약 전에 집 상태와 남은 짐을 함께 확인하고 사진으로 남겨요. 멀리 계시면 사진과 통화로 확인해요. 이때 본 상태를 <strong>무료 진단서</strong>로 정리해 드려요.</>,
-  <>귀중품은 관리를 시작하기 전에 옮겨 주세요. 옮기기 어려운 큰 짐은 그대로 두고 관리 대상에서 빼요.</>,
-  <>방문 전날 전용 톡방으로 방문 시간을 알려 드려요.</>,
-  <>이상한 점을 발견하면 보고서를 기다리지 않고 바로 연락드려요.</>,
-  <>수리가 필요하면 상의한 뒤 동네 업체를 알려 드려요. 공사 계약과 비용은 직접 정하세요.</>,
-  <>열쇠 보관 방법과 책임 범위는 계약서에 적어 드려요. (계약서 문구는 법률 확인 중이에요.)</>,
-  <>긴급 출동은 하지 않아요. 태풍·폭우 뒤 점검은 안전한 범위에서 눈으로 확인하고, 본 그대로 사진으로 알려 드려요.</>,
-  <>지금은 포항·경주에서 시범으로 운영해요. 시범 기간에는 대표가 직접 방문해요.</>,
+const NOT_INCLUDED = [
+  { title: '수리 공사', note: '동네 업체를 알려 드리고, 계약은 직접 해요' },
+  { title: '말벌집 제거', note: '업체를 알려 드려요' },
+  { title: '긴급 출동', note: '' },
+  { title: '귀중품 보관', note: '관리 시작 전에 옮겨 주세요' },
+]
+
+const GUIDE = [
+  <>계약 전에 집 상태를 함께 확인하고, <strong>무료 진단서</strong>로 정리해 드려요.</>,
+  <>방문 전날 톡방으로 방문 시간을 알려 드려요.</>,
+  <>열쇠 보관과 책임 범위는 계약서에 적어요. (법률 확인 중)</>,
+  <>포항·경주 시범 운영 중이며, 대표가 직접 방문해요.</>,
 ]
 
 export const MANAGEMENT_FAQ = [
@@ -90,42 +92,51 @@ export const MANAGEMENT_JSON_LD = {
 function ServicePanel() {
   return <>
     <h2>서비스 및 요금안내</h2>
-    <p className={m.sub}>열쇠를 맡겨 주시면 집 안팎을 둘러보고 사진 보고서를 보내 드려요. 한 번만 맡기셔도, 정기로 맡기셔도 돼요.</p>
+    <p className={m.sub}>열쇠를 맡겨 주시면 대신 가서 보고 알려 드려요. 한 번만 맡기셔도, 정기로 맡기셔도 돼요.</p>
 
-    <div className={m.special}>
-      <p className={m.specialTag}>빈집진단서만의 서비스</p>
-      <h3>계절·날씨 맞춤 점검 알림</h3>
-      <p className={m.specialLead}>방문하는 날만 보는 게 아니에요. 계절과 날씨에 맞춰 <strong>그때 살펴봐야 할 곳</strong>을 전용 톡방으로 미리 알려 드려요.</p>
-      <div className={m.alert} aria-label="알림 예시">
-        <div className={m.alertTop}><span>📲 빈집진단서</span><small>알림 예시</small></div>
-        <p><strong>송라면 집, 이번 주 금요일 영하 9도 예보예요.</strong><br />수도관이 얼지 않게 확인을 요청해 볼까요?</p>
-        <div className={m.alertButtons} aria-hidden="true"><span>방문 요청하기</span><span>괜찮아요</span></div>
-      </div>
-      <ul className={m.seasons}>{SEASONS.map(s => <li key={s.season}><strong>{s.season}</strong>{s.text}</li>)}</ul>
-      <p className={m.specialNote}>알림은 모든 상품에 들어가요. 알림을 보고 방문을 요청하시면 옵션 요금으로 다녀와요. 말벌집 제거와 풀베기는 직접 하지 않고 업체를 알려 드려요.</p>
-    </div>
-
-    <h3>관리 내역</h3>
-    <ul className={m.items}>{ITEMS.map(item => <li key={item.title}>
-      <Image src={item.image} alt="" width={184} height={144} sizes="92px" />
+    <h3><span className={m.num}>1</span>방문하면 해 드리는 일</h3>
+    <ul className={m.visit}>{VISIT.map(item => <li key={item.title}>
+      <Image src={item.image} alt="" width={360} height={192} sizes="(max-width: 720px) 50vw, 340px" />
       <div><strong>{item.title}</strong><span>{item.text}</span></div>
     </li>)}</ul>
 
-    <h3>주택 요금안내</h3>
+    <h3><span className={m.num}>2</span>받아 보시는 것</h3>
+    <div className={m.get}>
+      <div className={m.getHead}>
+        <Image src="/management/phone-report.jpg" alt="" width={144} height={112} sizes="72px" />
+        <div><strong>우리 집 전용 톡방</strong><span>다녀온 날 사진 보고서를 받아요. 본사·담당 관리인·가족이 함께 봐요.</span></div>
+      </div>
+    </div>
+    <div className={m.get}>
+      <div className={m.getHead}>
+        <span className={m.getIcon} aria-hidden="true">🌦️</span>
+        <div><em className={m.specialTag}>빈집진단서만의 서비스</em><strong>계절·날씨 맞춤 알림</strong><span>그때 살펴봐야 할 곳을 톡방으로 미리 알려 드려요.</span></div>
+      </div>
+      <div className={m.alert} aria-label="알림 예시">
+        <div className={m.alertTop}><span>📲 빈집진단서</span><small>알림 예시</small></div>
+        <p><strong>송라면 집, 이번 주 금요일 영하 9도 예보예요.</strong><br />수도관이 얼지 않게 확인을 요청해 볼까요?</p>
+      </div>
+      <ul className={m.seasons}>{SEASONS.map(s => <li key={s.season}><strong>{s.season}</strong>{s.text}</li>)}</ul>
+    </div>
+
+    <h3><span className={m.num}>3</span>요금</h3>
+    <p className={m.lead3}>모든 상품에 아래가 똑같이 들어가요.</p>
+    <p className={m.included}><span>✓ 방문 4가지</span><span>✓ 전용 톡방 보고</span><span>✓ 계절·날씨 알림</span></p>
     <table className={m.price}>
       <thead><tr><th scope="col">상품</th><th scope="col">비용</th></tr></thead>
       <tbody>{PLANS.map(plan => <tr key={plan.name} className={plan.base ? m.base : undefined}><th scope="row">{plan.name}<small>{plan.note}</small></th><td>{won(plan.price)}<small>{plan.unit}</small></td></tr>)}</tbody>
     </table>
-    <p className={m.priceNote}>모든 상품에 위 <strong>관리 내역 5가지</strong>가 똑같이 들어가요. 시범 기간 요금이에요.</p>
 
-    <h3>옵션 서비스</h3>
+    <h3>필요할 때 추가 (옵션)</h3>
     <table className={m.price}>
-      <thead><tr><th scope="col">옵션</th><th scope="col">비용</th></tr></thead>
       <tbody>{OPTIONS.map(o => <tr key={o.name}><th scope="row">{o.name}<small>{o.note}</small></th><td>{o.price === null ? '견적' : won(o.price)}<small>{o.unit}</small></td></tr>)}</tbody>
     </table>
 
-    <h3>비고</h3>
-    <ul className={m.remarks}>{REMARKS.map((r, i) => <li key={i}>{r}</li>)}</ul>
+    <h3>해 드리지 않는 일</h3>
+    <ul className={m.nots}>{NOT_INCLUDED.map(n => <li key={n.title}><div>{n.title}{n.note && <small>{n.note}</small>}</div></li>)}</ul>
+
+    <h3>이용 안내</h3>
+    <ul className={m.remarks}>{GUIDE.map((g, i) => <li key={i}>{g}</li>)}</ul>
 
     <h3>자주 묻는 질문</h3>
     <div className={m.faq}>{MANAGEMENT_FAQ.map(item => <details key={item.q}><summary>{item.q}</summary><p>{item.a}</p></details>)}</div>

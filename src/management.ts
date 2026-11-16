@@ -7,10 +7,9 @@ export const PLANS = [
 ] as const
 
 export const OPTIONS = [
-  { name: '태풍·폭우 뒤 비상점검', note: '지붕·담장 파손, 누수 확인. 전화로 요청', price: 33000, unit: '1회' },
-  { name: '겨울 동파 대비 점검', note: '한파 예보 전 수도·보일러 상태 확인', price: 33000, unit: '1회' },
-  { name: '마당 풀베기', note: '마당 크기를 보고 알려 드려요', price: null, unit: '상담 후' },
-  { name: '쓰레기·폐기물 처리', note: '양을 보고 알려 드려요', price: null, unit: '상담 후' },
+  { name: '태풍·폭우 뒤 비상점검', note: '전화로 요청', price: 33000, unit: '1회' },
+  { name: '겨울 동파 대비 점검', note: '한파 예보 전', price: 33000, unit: '1회' },
+  { name: '마당 풀베기·폐기물 처리', note: '크기·양을 보고 안내', price: null, unit: '상담 후' },
 ] as const
 
 export const PLAN_CHOICES = [...PLANS.map(plan => plan.name), '상담 후 정할게요'] as const
