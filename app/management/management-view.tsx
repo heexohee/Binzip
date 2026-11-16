@@ -92,7 +92,7 @@ export const MANAGEMENT_JSON_LD = {
 function ServicePanel() {
   return <>
     <h2>서비스 및 요금안내</h2>
-    <p className={m.sub}>멀리 있는 집, 대신 가서 보고 사진으로 알려 드려요. 한 번만 맡기셔도, 정기로 맡기셔도 돼요.</p>
+    <p className={m.sub}>멀리 있는 집, 대신 가서 보고 사진으로 알려 드려요. 한 번만 맡기셔도, 정기적으로 맡기셔도 돼요.</p>
 
     <h3><span className={m.num}>1</span>방문하면 해 드리는 일</h3>
     <ul className={m.visit}>{VISIT.map(item => <li key={item.title}>
