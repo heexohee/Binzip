@@ -10,7 +10,7 @@ export const metadata = pageMetadata({
 })
 /** `?source=other-region` comes from the diagnosis pages: same survey, intro framed as a regional waitlist. */
 function Intro({ otherRegion }: { otherRegion: boolean }) {
-  if (otherRegion) return <><Link href="/diagnosis">← 빈집 진단 소개로</Link><p>빈집 진단 · 다른 지역 소식 받기</p><h1>우리 지역에서도 진단이 열리면<br/>알려드릴게요</h1><p>진단 시범은 포항부터 하고 있어요. 빈집이 있는 지역과 지금의 고민을 남겨 주시면, 진단을 넓힐 지역을 정할 때 참고하고, 담당자가 연락드려요. 다른 지역 진단 일정은 아직 정해지지 않았어요.</p></>
+  if (otherRegion) return <><Link href="/management">← 빈집 관리 안내로</Link><p>빈집 관리 · 다른 지역 소식 받기</p><h1>우리 지역에서도 관리가 열리면<br/>알려드릴게요</h1><p>빈집 관리는 포항·경주에서 시범으로 하고 있어요. 빈집이 있는 지역과 지금의 고민을 남겨 주시면, 지역을 넓힐 때 참고하고 담당자가 연락드려요. 다른 지역 일정은 아직 정해지지 않았어요.</p></>
   return <><Link href="/management">← 빈집 관리 소개로</Link><h1>빈집 관리에 대한<br/>의견을 들려주세요</h1><p>필요한 관리와 희망 요금을 여쭤봐요. 총 4단계이며, 마지막에 응답 확인을 위한 연락처를 받아요.</p></>
 }
 export default async function Page({ searchParams }: { searchParams: Promise<{ source?: string | string[] }> }) {
