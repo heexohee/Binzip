@@ -1,3 +1,4 @@
+import { toHomeType } from '../../src/management'
 import { pageMetadata } from '../../src/seo'
 import { ManagementView } from '../management/management-view'
 
@@ -8,6 +9,7 @@ export const metadata = pageMetadata({
   description: '비워 둔 집, 대신 가서 집 안팎 점검·환기·누수 확인·우편물 수거를 하고 사진 보고서를 보내 드려요. 계절과 날씨에 맞춰 살펴볼 곳도 미리 알려 드려요. 포항·경주 시범 운영.',
 })
 
-export default function Diagnosis() {
-  return <ManagementView />
+export default async function Diagnosis({ searchParams }: { searchParams: Promise<{ home?: string | string[] }> }) {
+  const home = toHomeType((await searchParams).home)
+  return <ManagementView home={home} />
 }

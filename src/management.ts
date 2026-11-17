@@ -12,10 +12,22 @@ export const OPTIONS = [
   { name: '마당 풀베기·폐기물 처리', note: '크기·양을 보고 안내', price: null, unit: '상담 후' },
 ] as const
 
+/** Which kind of house the visitor chose at the top of /management. 'apt' = a lived-in flat left empty for a while. */
+export const HOME_TYPES = [
+  { id: 'house', label: '시골집·별장', note: '단독주택' },
+  { id: 'apt', label: '살던 집을 비움', note: '아파트·빌라' },
+] as const
+export type HomeType = (typeof HOME_TYPES)[number]['id']
+export const toHomeType = (value: unknown): HomeType => (value === 'apt' ? 'apt' : 'house')
+
+/** Flats have 14 check items instead of 20, so every plan is this much cheaper. Operator decision, 2026-11-17. */
+const APT_DISCOUNT = 11000
+export const plansFor = (home: HomeType) => PLANS.map(plan => ({ ...plan, price: home === 'apt' ? plan.price - APT_DISCOUNT : plan.price }))
+
 export const PLAN_CHOICES = [...PLANS.map(plan => plan.name), '상담 후 정할게요'] as const
 export const APPLICANTS = ['집 주인', '가족 (자녀 등)'] as const
 export const MANAGEMENT_SOURCE = 'management-apply'
-export const MANAGEMENT_CONSENT_VERSION = '2026-11-14-management-v1'
+export const MANAGEMENT_CONSENT_VERSION = '2026-11-17-management-v2'
 
 export const won = (price: number) => `${price.toLocaleString('ko-KR')}원`
 
@@ -43,7 +55,7 @@ export function validateManagementApply(data: FormData) {
   if (data.get('overseasAgree') !== 'on') errors.overseasAgree = '개인정보 국외 이전에 동의해 주세요. 원하지 않으시면 전화로 신청해 주세요.'
   if (text('website')) errors.form = '접수할 수 없는 입력입니다.'
   if (!/^[0-9a-f-]{36}$/i.test(text('requestId'))) errors.form = '화면을 새로고침한 뒤 다시 신청해 주세요.'
-  const answers = { survey_version: '2026-11-14-management-apply-v1', applicant, plan }
+  const answers = { survey_version: '2026-11-17-management-apply-v2', applicant, plan, home_type: toHomeType(text('homeType')) }
   return {
     errors,
     row: {

@@ -2,9 +2,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Brand } from '../home-ui'
 import { PHONE } from '../landing-parts'
-import { OPTIONS, PLANS, won } from '../../src/management'
+import { OPTIONS, PLANS, plansFor, won, type HomeType } from '../../src/management'
 import { SITE_URL } from '../../src/seo'
 import { ApplyForm } from './apply-form'
+import { HomeToggle } from './home-toggle'
 import { ManagementTabs } from './management-tabs'
 import m from './management.module.css'
 
@@ -33,12 +34,29 @@ const CHECKS = [
   { group: '하고 오는 일', items: ['환기 30분', '문단속'] },
 ]
 
+/** Flats: the six outdoor items (wall, roof, yard, branches, drains, wasp nests) do not apply. */
+const CHECKS_APT = [
+  { group: '현관·창문', items: ['현관문 잠김', '창문 (깨짐·열림)', '우편함', '억지로 연 흔적'] },
+  ...CHECKS.slice(1),
+]
+const VISIT_APT_TEXT: Record<string, string> = { '집 안팎 확인': '현관·창문·방 천장' }
+
 const SEASONS = [
   { season: '봄', text: '담장·축대 금, 마당 잡초' },
   { season: '여름', text: '배수로·곰팡이, 말벌집' },
   { season: '가을', text: '태풍 전 지붕·낙엽' },
   { season: '겨울', text: '한파 전 수도 동파' },
 ]
+
+const SEASONS_APT = [
+  { season: '봄', text: '환기, 결로 곰팡이' },
+  { season: '여름', text: '장마철 창틀 물 자국' },
+  { season: '가을', text: '태풍 전 창문·베란다' },
+  { season: '겨울', text: '한파 전 수도·보일러' },
+]
+
+const VALUABLES_APT = '방 하나에 모아 잠가 주세요. 그 방은 확인하지 않아요'
+const count = (groups: { items: readonly string[] }[]) => groups.reduce((sum, g) => sum + g.items.length, 0)
 
 const NOT_INCLUDED = [
   { title: '수리 공사', note: '동네 업체를 알려 드리고, 계약은 직접 해요' },
@@ -57,7 +75,7 @@ const GUIDE = [
 
 export const MANAGEMENT_FAQ = [
   { q: '열쇠는 어떻게 맡기나요?', a: '계약 확정 뒤 직접 받거나 등기로 받아요. 보관 방법은 계약서에 적어 드려요.' },
-  { q: '한 번만 맡겨도 되나요?', a: '네. 1회성 방문은 77,000원이에요. 정기 관리는 월 1회, 월 2회, 2개월 1회 중에 고를 수 있어요.' },
+  { q: '한 번만 맡겨도 되나요?', a: '네. 1회성 방문도 받아요. 정기 관리는 월 1회, 월 2회, 2개월 1회 중에 고를 수 있어요.' },
   { q: '언제든 그만둘 수 있나요?', a: '다음 방문 전에 말씀해 주시면 그다음부터 멈추고 열쇠를 돌려드려요. 환불 기준은 계약서에서 알려 드려요.' },
   { q: '수리도 해 주나요?', a: '수리 공사는 직접 하지 않아요. 상의한 뒤 동네 업체를 알려 드리고, 공사 계약과 비용은 직접 정하시면 돼요.' },
   { q: '가족이 대신 신청해도 되나요?', a: '네. 다만 계약할 때 집 주인의 동의를 확인해요. 필요한 서류는 상담 때 알려 드려요.' },
@@ -101,7 +119,9 @@ export const MANAGEMENT_JSON_LD = {
   ],
 }
 
-function ServicePanel() {
+function ServicePanel({ home }: { home: HomeType }) {
+  const apt = home === 'apt'
+  const checks = apt ? CHECKS_APT : CHECKS
   return <>
     <h2>서비스 및 요금안내</h2>
     <p className={m.sub}>사람이 없는 집은 작은 문제가 큰 사고로 커져요. 대신 가서 보고 사진으로 알려 드려요. 한 번만 맡기셔도, 정기적으로 맡기셔도 돼요.</p>
@@ -110,12 +130,12 @@ function ServicePanel() {
     <h3><span className={m.num}>1</span>방문하면 해 드리는 일</h3>
     <ul className={m.visit}>{VISIT.map(item => <li key={item.title}>
       <Image src={item.image} alt="" width={360} height={192} sizes="(max-width: 720px) 50vw, 340px" />
-      <div><strong>{item.title}</strong><span>{item.text}</span></div>
+      <div><strong>{item.title}</strong><span>{(apt && VISIT_APT_TEXT[item.title]) || item.text}</span></div>
     </li>)}</ul>
     <p className={m.scope}>확인 항목을 미리 정해 두고, 그 항목만 확인해서 보고해요.</p>
     <div className={m.faq}><details>
-      <summary>확인 항목 20가지 보기</summary>
-      <dl className={m.checks}>{CHECKS.map(c => <div key={c.group}><dt>{c.group}</dt><dd>{c.items.join(' · ')}</dd></div>)}</dl>
+      <summary>확인 항목 {count(checks)}가지 보기</summary>
+      <dl className={m.checks}>{checks.map(c => <div key={c.group}><dt>{c.group}</dt><dd>{c.items.join(' · ')}</dd></div>)}</dl>
     </details></div>
 
     <h3><span className={m.num}>2</span>받아 보시는 것</h3>
@@ -134,15 +154,15 @@ function ServicePanel() {
         <div className={m.alertTop}><span>📲 빈집진단서</span><small>알림 예시</small></div>
         <p><strong>송라면 집, 이번 주 금요일 영하 9도 예보예요.</strong><br />수도관이 얼지 않게 확인을 요청해 볼까요?</p>
       </div>
-      <ul className={m.seasons}>{SEASONS.map(s => <li key={s.season}><strong>{s.season}</strong>{s.text}</li>)}</ul>
+      <ul className={m.seasons}>{(apt ? SEASONS_APT : SEASONS).map(s => <li key={s.season}><strong>{s.season}</strong>{s.text}</li>)}</ul>
     </div>
 
-    <h3><span className={m.num}>3</span>요금</h3>
+    <h3><span className={m.num}>3</span>요금{apt ? ' (아파트·빌라)' : ' (단독주택)'}</h3>
     <p className={m.lead3}>모든 상품에 아래가 똑같이 들어가요.</p>
     <p className={m.included}><span>✓ 방문 4가지</span><span>✓ 전용 톡방 보고</span><span>✓ 계절·날씨 알림</span></p>
     <table className={m.price}>
       <thead><tr><th scope="col">상품</th><th scope="col">비용</th></tr></thead>
-      <tbody>{PLANS.map(plan => <tr key={plan.name} className={plan.base ? m.base : undefined}><th scope="row">{plan.name}<small>{plan.note}</small></th><td>{won(plan.price)}<small>{plan.unit}</small></td></tr>)}</tbody>
+      <tbody>{plansFor(home).map(plan => <tr key={plan.name} className={plan.base ? m.base : undefined}><th scope="row">{plan.name}<small>{plan.note}</small></th><td>{won(plan.price)}<small>{plan.unit}</small></td></tr>)}</tbody>
     </table>
 
     <h3>필요할 때 추가 (옵션)</h3>
@@ -151,7 +171,7 @@ function ServicePanel() {
     </table>
 
     <h3>해 드리지 않는 일</h3>
-    <ul className={m.nots}>{NOT_INCLUDED.map(n => <li key={n.title}><div>{n.title}{n.note && <small>{n.note}</small>}</div></li>)}</ul>
+    <ul className={m.nots}>{NOT_INCLUDED.map(n => <li key={n.title}><div>{n.title}{n.note && <small>{apt && n.title === '귀중품 보관' ? VALUABLES_APT : n.note}</small>}</div></li>)}</ul>
 
     <h3>이용 안내</h3>
     <ul className={m.remarks}>{GUIDE.map((g, i) => <li key={i}>{g}</li>)}</ul>
@@ -179,19 +199,19 @@ function ReportPanel() {
   </>
 }
 
-function ApplyPanel() {
+function ApplyPanel({ home }: { home: HomeType }) {
   return <>
     <h2>신청하기</h2>
     <p className={m.sub}>신청만으로 결제되지 않아요. 전화로 상담하고 집을 함께 확인한 뒤 계약서를 작성해요. 그다음부터는 다시 신청하지 않아도 우리 집 전용 톡방에서 담당자와 바로 이야기할 수 있어요.</p>
     <ol className={m.flow}>{FLOW.map((f, i) => <li key={f.step}><span>{i + 1}</span><strong>{f.step}</strong><small>{f.note}</small></li>)}</ol>
-    <div className={m.formBox}><ApplyForm /></div>
+    <div className={m.formBox}><ApplyForm homeType={home} /></div>
     <a className={m.call} href={`tel:${PHONE.replaceAll('-', '')}`}>전화로 신청하기 · {PHONE}</a>
     <p className={m.other}>포항·경주가 아닌가요? <Link href="/interest?source=other-region">우리 지역이 열리면 알림 받기 →</Link></p>
     <p className={m.partner}>🏡 <strong>동네 관리인을 찾고 있어요.</strong> 이장님처럼 마을 집을 잘 아는 분이라면 <a href={`tel:${PHONE.replaceAll('-', '')}`}>{PHONE}</a>로 연락 주세요.</p>
   </>
 }
 
-export function ManagementView() {
+export function ManagementView({ home = 'house' }: { home?: HomeType }) {
   return <div className={m.page}>
     <header className={m.top}>
       <div className={m.topIn}>
@@ -202,8 +222,9 @@ export function ManagementView() {
         </div>
       </div>
     </header>
+    <HomeToggle home={home} />
     <main className={m.main}>
-      <ManagementTabs panels={{ service: <ServicePanel />, report: <ReportPanel />, apply: <ApplyPanel /> }} />
+      <ManagementTabs panels={{ service: <ServicePanel home={home} />, report: <ReportPanel />, apply: <ApplyPanel home={home} /> }} />
     </main>
   </div>
 }

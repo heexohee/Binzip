@@ -2,13 +2,13 @@
 import { useActionState, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { trackForm } from '../../src/web-analytics'
-import { APPLICANTS, PLAN_CHOICES } from '../../src/management'
+import { APPLICANTS, PLAN_CHOICES, type HomeType } from '../../src/management'
 import { submitManagementApply } from './actions'
 import m from './management.module.css'
 
 const INITIAL = { ok: false, message: '', errors: {} as Record<string, string> }
 
-export function ApplyForm() {
+export function ApplyForm({ homeType }: { homeType: HomeType }) {
   const [state, action, pending] = useActionState(submitManagementApply, INITIAL)
   const [requestId, setRequestId] = useState('')
   // Controlled fields: React resets uncontrolled inputs after every submit, which would wipe answers on a validation error.
@@ -35,6 +35,7 @@ export function ApplyForm() {
 
   return <form className={m.form} action={action} onFocus={start} noValidate>
     <input type="hidden" name="requestId" value={requestId} />
+    <input type="hidden" name="homeType" value={homeType} />
     <div hidden aria-hidden="true"><label>웹사이트<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
 
     <label className={m.field}>집이 있는 곳<small>읍·면·리까지만 적어도 돼요.</small>
@@ -61,7 +62,7 @@ export function ApplyForm() {
 
     <details className={m.consent}>
       <summary>개인정보 수집·이용 안내 보기</summary>
-      <p>전화번호, 집이 있는 곳, 신청하는 분, 원하는 상품을 관리 상담 연락과 계약 안내에 사용해요. 유입 경로도 함께 저장해요. 접수일부터 최대 6개월 보관하고, 그 전에 삭제를 요청하실 수 있어요. 광고 연락에는 쓰지 않아요.</p>
+      <p>전화번호, 집이 있는 곳, 집 종류, 신청하는 분, 원하는 상품을 관리 상담 연락과 계약 안내에 사용해요. 유입 경로도 함께 저장해요. 접수일부터 최대 6개월 보관하고, 그 전에 삭제를 요청하실 수 있어요. 광고 연락에는 쓰지 않아요.</p>
       <p>응답은 해외 업체의 서버에 저장·처리돼요. Supabase Pte. Ltd.(일본 도쿄): 응답 저장, 접수일부터 최대 6개월. Vercel Inc.(대한민국 서울·미국): 사이트 운영과 응답 처리. 동의하지 않으시면 010-7428-2624로 전화 신청해 주세요.</p>
       <Link href="/privacy">개인정보 처리방침 보기</Link>
     </details>
