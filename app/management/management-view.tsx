@@ -119,7 +119,7 @@ function ServicePanel() {
     <div className={m.get}>
       <div className={m.getHead}>
         <Image src="/management/phone-report.jpg" alt="" width={144} height={112} sizes="72px" />
-        <div><strong>우리 집 전용 톡방</strong><span>다녀온 날 사진 보고서를 받아요. 바퀴벌레·하수구 막힘처럼 손볼 일이 생기면 톡방에 말씀만 하세요. 동네 업체를 찾아 연결하고, 문을 열어 드린 뒤 작업 전후 사진으로 알려 드려요.</span></div>
+        <div><strong>우리 집 전용 톡방</strong><span>다녀온 날 사진 보고서를 받아요. 바퀴벌레·하수구 막힘처럼 손볼 일이 생기면 톡방에 말씀해 주세요. 동네 업체를 알려 드려요. 업체와의 계약과 작업 내용은 직접 정하시고, 톡방으로 요청하시면 약속한 시간에 문을 열어 드리고 작업 전후 사진을 남겨요.</span></div>
       </div>
     </div>
     <div className={m.get}>
