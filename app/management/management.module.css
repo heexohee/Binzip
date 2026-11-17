@@ -95,7 +95,7 @@
 .rows { margin: 0; padding: 4px 16px 6px; list-style: none; }
 .rows li { display: flex; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); font-size: 1rem; line-height: 1.45; }
 .rows li:last-child { border-bottom: 0; }
-.rows li > span { flex: none; width: 82px; font-size: .875rem; font-weight: 800; padding-top: 1px; }
+.rows li > span { flex: none; width: 118px; font-size: .875rem; font-weight: 800; padding-top: 1px; }
 .ok { color: var(--brand-primary); }
 .warn { color: #a3452d; }
 .history { margin: 12px 0 0; padding: 0; list-style: none; }
@@ -177,3 +177,9 @@
 .nots li { display: flex; gap: 10px; padding: 12px 4px; border-bottom: 1px solid var(--border-subtle); font-size: 1rem; line-height: 1.45; }
 .nots li::before { content: "✕"; flex: none; color: #a3452d; font-weight: 900; }
 .nots small { display: block; font-size: .875rem; color: var(--text-secondary); }
+
+/* fixed check list under "방문하면 해 드리는 일" */
+.scope { margin: 12px 0 0; font-size: .9375rem; line-height: 1.5; color: var(--text-secondary); }
+.checks { margin: 0; padding: 0 4px 16px; }
+.checks dt { margin-top: 10px; font-size: .9375rem; font-weight: 800; }
+.checks dd { margin: 4px 0 0; font-size: .9375rem; line-height: 1.65; color: var(--text-secondary); }

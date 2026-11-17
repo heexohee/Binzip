@@ -17,10 +17,18 @@ const FLOW = [
 ]
 
 const VISIT = [
-  { title: '집 안팎 점검', text: '지붕·담장·마당·방·부엌·화장실', image: '/management/house-gate.jpg' },
+  { title: '집 안팎 확인', text: '대문·담장·지붕·마당·방 천장', image: '/management/house-gate.jpg' },
   { title: '실내 환기', text: '창문과 방문을 열어 30분', image: '/management/ventilation.jpg' },
-  { title: '누수·누전 점검', text: '천장·보일러·수도·가스·차단기', image: '/management/ceiling-leak.jpg' },
+  { title: '물 자국·설비 확인', text: '천장·창틀, 차단기·보일러·계량기', image: '/management/ceiling-leak.jpg' },
   { title: '우편물 수거', text: '사진으로 알리고, 원하시면 발송', image: '/management/mailbox.jpg' },
+]
+
+/** The fixed scope of a visit. Reports cover these items only; keep in sync with the contract. */
+const CHECKS = [
+  { group: '집 밖', items: ['대문·현관문 잠김', '담장·축대 (정해 둔 지점)', '지붕 (땅에서 보이는 면)', '외벽·창문', '마당 풀·쓰레기', '우편함', '이웃 쪽으로 넘어간 나뭇가지', '배수로·홈통 막힘', '억지로 연 흔적', '벌집 (4~10월)'] },
+  { group: '집 안', items: ['방 천장 물 자국 (정해 둔 방)', '창틀·벽 아래 물 자국', '부엌·화장실 바닥 물 고임', '가스 냄새'] },
+  { group: '설비 (만지지 않고 눈으로만)', items: ['차단기', '보일러 표시창·연료 눈금', '수도 계량기 숫자', '가스 밸브'] },
+  { group: '하고 오는 일', items: ['환기 30분', '문단속'] },
 ]
 
 const SEASONS = [
@@ -40,7 +48,8 @@ const NOT_INCLUDED = [
 const GUIDE = [
   <>계약 전에 집 상태를 함께 확인하고, <strong>무료 진단서</strong>로 정리해 드려요.</>,
   <>방문 전날 톡방으로 방문 시간을 알려 드려요.</>,
-  <>열쇠 보관과 책임 범위는 계약서에 적어요. (법률 확인 중)</>,
+  <>정해진 확인 항목만 보고, 본 사실만 알려 드려요. 구조 안전이나 고장 원인은 판단하지 않아요.</>,
+  <>열쇠 보관, 책임 범위, 보상 한도는 계약서에 적어요. (법률 확인 중)</>,
   <>포항·경주 시범 운영 중이며, 대표가 직접 방문해요.</>,
 ]
 
@@ -56,14 +65,15 @@ export const MANAGEMENT_FAQ = [
 ]
 
 const REPORT_ROWS = [
-  { tone: 'ok', label: '괜찮음', text: '지붕·대문은 지난달과 같아요.' },
-  { tone: 'warn', label: '살펴볼 곳', text: '마당 풀이 무릎 높이까지 자랐어요. 제초 업체를 알려 드릴까요?' },
-  { tone: 'ok', label: '괜찮음', text: '방 3곳 30분 환기했어요. 천장·보일러 주변에 물 자국은 없어요.' },
+  { tone: 'ok', label: '지난번과 같음', text: '대문, 담장, 지붕(땅에서 보이는 면)' },
+  { tone: 'warn', label: '달라짐', text: '마당 풀이 발목에서 무릎 높이로 자랐어요. 제초 업체를 알려 드릴까요?' },
+  { tone: 'ok', label: '지난번과 같음', text: '안방·작은방 천장, 창틀, 부엌·화장실 바닥' },
+  { tone: 'ok', label: '환기', text: '방 3곳 창문을 열어 30분 환기했어요.' },
   { tone: 'ok', label: '우편물', text: '2통 모아 두었어요. (사진 첨부)' },
   { tone: 'warn', label: '다음 알림', text: '첫 한파 예보가 나오면 수도 동파 점검을 알려 드릴게요.' },
 ] as const
 
-const HISTORY = [{ month: '11월 방문', status: '살펴볼 곳 1', warn: true }, { month: '10월 방문', status: '괜찮음' }, { month: '9월 방문', status: '괜찮음' }]
+const HISTORY = [{ month: '11월 방문', status: '달라짐 1', warn: true }, { month: '10월 방문', status: '지난번과 같음' }, { month: '9월 방문', status: '지난번과 같음' }]
 
 /** Only facts shown on the page: pilot prices, area, what is and is not included. */
 export const MANAGEMENT_JSON_LD = {
@@ -74,7 +84,7 @@ export const MANAGEMENT_JSON_LD = {
       '@id': `${SITE_URL}/management#service`,
       name: '빈집 관리 대행',
       serviceType: '비어 있는 주택 방문 점검과 사진 보고',
-      description: '집 안팎 점검, 실내 환기, 누수·누전 눈 점검, 우편물 수거를 하고 사진 보고서를 우리 집 전용 톡방으로 보내요. 계절과 날씨에 맞춰 살펴볼 곳도 미리 알려 드려요. 수리 공사와 긴급 출동은 하지 않아요.',
+      description: '정해진 항목대로 집 안팎을 눈으로 확인하고, 실내 환기, 물 자국과 설비 상태 확인, 우편물 수거를 하고 사진 보고서를 우리 집 전용 톡방으로 보내요. 계절과 날씨에 맞춰 살펴볼 곳도 미리 알려 드려요. 수리 공사와 긴급 출동은 하지 않아요.',
       url: `${SITE_URL}/management`,
       provider: { '@id': `${SITE_URL}/#organization` },
       areaServed: [{ '@type': 'City', name: '포항시' }, { '@type': 'City', name: '경주시' }],
@@ -99,6 +109,11 @@ function ServicePanel() {
       <Image src={item.image} alt="" width={360} height={192} sizes="(max-width: 720px) 50vw, 340px" />
       <div><strong>{item.title}</strong><span>{item.text}</span></div>
     </li>)}</ul>
+    <p className={m.scope}>확인 항목을 미리 정해 두고, 그 항목만 확인해서 보고해요.</p>
+    <div className={m.faq}><details>
+      <summary>확인 항목 20가지 보기</summary>
+      <dl className={m.checks}>{CHECKS.map(c => <div key={c.group}><dt>{c.group}</dt><dd>{c.items.join(' · ')}</dd></div>)}</dl>
+    </details></div>
 
     <h3><span className={m.num}>2</span>받아 보시는 것</h3>
     <div className={m.get}>
@@ -146,7 +161,7 @@ function ServicePanel() {
 function ReportPanel() {
   return <>
     <h2>관리보고</h2>
-    <p className={m.sub}>다녀온 날마다 이런 보고를 우리 집 전용 톡방으로 받아요.</p>
+    <p className={m.sub}>다녀온 날마다 이런 보고를 우리 집 전용 톡방으로 받아요. 정해진 확인 항목마다 지난번과 같은지, 달라졌는지를 사진과 함께 알려 드려요.</p>
     <div className={m.report}>
       <div className={m.reportHead}><span>보고 예시</span><strong>경북 ○○군 단독주택</strong><small>11월 방문 · 머문 시간 30분</small></div>
       <div className={m.shots}>
