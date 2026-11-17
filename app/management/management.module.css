@@ -180,9 +180,16 @@
 
 /* fixed check list under "방문하면 해 드리는 일" */
 .scope { margin: 12px 0 0; font-size: .9375rem; line-height: 1.5; color: var(--text-secondary); }
-.checks { margin: 0; padding: 0 4px 16px; }
-.checks dt { margin-top: 10px; font-size: .9375rem; font-weight: 800; }
-.checks dd { margin: 4px 0 0; font-size: .9375rem; line-height: 1.65; color: var(--text-secondary); }
+.checks { padding: 0 4px 16px; }
+.checks h4 { margin: 14px 0 0; padding: 6px 10px; border-radius: 8px; background: var(--surface-soft); color: var(--brand-primary); font-size: .9375rem; font-weight: 800; }
+.checks ol { display: grid; grid-template-columns: 1fr; gap: 0; margin: 4px 0 0; padding: 0; list-style: none; }
+.checks li { display: flex; align-items: flex-start; gap: 10px; padding: 9px 2px; border-bottom: 1px solid var(--border-subtle); font-size: 1rem; line-height: 1.4; color: var(--text-primary); }
+.checks li:last-child { border-bottom: 0; }
+.checks li span { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--brand-primary); color: #fff; font-size: .8125rem; font-weight: 800; }
+@media (min-width: 600px) {
+  .checks ol { grid-template-columns: 1fr 1fr; column-gap: 20px; }
+  .checks li:nth-last-child(2):nth-child(odd) { border-bottom: 0; }
+}
 
 /* "어떤 집인가요?" choice above the tabs */
 .homeToggle { max-width: 720px; margin: 0 auto; padding: 14px 16px 16px; }

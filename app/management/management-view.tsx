@@ -17,7 +17,21 @@ const FLOW = [
   { step: '관리·보고', note: '다녀온 날 사진 보고' },
 ]
 
-const AUDIENCE = ['부모님이 살던 시골집', '세컨하우스와 별장', '유학이나 해외 근무로 비운 집', '장기 여행 중인 집']
+/** Copy and photos that change with the house type picked at the top of the page. */
+const BY_HOME = {
+  house: {
+    intro: '멀리 있는 부모님 집이나 별장, 자주 못 가시나요? 사람이 없는 집은 작은 문제가 큰 사고로 커져요. 대신 가서 보고 사진으로 알려 드려요.',
+    audience: ['부모님이 살던 시골집', '세컨하우스와 별장'],
+    alert: { title: '송라면 집, 이번 주 금요일 영하 9도 예보예요.', body: '수도관이 얼지 않게 확인을 요청해 볼까요?' },
+    report: { place: '경북 ○○군 단독주택', shots: [{ src: '/management/house-gate.jpg', caption: '대문·담장', position: undefined }, { src: '/management/yard.jpg', caption: '마당', position: '75% 50%' }] },
+  },
+  apt: {
+    intro: '유학이나 장기 출장으로 집을 비우시나요? 사람이 없는 집은 작은 문제가 큰 사고로 커져요. 비운 동안 대신 가서 보고 사진으로 알려 드려요.',
+    audience: ['유학·해외 근무', '장기 출장', '장기 여행', '해외에 자주 가시는 부모님 집'],
+    alert: { title: '○○동 집, 이번 주 금요일 영하 9도 예보예요.', body: '보일러 외출 모드와 베란다 수도를 확인해 볼까요?' },
+    report: { place: '포항시 ○○동 아파트', shots: [{ src: '/management/apt-entry.jpg', caption: '현관', position: undefined }, { src: '/management/apt-living.jpg', caption: '거실', position: undefined }] },
+  },
+} as const
 
 const VISIT = [
   { title: '집 안팎 확인', text: '대문·담장·지붕·마당·방 천장', image: '/management/house-gate.jpg' },
@@ -39,7 +53,12 @@ const CHECKS_APT = [
   { group: '현관·창문', items: ['현관문 잠김', '창문 (깨짐·열림)', '우편함', '억지로 연 흔적'] },
   ...CHECKS.slice(1),
 ]
-const VISIT_APT_TEXT: Record<string, string> = { '집 안팎 확인': '현관·창문·방 천장' }
+const VISIT_APT = [
+  { title: '집 안팎 확인', text: '현관·창문·방 천장', image: '/management/apt-living.jpg' },
+  { title: '실내 환기', text: '창문과 방문을 열어 30분', image: '/management/apt-air.jpg' },
+  { title: '물 자국·설비 확인', text: '천장·창틀, 차단기·보일러·계량기', image: '/management/apt-boiler.jpg' },
+  { title: '우편물 수거', text: '사진으로 알리고, 원하시면 발송', image: '/management/apt-door.jpg' },
+]
 
 const SEASONS = [
   { season: '봄', text: '담장·축대 금, 마당 잡초' },
@@ -93,6 +112,14 @@ const REPORT_ROWS = [
   { tone: 'warn', label: '다음 알림', text: '첫 한파 예보가 나오면 수도 동파 점검을 알려 드릴게요.' },
 ] as const
 
+const REPORT_ROWS_APT = [
+  { tone: 'ok', label: '지난번과 같음', text: '현관문, 창문, 거실·안방 천장' },
+  { tone: 'warn', label: '달라짐', text: '싱크대 아래 바닥에 물기가 조금 있어요. (사진 첨부) 설비 업체를 알려 드릴까요?' },
+  { tone: 'ok', label: '환기', text: '거실과 방 2곳 창문을 열어 30분 환기했어요.' },
+  { tone: 'ok', label: '우편물', text: '3통 모아 두었어요. (사진 첨부)' },
+  { tone: 'warn', label: '다음 알림', text: '첫 한파 예보가 나오면 보일러와 베란다 수도 확인을 알려 드릴게요.' },
+] as const
+
 const HISTORY = [{ month: '11월 방문', status: '달라짐 1', warn: true }, { month: '10월 방문', status: '지난번과 같음' }, { month: '9월 방문', status: '지난번과 같음' }]
 
 /** Only facts shown on the page: pilot prices, area, what is and is not included. */
@@ -122,20 +149,27 @@ export const MANAGEMENT_JSON_LD = {
 function ServicePanel({ home }: { home: HomeType }) {
   const apt = home === 'apt'
   const checks = apt ? CHECKS_APT : CHECKS
+  const copy = BY_HOME[home]
   return <>
     <h2>서비스 및 요금안내</h2>
-    <p className={m.sub}>사람이 없는 집은 작은 문제가 큰 사고로 커져요. 대신 가서 보고 사진으로 알려 드려요. 한 번만 맡기셔도, 정기적으로 맡기셔도 돼요.</p>
-    <p className={m.included} aria-label="이런 집을 맡아요">{AUDIENCE.map(a => <span key={a}>{a}</span>)}</p>
+    <p className={m.sub}>{copy.intro} 한 번만 맡기셔도, 정기적으로 맡기셔도 돼요.</p>
+    <p className={m.included} aria-label="이런 집을 맡아요">{copy.audience.map(a => <span key={a}>{a}</span>)}</p>
 
     <h3><span className={m.num}>1</span>방문하면 해 드리는 일</h3>
-    <ul className={m.visit}>{VISIT.map(item => <li key={item.title}>
+    <ul className={m.visit}>{(apt ? VISIT_APT : VISIT).map(item => <li key={item.title}>
       <Image src={item.image} alt="" width={360} height={192} sizes="(max-width: 720px) 50vw, 340px" />
-      <div><strong>{item.title}</strong><span>{(apt && VISIT_APT_TEXT[item.title]) || item.text}</span></div>
+      <div><strong>{item.title}</strong><span>{item.text}</span></div>
     </li>)}</ul>
     <p className={m.scope}>확인 항목을 미리 정해 두고, 그 항목만 확인해서 보고해요.</p>
     <div className={m.faq}><details>
       <summary>확인 항목 {count(checks)}가지 보기</summary>
-      <dl className={m.checks}>{checks.map(c => <div key={c.group}><dt>{c.group}</dt><dd>{c.items.join(' · ')}</dd></div>)}</dl>
+      <div className={m.checks}>{checks.map((c, g) => {
+        const start = count(checks.slice(0, g)) + 1
+        return <section key={c.group}>
+          <h4>{c.group}</h4>
+          <ol start={start}>{c.items.map((item, i) => <li key={item}><span aria-hidden="true">{start + i}</span>{item}</li>)}</ol>
+        </section>
+      })}</div>
     </details></div>
 
     <h3><span className={m.num}>2</span>받아 보시는 것</h3>
@@ -152,7 +186,7 @@ function ServicePanel({ home }: { home: HomeType }) {
       </div>
       <div className={m.alert} aria-label="알림 예시">
         <div className={m.alertTop}><span>📲 빈집진단서</span><small>알림 예시</small></div>
-        <p><strong>송라면 집, 이번 주 금요일 영하 9도 예보예요.</strong><br />수도관이 얼지 않게 확인을 요청해 볼까요?</p>
+        <p><strong>{copy.alert.title}</strong><br />{copy.alert.body}</p>
       </div>
       <ul className={m.seasons}>{(apt ? SEASONS_APT : SEASONS).map(s => <li key={s.season}><strong>{s.season}</strong>{s.text}</li>)}</ul>
     </div>
@@ -181,17 +215,18 @@ function ServicePanel({ home }: { home: HomeType }) {
   </>
 }
 
-function ReportPanel() {
+function ReportPanel({ home }: { home: HomeType }) {
+  const { report } = BY_HOME[home]
+  const rows = home === 'apt' ? REPORT_ROWS_APT : REPORT_ROWS
   return <>
     <h2>관리보고</h2>
     <p className={m.sub}>다녀온 날마다 이런 보고를 우리 집 전용 톡방으로 받아요. 정해진 확인 항목마다 지난번과 같은지, 달라졌는지를 사진과 함께 알려 드려요.</p>
     <div className={m.report}>
-      <div className={m.reportHead}><span>보고 예시</span><strong>경북 ○○군 단독주택</strong><small>11월 방문 · 머문 시간 30분</small></div>
+      <div className={m.reportHead}><span>보고 예시</span><strong>{report.place}</strong><small>11월 방문 · 머문 시간 30분</small></div>
       <div className={m.shots}>
-        <figure><Image src="/management/house-gate.jpg" alt="" width={350} height={196} sizes="50vw" /><figcaption>대문·담장</figcaption></figure>
-        <figure><Image src="/management/yard.jpg" alt="" width={350} height={196} sizes="50vw" style={{ objectPosition: '75% 50%' }} /><figcaption>마당</figcaption></figure>
+        {report.shots.map(shot => <figure key={shot.src}><Image src={shot.src} alt="" width={350} height={196} sizes="50vw" style={shot.position ? { objectPosition: shot.position } : undefined} /><figcaption>{shot.caption}</figcaption></figure>)}
       </div>
-      <ul className={m.rows}>{REPORT_ROWS.map(row => <li key={row.text}><span className={row.tone === 'warn' ? m.warn : m.ok}>● {row.label}</span>{row.text}</li>)}</ul>
+      <ul className={m.rows}>{rows.map(row => <li key={row.text}><span className={row.tone === 'warn' ? m.warn : m.ok}>● {row.label}</span>{row.text}</li>)}</ul>
     </div>
     <h3>지난 보고</h3>
     <ul className={m.history}>{HISTORY.map(h => <li key={h.month}>{h.month}<span className={h.warn ? m.historyWarn : m.historyOk}>{h.status}</span></li>)}</ul>
@@ -224,7 +259,7 @@ export function ManagementView({ home = 'house' }: { home?: HomeType }) {
     </header>
     <HomeToggle home={home} />
     <main className={m.main}>
-      <ManagementTabs panels={{ service: <ServicePanel home={home} />, report: <ReportPanel />, apply: <ApplyPanel home={home} /> }} />
+      <ManagementTabs panels={{ service: <ServicePanel home={home} />, report: <ReportPanel home={home} />, apply: <ApplyPanel home={home} /> }} />
     </main>
   </div>
 }
