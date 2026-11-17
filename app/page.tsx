@@ -9,7 +9,7 @@ import { pageMetadata, SITE_DESCRIPTION } from '../src/seo'
 
 export const metadata = pageMetadata({
   path: '/',
-  title: '빈집진단서 — 시골 빈집 관리 대행, 방문 점검·사진 보고',
+  title: '빈집진단서 — 비워 둔 집 관리 대행, 방문 점검·사진 보고',
   description: SITE_DESCRIPTION,
 })
 
@@ -31,7 +31,7 @@ export default function Home() {
           <div className={s.heroTop}>
             <div>
               <p className={s.eyebrow}>빈집 관리 대행</p>
-              <h1 id="hero-title">멀리 있는 시골집,<br />대신 가서 보고 알려 드려요.</h1>
+              <h1 id="hero-title">비워 둔 집,<br />대신 가서 보고 알려 드려요.</h1>
             </div>
             <Image src="/mascot/binzip-rabbit-v1.png" alt="" width={256} height={256} className={s.heroRabbit} priority />
           </div>

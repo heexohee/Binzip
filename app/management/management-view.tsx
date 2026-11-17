@@ -16,6 +16,8 @@ const FLOW = [
   { step: '관리·보고', note: '다녀온 날 사진 보고' },
 ]
 
+const AUDIENCE = ['부모님이 살던 시골집', '세컨하우스와 별장', '유학이나 해외 근무로 비운 집', '장기 여행 중인 집']
+
 const VISIT = [
   { title: '집 안팎 확인', text: '대문·담장·지붕·마당·방 천장', image: '/management/house-gate.jpg' },
   { title: '실내 환기', text: '창문과 방문을 열어 30분', image: '/management/ventilation.jpg' },
@@ -88,7 +90,7 @@ export const MANAGEMENT_JSON_LD = {
       url: `${SITE_URL}/management`,
       provider: { '@id': `${SITE_URL}/#organization` },
       areaServed: [{ '@type': 'City', name: '포항시' }, { '@type': 'City', name: '경주시' }],
-      audience: { '@type': 'Audience', audienceType: '빈집이 있는 소유자와 가족' },
+      audience: { '@type': 'Audience', audienceType: '집을 비워 둔 소유자와 가족' },
       offers: PLANS.map(plan => ({ '@type': 'Offer', name: plan.name, price: String(plan.price), priceCurrency: 'KRW', description: `${plan.note} (${plan.unit})` })),
     },
     {
@@ -102,7 +104,8 @@ export const MANAGEMENT_JSON_LD = {
 function ServicePanel() {
   return <>
     <h2>서비스 및 요금안내</h2>
-    <p className={m.sub}>멀리 있는 집, 대신 가서 보고 사진으로 알려 드려요. 한 번만 맡기셔도, 정기적으로 맡기셔도 돼요.</p>
+    <p className={m.sub}>사람이 없는 집은 작은 문제가 큰 사고로 커져요. 대신 가서 보고 사진으로 알려 드려요. 한 번만 맡기셔도, 정기적으로 맡기셔도 돼요.</p>
+    <p className={m.included} aria-label="이런 집을 맡아요">{AUDIENCE.map(a => <span key={a}>{a}</span>)}</p>
 
     <h3><span className={m.num}>1</span>방문하면 해 드리는 일</h3>
     <ul className={m.visit}>{VISIT.map(item => <li key={item.title}>
@@ -194,7 +197,7 @@ export function ManagementView() {
       <div className={m.topIn}>
         <div className={m.brandRow}><Brand /><span>포항·경주 시범</span></div>
         <div className={m.titleRow}>
-          <div><h1>빈집 관리</h1><p>멀리 있는 시골집, 대신 가서 보고<br />날씨에 맞춰 미리 알려 드려요</p></div>
+          <div><h1>빈집 관리</h1><p>비워 둔 집, 대신 가서 보고<br />날씨에 맞춰 미리 알려 드려요</p></div>
           <Image src="/mascot/binzip-rabbit-report-transparent-v4.png" alt="" width={120} height={120} sizes="96px" priority />
         </div>
       </div>

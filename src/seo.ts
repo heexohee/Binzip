@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 export const SITE_URL = 'https://www.binzipcare.kr'
 export const SITE_NAME = '빈집진단서'
 export const SITE_DESCRIPTION =
-  '멀리 있는 시골 빈집, 대신 가서 보고 사진으로 알려 드려요. 집 안팎 점검·환기·누수 확인·우편물 수거를 하고, 계절과 날씨에 맞춰 살펴볼 곳을 미리 알려 드려요. 포항·경주 시범 운영.'
+  '비워 둔 집, 대신 가서 보고 사진으로 알려 드려요. 집 안팎 점검·환기·누수 확인·우편물 수거를 하고, 계절과 날씨에 맞춰 살펴볼 곳을 미리 알려 드려요. 포항·경주 시범 운영.'
 
 export const OG_IMAGE = { url: '/diagnosis/rural-house.jpg', width: 752, height: 480, alt: '오래 비어 있는 시골 기와집' }
 
