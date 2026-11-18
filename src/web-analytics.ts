@@ -26,7 +26,7 @@ export function vercelSafeUrl(raw: string): string | null {
 declare global { interface Window { dataLayer?: unknown[]; gtag?: (...args: unknown[])=>void } }
 /** Event names and parameter values are fixed labels only — never addresses, contacts or free-text answers. */
 type EventParams = Record<string, string | number>
-export function trackEvent(event: 'form_start'|'generate_lead'|'apply_step'|'address_start'|'contact_click', params: EventParams = {}) {
+export function trackEvent(event: 'form_start'|'generate_lead'|'apply_step'|'contact_click', params: EventParams = {}) {
  if(typeof window==='undefined' || !safePage(location.pathname)) return
  try { if(localStorage.getItem(CONSENT_KEY)!=='granted') return } catch { return }
  window.gtag?.('event',event,{...params,send_to:MEASUREMENT_ID,page_location:safePage(location.pathname),page_title:location.pathname,page_referrer:''})
