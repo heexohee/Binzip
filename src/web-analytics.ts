@@ -22,8 +22,18 @@ export function vercelSafeUrl(raw: string): string | null {
  return url.origin + url.pathname + (campaign ? '?' + campaign : '')
 }
 declare global { interface Window { dataLayer?: unknown[]; gtag?: (...args: unknown[])=>void } }
-export function trackForm(event: 'form_start'|'generate_lead', kind: 'diagnosis'|'care') {
+/** Event names and parameter values are fixed labels only — never addresses, contacts or free-text answers. */
+type EventParams = Record<string, string | number>
+export function trackEvent(event: 'form_start'|'generate_lead'|'contact_click', params: EventParams = {}) {
  if(typeof window==='undefined' || !safePage(location.pathname)) return
  try { if(localStorage.getItem(CONSENT_KEY)!=='granted') return } catch { return }
- window.gtag?.('event',event,{send_to:MEASUREMENT_ID,form_id:kind,page_location:safePage(location.pathname),page_title:location.pathname,page_referrer:''})
+ window.gtag?.('event',event,{...params,send_to:MEASUREMENT_ID,page_location:safePage(location.pathname),page_title:location.pathname,page_referrer:''})
+}
+export function trackForm(event: 'form_start'|'generate_lead', kind: 'diagnosis'|'care') {
+ trackEvent(event, {form_id: kind})
+}
+/** Contact links are matched by scheme/host so server-rendered pages need no client wrapper. */
+export function contactMethod(href: string): 'phone'|'kakao'|null {
+ if(href.startsWith('tel:')) return 'phone'
+ try { return new URL(href).hostname==='pf.kakao.com' ? 'kakao' : null } catch { return null }
 }

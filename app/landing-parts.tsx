@@ -1,5 +1,6 @@
 import { Icon } from './home-ui'
 import s from './landing.module.css'
+import { KAKAO_CHAT_URL } from './contact'
 
 export const PHONE = '010-7428-2624'
 const KAKAO_CHANNEL = /^https:\/\/pf\.kakao\.com\/[A-Za-z0-9_/-]+$/
@@ -8,7 +9,7 @@ export type Item = { title: string; text: string }
 
 export function kakaoChannel() {
   const channel = process.env.KAKAO_CHANNEL_URL
-  return channel && KAKAO_CHANNEL.test(channel) ? channel : null
+  return channel && KAKAO_CHANNEL.test(channel) ? channel : KAKAO_CHAT_URL
 }
 
 export function Gets({ items, planned = false }: { items: Item[]; planned?: boolean }) {

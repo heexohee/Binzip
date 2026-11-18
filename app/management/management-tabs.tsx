@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState, type ReactNode } from 'react'
 import m from './management.module.css'
+import { KAKAO_CHAT_URL } from '../contact'
 
 export const TABS = [
   { id: 'apply', label: '신청하기' },
@@ -38,6 +39,6 @@ export function ManagementTabs({ panels }: { panels: Record<TabId, ReactNode> })
         <button type="button" className={m.secondary} onClick={() => open('report')}>관리보고 예시 보기</button>
       </div>}
     </section>)}
-    {tab !== 'apply' && <div className={m.sticky}><button type="button" className={m.primary} onClick={() => open('apply')}>관리 신청하기</button></div>}
+    {tab !== 'apply' && <div className={m.sticky}><div className={m.stickyRow}><button type="button" className={m.primary} onClick={() => open('apply')}>관리 신청하기</button><a className={m.stickyKakao} href={KAKAO_CHAT_URL} target="_blank" rel="noopener noreferrer" aria-label="카카오톡으로 문의하기">카톡 문의</a></div></div>}
   </>
 }
