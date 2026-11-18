@@ -1,14 +1,25 @@
 import Link from 'next/link'
 import { requireAdmin } from '../../../src/admin-auth'
+import { toInterestCard, type InterestRow } from '../../../src/admin-interests'
 import { sbSelect, supabaseConfigured } from '../../../src/supabase'
-import { deleteInterest, updateInterest } from './actions'
-import s from '../../interest/interest.module.css'
+import { AdminFrame } from '../admin-frame'
+import { LogoutButton } from '../logout-button'
+import { InterestList } from './interest-list'
+import styles from '../admin.module.css'
+
 export const dynamic = 'force-dynamic'
-export const metadata = {title:'보유·관리 관심 등록 관리', robots:{index:false,follow:false},referrer:'no-referrer' as const}
-type Interest = {id:string;region:string;location:string|null;residence:string;intent:string;budget:string;services:string[];contact:string;email:string|null;source:string;phone_explanation:boolean;status:string;created_at:string;consent_version:string}
+export const metadata = { title: '관리 신청 관리 — 빈집진단서', robots: { index: false, follow: false }, referrer: 'no-referrer' as const }
+
 export default async function Page() {
- await requireAdmin()
- let rows:Interest[] = [], error = ''
- try { if (!supabaseConfigured()) throw new Error(); rows = await sbSelect<Interest>('care_interests?select=*&expires_at=gt.' + encodeURIComponent(new Date().toISOString()) + '&order=created_at.desc&limit=500') } catch {error='관심 등록을 불러올 수 없습니다. Supabase 연결과 care-interests.sql 적용 여부를 확인하세요.'}
- return <main className={s.page}><Link href="/admin">← 진단 신청 관리</Link><h1>보유·관리 관심 등록</h1><p>최근 500건 이내의 유효한 응답입니다. 관심과 가격 응답은 결제·계약 실적이 아닙니다.</p>{error ? <p role="alert">{error}</p> : <><p>응답 {rows.length}건 · 보유·관리 {rows.filter(r=>r.intent==='보유하며 관리').length}건 · 미연락 {rows.filter(r=>r.status==='new').length}건</p>{rows.length===0 && <p>아직 접수된 관심 등록이 없습니다.</p>}{rows.map(r=><article className={s.notice} key={r.id} style={{marginBottom:24}}><h2>{r.region} · {r.intent}</h2><p>{r.location || '상세 위치 미입력'} / {r.residence}</p><p>가격 응답: {r.budget}</p><p>필요한 관리: {r.services.join(', ') || '미선택'}</p><p><a href={'tel:'+r.contact}>{r.contact}</a> {r.email && <a href={'mailto:'+r.email}>{r.email}</a>}</p><p>전화 설명 요청: {r.phone_explanation?'예':'아니오'} · 유입: {r.source}</p><p>접수: {new Date(r.created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})} · 동의 버전: {r.consent_version}</p><form action={updateInterest}><input type="hidden" name="id" value={r.id}/><label>연락 상태 <select name="status" defaultValue={r.status}><option value="new">미연락</option><option value="contacted">연락함</option><option value="closed">종료</option></select></label> <button type="submit">상태 저장</button></form><form action={deleteInterest} style={{marginTop:12}}><input type="hidden" name="id" value={r.id}/><label><input type="checkbox" name="confirmDelete" required/> 이 응답을 영구 삭제하는 것을 확인했어요</label> <button type="submit">응답 영구 삭제</button></form></article>)}</>}</main>
+  await requireAdmin()
+  let rows: InterestRow[] = [], error = ''
+  try {
+    if (!supabaseConfigured()) throw new Error('NOT_CONFIGURED')
+    rows = await sbSelect<InterestRow>('care_interests?select=*&expires_at=gt.' + encodeURIComponent(new Date().toISOString()) + '&order=created_at.desc&limit=500')
+  } catch { error = '관리 신청을 불러오지 못했어요. 데이터 연결 상태를 확인한 뒤 새로고침해 주세요.' }
+  return <AdminFrame navigation={<><Link href="/admin">진단 신청</Link><Link href="/admin/metrics">수요 지표</Link><LogoutButton /></>}>
+    <div className={styles.titleRow}><div><p className={styles.eyebrow}>최근 500건 · 보관 기간 안의 기록</p><h1 tabIndex={-1} className={styles.title}>관리 신청</h1><p className={styles.description}>새 신청부터 전화로 연락하고, 진행 상태를 바꿔 두세요. 상태는 고르는 즉시 저장돼요.</p></div></div>
+    {error ? <section className={styles.panel}><h2>목록을 확인할 수 없어요</h2><p className={styles.description}>{error}</p><div className={styles.actions}><Link href="/admin/interests" className={styles.secondary}>다시 불러오기</Link></div></section>
+      : <InterestList cards={rows.map(toInterestCard)} />}
+  </AdminFrame>
 }

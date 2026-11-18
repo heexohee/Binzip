@@ -1,0 +1,26 @@
+.kinds { display: flex; gap: 8px; margin: 4px 0 18px; flex-wrap: wrap; }
+.kind { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--color-line); background: var(--color-paper); color: var(--color-body); font: inherit; font-weight: 700; cursor: pointer; }
+.kind span { font-weight: 500; color: var(--color-muted); }
+.kind[aria-selected=true] { background: var(--color-deep); border-color: var(--color-deep); color: #fff; }
+.kind[aria-selected=true] span { color: #ffffffcc; }
+.card { border-top: 1px solid var(--color-line); padding: 18px 4px; }
+.head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.status { display: inline-flex; padding: 4px 10px; border-radius: 999px; font-size: var(--type-help); font-weight: 700; background: var(--surface-soft); color: var(--color-muted); }
+.status[data-status=new] { background: #fde8c8; color: #7a4a00; }
+.status[data-status=contacted] { background: var(--color-wash); color: var(--color-deep); }
+.receipt { font-size: var(--type-help); color: var(--color-muted); }
+.receipt b { font-size: 1.25rem; letter-spacing: .1em; color: var(--color-deep); margin-left: 4px; }
+.time { margin-left: auto; font-size: var(--type-help); color: var(--color-muted); }
+.region { display: block; margin-top: 10px; font-size: var(--type-body); overflow-wrap: anywhere; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chips span { padding: 4px 10px; border-radius: 8px; background: var(--surface-soft); font-size: var(--type-help); }
+.details { margin: 8px 0 0; padding-left: 18px; font-size: var(--type-help); color: var(--color-muted); line-height: 1.7; }
+.actions { display: flex; flex-wrap: wrap; align-items: end; gap: 10px 14px; margin-top: 14px; }
+.statusForm label { display: flex; flex-direction: column; gap: 4px; font-size: var(--type-help); color: var(--color-muted); }
+.danger { margin-top: 10px; font-size: var(--type-help); color: var(--color-muted); }
+.danger summary { cursor: pointer; width: fit-content; }
+.danger form { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 8px; }
+@media (max-width: 640px) {
+  .actions > a { flex: 1 1 100%; }
+  .statusForm, .statusForm select { width: 100%; }
+}
