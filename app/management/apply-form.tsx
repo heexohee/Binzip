@@ -5,6 +5,7 @@ import { trackForm } from '../../src/web-analytics'
 import { APPLICANTS, PLAN_CHOICES, type HomeType } from '../../src/management'
 import { submitManagementApply } from './actions'
 import m from './management.module.css'
+import { KAKAO_CHAT_URL } from '../contact'
 
 const INITIAL = { ok: false, message: '', errors: {} as Record<string, string> }
 
@@ -31,6 +32,8 @@ export function ApplyForm({ homeType }: { homeType: HomeType }) {
   if (state.ok) return <div className={m.success} ref={feedback} tabIndex={-1} role="status">
     <strong>신청을 접수했어요</strong>
     <p>{state.message}</p>
+    <p className={m.successNext}>전화를 기다리기 전에 궁금한 점이 있으면 카카오톡으로 먼저 물어보셔도 돼요.</p>
+    <a className={m.kakao} href={KAKAO_CHAT_URL} target="_blank" rel="noopener noreferrer">카카오톡으로 이어서 상담하기</a>
   </div>
 
   return <form className={m.form} action={action} onFocus={start} noValidate>

@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Brand } from '../home-ui'
-import { PHONE } from '../landing-parts'
+import { kakaoChannel, PHONE } from '../landing-parts'
 import { OPTIONS, PLANS, plansFor, won, type HomeType } from '../../src/management'
 import { SITE_URL } from '../../src/seo'
 import { ApplyForm } from './apply-form'
@@ -241,6 +241,7 @@ function ApplyPanel({ home }: { home: HomeType }) {
     <ol className={m.flow}>{FLOW.map((f, i) => <li key={f.step}><span>{i + 1}</span><strong>{f.step}</strong><small>{f.note}</small></li>)}</ol>
     <div className={m.formBox}><ApplyForm homeType={home} /></div>
     <a className={m.call} href={`tel:${PHONE.replaceAll('-', '')}`}>전화로 신청하기 · {PHONE}</a>
+    <a className={m.kakao} href={kakaoChannel()} target="_blank" rel="noopener noreferrer">카카오톡으로 문의하기</a>
     <p className={m.other}>포항·경주가 아닌가요? <Link href="/interest?source=other-region">우리 지역이 열리면 알림 받기 →</Link></p>
     <p className={m.partner}>🏡 <strong>동네 관리인을 찾고 있어요.</strong> 이장님처럼 마을 집을 잘 아는 분이라면 <a href={`tel:${PHONE.replaceAll('-', '')}`}>{PHONE}</a>로 연락 주세요.</p>
   </>
