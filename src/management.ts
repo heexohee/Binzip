@@ -27,11 +27,11 @@ export const plansFor = (home: HomeType) => PLANS.map(plan => ({ ...plan, price:
 export const PLAN_CHOICES = [...PLANS.map(plan => plan.name), '상담 후 정할게요'] as const
 export const APPLICANTS = ['집 주인', '가족 (자녀 등)'] as const
 export const MANAGEMENT_SOURCE = 'management-apply'
-export const MANAGEMENT_CONSENT_VERSION = '2026-11-17-management-v2'
+export const MANAGEMENT_CONSENT_VERSION = '2026-11-18-management-v3'
 
 export const won = (price: number) => `${price.toLocaleString('ko-KR')}원`
 
-export type ManagementState = { ok: boolean; message: string; errors: Record<string, string> }
+export type ManagementState = { ok: boolean; message: string; errors: Record<string, string>; receipt?: string }
 
 /**
  * Management applications reuse the care_interests table and its submit_care_interest RPC,

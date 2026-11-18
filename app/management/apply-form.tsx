@@ -2,12 +2,12 @@
 import { useActionState, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { trackForm } from '../../src/web-analytics'
-import { APPLICANTS, PLAN_CHOICES, type HomeType } from '../../src/management'
+import { APPLICANTS, PLAN_CHOICES, type HomeType, type ManagementState } from '../../src/management'
 import { submitManagementApply } from './actions'
 import m from './management.module.css'
-import { KAKAO_CHAT_URL } from '../contact'
+import { ApplySuccess } from './apply-success'
 
-const INITIAL = { ok: false, message: '', errors: {} as Record<string, string> }
+const INITIAL: ManagementState = { ok: false, message: '', errors: {} }
 
 export function ApplyForm({ homeType }: { homeType: HomeType }) {
   const [state, action, pending] = useActionState(submitManagementApply, INITIAL)
@@ -29,12 +29,7 @@ export function ApplyForm({ homeType }: { homeType: HomeType }) {
   const err = (name: string) => state.errors[name] ? <p id={`${name}-error`} className={m.error}>{state.errors[name]}</p> : null
   const described = (name: string) => state.errors[name] ? `${name}-error` : undefined
 
-  if (state.ok) return <div className={m.success} ref={feedback} tabIndex={-1} role="status">
-    <strong>신청을 접수했어요</strong>
-    <p>{state.message}</p>
-    <p className={m.successNext}>전화를 기다리기 전에 궁금한 점이 있으면 카카오톡으로 먼저 물어보셔도 돼요.</p>
-    <a className={m.kakao} href={KAKAO_CHAT_URL} target="_blank" rel="noopener noreferrer">카카오톡으로 이어서 상담하기</a>
-  </div>
+  if (state.ok) return <ApplySuccess ref={feedback} message={state.message} receipt={state.receipt} />
 
   return <form className={m.form} action={action} onFocus={start} noValidate>
     <input type="hidden" name="requestId" value={requestId} />
@@ -66,7 +61,7 @@ export function ApplyForm({ homeType }: { homeType: HomeType }) {
     <details className={m.consent}>
       <summary>개인정보 수집·이용 안내 보기</summary>
       <p>전화번호, 집이 있는 곳, 집 종류, 신청하는 분, 원하는 상품을 관리 상담 연락과 계약 안내에 사용해요. 유입 경로도 함께 저장해요. 접수일부터 최대 6개월 보관하고, 그 전에 삭제를 요청하실 수 있어요. 광고 연락에는 쓰지 않아요.</p>
-      <p>응답은 해외 업체의 서버에 저장·처리돼요. Supabase Pte. Ltd.(일본 도쿄): 응답 저장, 접수일부터 최대 6개월. Vercel Inc.(대한민국 서울·미국): 사이트 운영과 응답 처리. 동의하지 않으시면 010-7428-2624로 전화 신청해 주세요.</p>
+      <p>응답은 해외 업체의 서버에 저장·처리돼요. Supabase Pte. Ltd.(일본 도쿄): 응답 저장, 접수일부터 최대 6개월. Vercel Inc.(대한민국 서울·미국): 사이트 운영과 응답 처리. Plus Five Five, Inc.(Resend, 미국): 담당자에게 접수 알림 메일 발송(집이 있는 곳·집 종류·신청하는 분·상품·전화번호). 동의하지 않으시면 010-7428-2624로 전화 신청해 주세요.</p>
       <Link href="/privacy">개인정보 처리방침 보기</Link>
     </details>
     <label className={m.check}><input type="checkbox" name="agree" checked={checks.agree ?? false} onChange={toggle('agree')} required aria-describedby={described('agree')} />개인정보 수집·이용에 동의하고 담당자의 연락을 요청합니다. (필수)</label>

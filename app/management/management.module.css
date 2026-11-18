@@ -137,6 +137,11 @@
 .success strong { display: block; font-size: 1.25rem; color: var(--brand-primary); }
 .success p { margin: 6px 0 0; font-size: 1.0625rem; line-height: 1.55; }
 .success .successNext { margin-top: 14px; font-size: .9375rem; color: var(--text-secondary); }
+.receipt { display: flex; align-items: baseline; gap: 10px; margin-top: 14px; padding: 12px 16px; border-radius: 14px; background: var(--surface-soft); }
+.receipt span { font-size: .9375rem; color: var(--text-secondary); }
+.receipt b { font-size: 1.75rem; letter-spacing: .12em; color: var(--brand-primary); }
+.success .redirect { margin-top: 10px; font-size: .9375rem; color: var(--text-secondary); text-align: center; }
+.redirect button { border: 0; background: none; padding: 0 0 0 4px; font: inherit; color: var(--brand-primary); font-weight: 800; text-decoration: underline; cursor: pointer; }
 .call { display: block; margin-top: 14px; text-align: center; font-size: 1.0625rem; color: var(--brand-primary); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
 .other { margin: 12px 0 0; padding: 14px 16px; border-radius: 14px; background: var(--status-unknown-surface); color: var(--status-unknown-text); font-size: .9375rem; line-height: 1.5; }
 .other a { color: inherit; font-weight: 800; }
