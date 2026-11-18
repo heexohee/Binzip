@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import {safePage,safeCampaign,trackForm,vercelSafeUrl,CONSENT_KEY} from '../src/web-analytics'
+import {safePage,safeCampaign,safeUtmContent,contactMethod,trackForm,vercelSafeUrl,CONSENT_KEY} from '../src/web-analytics'
 assert.equal(safePage('/admin/123'),null)
 assert.equal(safePage('/report/private-id'),null)
 assert.equal(safePage('/decision-report'),null)
@@ -21,3 +21,15 @@ assert.equal(vercelSafeUrl(base+'/?utm_source=evil'),base+'/')
 for (const personal of ['/admin','/admin/metrics','/report/abc','/status/123','/experts/1']) assert.equal(vercelSafeUrl(base+personal),null,personal)
 assert.equal(vercelSafeUrl('not a url'),null)
 console.log('analytics privacy and consent checks passed')
+// YouTube and family-share campaigns pass the GA allowlist; free text still does not.
+assert.deepEqual(safeCampaign('?utm_source=youtube&utm_medium=paid_video&utm_campaign=binzip_care_202612&utm_content=video_rabbit_15s'),{utm_source:'youtube',utm_medium:'paid_video',utm_campaign:'binzip_care_202612',utm_content:'video_rabbit_15s'})
+assert.deepEqual(safeCampaign('?utm_source=family-share&utm_medium=share&utm_campaign=binzip_diagnosis_202611'),{utm_source:'family-share',utm_medium:'share',utm_campaign:'binzip_diagnosis_202611'})
+assert.deepEqual(safeCampaign('?utm_source=youtube.com&utm_content=video_Name%20Here'),{})
+// The stored application label stays strict because the database check only allows image_<name> or ad ids.
+assert.equal(safeUtmContent('video_rabbit_15s'),null)
+assert.equal(safeUtmContent('image_a'),'image_a')
+// Contact links map to fixed labels only.
+assert.equal(contactMethod('tel:01074282624'),'phone')
+assert.equal(contactMethod('https://pf.kakao.com/_SqxkNX/chat'),'kakao')
+assert.equal(contactMethod('https://example.com/pf.kakao.com'),null)
+assert.equal(contactMethod('/apply'),null)

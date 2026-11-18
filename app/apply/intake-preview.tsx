@@ -8,9 +8,11 @@ import { PhotoPicker } from '../photo-picker'
 import styles from './intake-preview.module.css'
 import { APPLICANT_OPTIONS, GOALS, VACANCY_OPTIONS, intakePhase, intakeScreens, type IntakeGoal } from '../../src/intake-flow'
 import { PROVINCES, REGIONS, isProvince, regionLabel } from '../../src/regions'
-import { safeUtmContent } from '../../src/web-analytics'
+import { safeUtmContent, trackEvent, trackForm } from '../../src/web-analytics'
 
 const PHONE = '010-7428-2624'
+
+const STEP_LABELS = ['간단한 질문', '집 상황', '위치·연락처', '확인·제출'] as const
 
 /** Follow-up screens say which answer they come from, so owners see why they are asked. */
 const CATEGORY: Record<string, { tag: string; why: string }> = {
@@ -80,6 +82,14 @@ export function IntakePreview({ initialAddress = '', initialProvince = '' }: { i
   const region = regionLabel(answers.province ?? '', answers.district ?? '')
   const districts: readonly string[] = isProvince(answers.province ?? '') ? REGIONS[answers.province as keyof typeof REGIONS] : []
   const set = (key: string, value: string) => setAnswers(current => ({ ...current, [key]: value }))
+  const started = useRef(false)
+  const furthestPhase = useRef(0)
+  // Count each later step once, the first time the visitor reaches it; step 1 is covered by form_start.
+  useEffect(() => {
+    if (phase <= furthestPhase.current) return
+    furthestPhase.current = phase
+    trackEvent('apply_step', { form_id: 'diagnosis', step_number: phase + 1, step_name: STEP_LABELS[phase] ?? '' })
+  }, [phase])
   useEffect(() => {
     if (didNavigate.current) heading.current?.focus()
   }, [screen, review, done])
@@ -91,6 +101,7 @@ export function IntakePreview({ initialAddress = '', initialProvince = '' }: { i
     didNavigate.current = true; setError(''); setScreen(next)
   }
   function next() {
+    if (!started.current) { started.current = true; trackForm('form_start', 'diagnosis') }
     if (screen === 'basics' && !goal) { setError('가장 큰 고민을 골라 주세요. 아직 모르겠다는 답도 괜찮아요.'); return }
     const missing = (REQUIRED[screen] ?? []).filter(([key]) => key === 'damage' ? !damage.length : !answers[key])
       .filter(([key]) => key !== 'agreement' || answers.ownership === '공동 소유' || answers.ownership === '상속 정리 중')
@@ -145,7 +156,7 @@ export function IntakePreview({ initialAddress = '', initialProvince = '' }: { i
     data.set('utmContent', campaignContent())
     try {
       const result = await submitApplication({ ok: false, errors: {}, message: null }, data)
-      if (result.ok) { didNavigate.current = true; setDone(true); return }
+      if (result.ok) { if (result.newReceipt) trackForm('generate_lead', 'diagnosis'); didNavigate.current = true; setDone(true); return }
       setError(result.message ?? Object.values(result.errors)[0] ?? '입력 내용을 다시 확인해 주세요.')
     } catch {
       setError(`접수 결과를 확인하지 못했어요. 잠시 후 다시 시도하거나 ${PHONE}로 연락 주세요.`)
@@ -190,7 +201,7 @@ export function IntakePreview({ initialAddress = '', initialProvince = '' }: { i
   }}>
     <div hidden aria-hidden="true"><label>웹사이트<input ref={honeypot} name="website" tabIndex={-1} autoComplete="off" /></label></div>
     <ol className={styles.steps} aria-label="진단 신청 단계">
-      {['간단한 질문', '집 상황', '위치·연락처', '확인·제출'].map((label, i) => <li key={label} aria-current={phase === i ? 'step' : undefined} data-complete={phase > i}><span>{phase > i ? '✓' : i + 1}</span>{label}</li>)}
+      {STEP_LABELS.map((label, i) => <li key={label} aria-current={phase === i ? 'step' : undefined} data-complete={phase > i}><span>{phase > i ? '✓' : i + 1}</span>{label}</li>)}
     </ol>
     <div className={styles.card}>
       <header className={styles.heading}>

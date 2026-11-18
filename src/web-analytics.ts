@@ -9,7 +9,9 @@ export function safeUtmContent(value: string | null | undefined): string | null 
 export function safeCampaign(search: string) {
  const q = new URLSearchParams(search)
  const result: Record<string,string> = {}
- const allowed: Record<string,RegExp> = { utm_source: /^(instagram|facebook|meta|moast)$/, utm_medium: /^(paid_social|social)$/, utm_campaign: /^binzip_(diagnosis|care)_202611$/, utm_content: UTM_CONTENT_PATTERN }
+ // GA-only allowlist. utm_content here also accepts video_<name>; the stored application value keeps
+ // UTM_CONTENT_PATTERN because the database check constraint only allows image_<name> or ad ids.
+ const allowed: Record<string,RegExp> = { utm_source: /^(instagram|facebook|meta|moast|youtube|family-share)$/, utm_medium: /^(paid_social|social|paid_video|share)$/, utm_campaign: /^binzip_(diagnosis|care)_20[0-9]{4}$/, utm_content: /^((image|video)_[a-z0-9_]{1,30}|[0-9]{5,30})$/ }
  for (const [key, pattern] of Object.entries(allowed)) { const value=q.get(key); if(value && pattern.test(value)) result[key]=value }
  return result
 }
@@ -24,7 +26,7 @@ export function vercelSafeUrl(raw: string): string | null {
 declare global { interface Window { dataLayer?: unknown[]; gtag?: (...args: unknown[])=>void } }
 /** Event names and parameter values are fixed labels only — never addresses, contacts or free-text answers. */
 type EventParams = Record<string, string | number>
-export function trackEvent(event: 'form_start'|'generate_lead'|'contact_click', params: EventParams = {}) {
+export function trackEvent(event: 'form_start'|'generate_lead'|'apply_step'|'address_start'|'contact_click', params: EventParams = {}) {
  if(typeof window==='undefined' || !safePage(location.pathname)) return
  try { if(localStorage.getItem(CONSENT_KEY)!=='granted') return } catch { return }
  window.gtag?.('event',event,{...params,send_to:MEASUREMENT_ID,page_location:safePage(location.pathname),page_title:location.pathname,page_referrer:''})
