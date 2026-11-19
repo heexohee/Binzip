@@ -63,7 +63,7 @@ export default async function Review({ params }: { params: Promise<{ id: string 
 
   return (
     <AdminFrame navigation={<LogoutButton />}><div className={styles.review}>
-      <Link href="/admin" className={styles.back}>← 신청 목록으로</Link>
+      <Link href="/admin/diagnosis" className={styles.back}>← 진단 신청 목록으로</Link>
       <h1 className="mt-3 text-[length:var(--type-page)]">{app.resolved_address || app.address}</h1>
       <p className="mt-2 text-[length:var(--type-help)] text-muted">
         신청 {new Date(app.created_at).toLocaleString('ko-KR')} · 파기 예정{' '}

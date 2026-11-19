@@ -88,3 +88,8 @@
 .pendingAddress { font-weight: 700; color: var(--color-earth); }
 .pendingNotice { margin-top: 16px; padding: 12px 14px; border: 1px dashed var(--color-earth); border-radius: var(--radius-badge); font-size: var(--type-help); line-height: 1.6; }
 .pendingNotice strong { margin-right: 8px; color: var(--color-earth); }
+.nav a, .nav button { white-space: nowrap; }
+@media (max-width: 640px) {
+  .header { flex-wrap: wrap; row-gap: 10px; }
+  .nav { width: 100%; flex-wrap: wrap; gap: 8px 16px; }
+}

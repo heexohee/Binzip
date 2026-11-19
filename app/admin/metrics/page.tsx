@@ -19,7 +19,7 @@ export default async function MetricsPage() {
   await requireAdmin()
   const { summary, error } = await loadDemandMetrics()
   return <AdminFrame navigation={<LogoutButton />}>
-    <Link href="/admin">← 진단 신청 관리</Link>
+    <Link href="/admin">← 관리 신청</Link>
     <h1>수요 지표</h1>
     <p className={m.lead}>접수 6개월이 지난 응답은 자동으로 삭제돼요. 사업계획서에 쓸 숫자는 CSV로 주기적으로 받아 두세요.</p>
     <p className={m.note}>6개월 이내 응답만 집계해요 · CSV에는 연락처가 없어요 · 전체 방문자 수는 Vercel Analytics, 동의한 방문의 흐름·광고 유입은 <a href="https://analytics.google.com/analytics/web/#/a406338925p562345726/reports/intelligenthome" target="_blank" rel="noopener noreferrer">Google Analytics</a>에서 확인해요</p>

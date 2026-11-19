@@ -91,6 +91,9 @@ try {
   await page.getByLabel('관리자 접근 키').fill(token)
   await page.getByRole('button', { name: '로그인', exact: true }).click()
   await page.waitForURL(origin + '/admin')
+  await page.getByRole('heading', { name: '관리 신청', exact: true }).waitFor()
+  await page.getByRole('link', { name: '진단 신청', exact: true }).click()
+  await page.waitForURL(origin + '/admin/diagnosis')
   await page.getByRole('heading', { name: '추가 확인 신청 관리' }).waitFor()
   console.log('QA authenticated dashboard reached')
   const session = (await page.context().cookies()).find(cookie => cookie.name === 'binzip_admin')!
@@ -125,7 +128,7 @@ try {
   assert.equal(patches, 1)
   console.log('QA step completed')
   checks.push('mock database login, private cookie, persisted workflow, no report publication, protected POST rejected and anonymous requests cannot mutate')
-  await page.goto(origin + '/admin')
+  await page.goto(origin + '/admin/diagnosis')
   failReads = true
   await page.reload()
   await page.getByRole('heading', { name: '신청 목록을 확인할 수 없어요' }).waitFor()
