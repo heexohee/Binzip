@@ -22,7 +22,7 @@ export function InterestList({ cards }: { cards: InterestCard[] }) {
 
   return <>
     <div className={s.kinds} role="tablist" aria-label="목록 종류">{KINDS.map(item => <button key={item.id} role="tab" aria-selected={kind === item.id} className={s.kind} onClick={() => { setKind(item.id); setStatus('all') }}>{item.label}<span>{cards.filter(card => card.kind === item.id).length}</span></button>)}</div>
-    <div className={styles.stats} style={{ gridTemplateColumns: 'repeat(3, 1fr)' }} aria-label="상태별 건수">{INTEREST_STATUSES.map(item => <button key={item.id} className={styles.stat} aria-pressed={status === item.id} onClick={() => setStatus(status === item.id ? 'all' : item.id)}><span>{label(item.id)}</span><strong>{counts[item.id]}<small>건</small></strong></button>)}</div>
+    <div className={`${styles.stats} ${s.statusStats}`} aria-label="상태별 건수">{INTEREST_STATUSES.map(item => <button key={item.id} className={styles.stat} aria-pressed={status === item.id} onClick={() => setStatus(status === item.id ? 'all' : item.id)}><span>{label(item.id)}</span><strong>{counts[item.id]}<small>건</small></strong></button>)}</div>
     <section className={styles.panel} aria-labelledby="interest-title">
       <h2 id="interest-title">{kind === 'management' ? '관리 신청 목록' : '의견 조사·관심 등록 목록'}</h2>
       <div className={styles.tools}><label className={styles.search}>접수번호·전화번호·지역 검색<input type="search" className={styles.input} value={query} onChange={event => setQuery(event.target.value)} placeholder="예: F9F5, 1234, 흥해" maxLength={60} /></label></div>

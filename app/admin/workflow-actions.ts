@@ -23,7 +23,7 @@ export async function saveWorkflow(applicationId: string, _previous: WorkflowSta
   } catch {
     return { ok: false, message: '저장하지 못했어요. 연결을 확인하고 다시 시도해 주세요.' }
   }
-  revalidatePath('/admin')
+  revalidatePath('/admin/diagnosis')
   revalidatePath('/admin/' + applicationId)
   return { ok: true, message: '처리 상태와 내부 메모를 저장했어요. 고객에게 알림은 발송되지 않습니다.' }
 }

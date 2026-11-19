@@ -8,6 +8,9 @@
 .status { display: inline-flex; padding: 4px 10px; border-radius: 999px; font-size: var(--type-help); font-weight: 700; background: var(--surface-soft); color: var(--color-muted); }
 .status[data-status=new] { background: #fde8c8; color: #7a4a00; }
 .status[data-status=contacted] { background: var(--color-wash); color: var(--color-deep); }
+.status[data-status=scheduled] { background: #e3ecf8; color: #234a7a; }
+.status[data-status=subscribed] { background: var(--color-deep); color: #fff; }
+.statusStats { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .receipt { font-size: var(--type-help); color: var(--color-muted); }
 .receipt b { font-size: 1.25rem; letter-spacing: .1em; color: var(--color-deep); margin-left: 4px; }
 .time { margin-left: auto; font-size: var(--type-help); color: var(--color-muted); }
@@ -20,7 +23,9 @@
 .danger { margin-top: 10px; font-size: var(--type-help); color: var(--color-muted); }
 .danger summary { cursor: pointer; width: fit-content; }
 .danger form { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 8px; }
+@media (max-width: 900px) { .statusStats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 640px) {
+  .statusStats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .actions > a { flex: 1 1 100%; }
   .statusForm, .statusForm select { width: 100%; }
 }

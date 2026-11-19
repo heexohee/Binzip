@@ -88,8 +88,8 @@
 .pendingAddress { font-weight: 700; color: var(--color-earth); }
 .pendingNotice { margin-top: 16px; padding: 12px 14px; border: 1px dashed var(--color-earth); border-radius: var(--radius-badge); font-size: var(--type-help); line-height: 1.6; }
 .pendingNotice strong { margin-right: 8px; color: var(--color-earth); }
-
-.managementCallout { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; padding: 18px 22px; border-radius: var(--radius-card); border: 1px solid var(--color-line); background: var(--color-paper); color: var(--color-body); text-decoration: none; font-size: var(--type-body); }
-.managementCallout strong { display: block; font-size: var(--type-help); color: var(--color-muted); font-weight: 500; margin-bottom: 2px; }
-.managementCallout[data-new=true] { border: 2px solid var(--color-deep); background: var(--color-wash); font-weight: 700; color: var(--color-deep); }
-.managementCallout:hover { background: var(--color-wash); }
+.nav a, .nav button { white-space: nowrap; }
+@media (max-width: 640px) {
+  .header { flex-wrap: wrap; row-gap: 10px; }
+  .nav { width: 100%; flex-wrap: wrap; gap: 8px 16px; }
+}

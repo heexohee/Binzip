@@ -17,7 +17,7 @@ create table if not exists public.care_interests (
  consented_at timestamptz not null default now(),
  created_at timestamptz not null default now(),
  expires_at timestamptz not null default (now() + interval '6 months'),
- status text not null default 'new' check (status in ('new','contacted','closed'))
+ status text not null default 'new' check (status in ('new','contacted','scheduled','subscribed','closed'))
 );
 alter table public.care_interests enable row level security;
 revoke all on public.care_interests from anon, authenticated;

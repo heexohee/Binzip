@@ -81,7 +81,7 @@ export async function approveReport(reportId: string, applicationId: string) {
   }
 
   await sbUpdate('reports', 'id=eq.' + reportId, patch)
-  revalidatePath('/admin')
+  revalidatePath('/admin/diagnosis')
   revalidatePath('/admin/' + applicationId)
 }
 
@@ -108,7 +108,7 @@ function registryFinding(): Finding {
 export async function revertReport(reportId: string, applicationId: string) {
   await requireReport(reportId, applicationId)
   await sbUpdate('reports', 'id=eq.' + reportId, { status: 'draft', issued_at: null })
-  revalidatePath('/admin')
+  revalidatePath('/admin/diagnosis')
   revalidatePath('/admin/' + applicationId)
 }
 
@@ -150,7 +150,7 @@ export async function rerunJudgment(applicationId: string) {
   if (isAddressPending(app)) throw new Error('ADMIN_ADDRESS_PENDING')
   await createDraftReport(applicationId, app.resolved_address || app.address)
   revalidatePath('/admin/' + applicationId)
-  revalidatePath('/admin')
+  revalidatePath('/admin/diagnosis')
 }
 
 /**
@@ -164,7 +164,7 @@ export async function deleteApplication(formData: FormData) {
   if (formData.get('confirmDelete') !== 'on') throw new Error('ADMIN_DELETE_UNCONFIRMED')
   const deleted = await sbDelete('applications', 'id=eq.' + applicationId)
   if (!deleted) throw new Error('ADMIN_APPLICATION_UNAVAILABLE')
-  revalidatePath('/admin')
+  revalidatePath('/admin/diagnosis')
   revalidatePath('/admin/metrics')
-  redirect('/admin')
+  redirect('/admin/diagnosis')
 }

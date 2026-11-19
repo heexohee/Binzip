@@ -8,11 +8,15 @@ export type InterestRow = {
   status: string; created_at: string; consent_version: string; answers?: Record<string, unknown> | null
 }
 export type InterestKind = 'management' | 'survey'
-export type InterestStatus = 'new' | 'contacted' | 'closed'
+/** Must match the care_interests status check (supabase/migrations/20261119_care_interest_subscription_status.sql). */
+export const INTEREST_STATUS_IDS = ['new', 'contacted', 'scheduled', 'subscribed', 'closed'] as const
+export type InterestStatus = (typeof INTEREST_STATUS_IDS)[number]
 export const INTEREST_STATUSES: { id: InterestStatus; label: string; managementLabel: string }[] = [
   { id: 'new', label: '미연락', managementLabel: '새 신청 · 연락 전' },
   { id: 'contacted', label: '연락함', managementLabel: '상담 중' },
-  { id: 'closed', label: '종료', managementLabel: '종료' },
+  { id: 'scheduled', label: '방문 예정', managementLabel: '집 확인·계약 예정' },
+  { id: 'subscribed', label: '이용 중', managementLabel: '구독 중' },
+  { id: 'closed', label: '종료', managementLabel: '해지·종료' },
 ]
 
 export type InterestCard = {
@@ -21,7 +25,7 @@ export type InterestCard = {
 }
 
 const text = (value: unknown) => (typeof value === 'string' && value.trim() ? value.trim() : null)
-const asStatus = (value: string): InterestStatus => (value === 'contacted' || value === 'closed' ? value : 'new')
+const asStatus = (value: string): InterestStatus => ((INTEREST_STATUS_IDS as readonly string[]).includes(value) ? value as InterestStatus : 'new')
 
 export function toInterestCard(row: InterestRow): InterestCard {
   const answers = row.answers ?? {}
